@@ -1,0 +1,58 @@
+generated: '2026-07-19'
+method: probed
+source: live HTTP probes of the laserdata.com, laserdata.cloud, docs.laserdata.cloud and
+  api.laserdata.cloud hosts
+notes: >-
+  No /.well-known/ discovery documents are published on any LaserData host as of this pass.
+  Recorded as verified absence, not as a gap in harvesting. laserdata.com soft-404s unknown
+  paths back to the marketing homepage, so the 404 status codes below are the authoritative
+  signal rather than the response bodies. A machine-readable API catalogue does exist, but at
+  the non-standard location https://api.laserdata.cloud/docs (a Scalar reference that lists the
+  Core, Audit and Notifier OpenAPI 3.1 specs) rather than at /.well-known/api-catalog.
+hosts:
+- host: https://laserdata.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /llms.txt
+    status: 200
+    file: ../llms/laserdata-llms.txt
+- host: https://laserdata.cloud
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+- host: https://docs.laserdata.cloud
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /llms.txt
+    status: 404
+- host: https://api.laserdata.cloud
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /openapi.json
+    status: 404
+  - path: /openapi/core.json
+    status: 200
+    file: ../openapi/laserdata-core-openapi.json
+  - path: /openapi/audit.json
+    status: 200
+    file: ../openapi/laserdata-audit-openapi.json
+  - path: /openapi/notifier.json
+    status: 200
+    file: ../openapi/laserdata-notifier-openapi.json

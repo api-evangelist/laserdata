@@ -1,0 +1,474 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Environments API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Environments
+  description: Environments within a division
+paths:
+  /tenants/{tenant_id}/divisions/{division_id}/environments:
+    get:
+      tags:
+      - Environments
+      summary: List environments
+      description: Returns the division's environments visible to the caller. Permission-filtered.
+      operationId: get_environments
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 10
+      responses:
+        '200':
+          description: Paged environments listing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_EnvironmentInfo'
+        '403':
+          description: Insufficient permissions
+    post:
+      tags:
+      - Environments
+      summary: Create environment
+      description: 'Creates an environment in the division. Environments are the natural API key scope unit: scope a key to a single environment to bound an agent''s blast radius. New id returned in the `ld-environment` response header.'
+      operationId: create_environment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      requestBody:
+        description: Name, optional description, protected flag
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEnvironment'
+        required: true
+      responses:
+        '201':
+          description: Environment created. The new environment ID is returned in the ld-environment header
+        '400':
+          description: Invalid name / description or environments limit reached
+        '403':
+          description: Insufficient permissions
+        '409':
+          description: Name already used in this division
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}:
+    get:
+      tags:
+      - Environments
+      summary: Get environment
+      description: Returns environment details including description and deployment count. Environments group deployments within a division and are the smallest unit for fine-grained API key scoping.
+      operationId: get_environment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      responses:
+        '200':
+          description: Environment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentDetails'
+        '403':
+          description: Insufficient permissions on the environment
+        '404':
+          description: Environment not found
+    put:
+      tags:
+      - Environments
+      summary: Update environment
+      description: Partial update of environment attributes. Omitted fields are unchanged.
+      operationId: update_environment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      requestBody:
+        description: Partial update. Null or missing fields are unchanged
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEnvironment'
+        required: true
+      responses:
+        '204':
+          description: Environment updated
+        '400':
+          description: Invalid field value
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Environment not found
+    delete:
+      tags:
+      - Environments
+      summary: Delete environment
+      description: Deletes the environment. Must be empty of deployments first. Protected environments require a resource code (obtain via PUT /tenants/{tenant_id}/request_code with action `delete_environment`).
+      operationId: delete_environment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: code
+        in: query
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '204':
+          description: Environment deleted
+        '400':
+          description: Environment contains deployments or missing code on protected env
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Environment not found
+components:
+  schemas:
+    EnvironmentName:
+      type: string
+      example: staging
+    Paged_EnvironmentInfo:
+      type: object
+      required:
+      - total_pages
+      - total_results
+      - page
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - name
+            - deployments_count
+            - protected
+            - created_at
+            - updated_at
+            properties:
+              created_at:
+                type: string
+                format: date-time
+                description: Resource creation timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+              deployments_count:
+                type: integer
+                format: int32
+                minimum: 0
+              id:
+                $ref: '#/components/schemas/EnvironmentId'
+              name:
+                $ref: '#/components/schemas/EnvironmentName'
+              protected:
+                type: boolean
+                description: 'When `true`, deletion is hardened: the DELETE request must include a one-time
+
+                  confirmation code emailed to the tenant address. Obtain the code via
+
+                  `PUT /tenants/{tenant_id}/request_code` with `action = "delete_environment"` and
+
+                  pass it as the `code` query parameter on the DELETE call.'
+                example: true
+              updated_at:
+                type: string
+                format: date-time
+                description: Resource last-update timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+            example:
+              id: 7261845066528310000
+              name: production
+              deployments_count: 3
+              protected: true
+              created_at: '2026-05-20T10:00:00Z'
+              updated_at: '2026-05-20T10:00:00Z'
+        page:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        total_pages:
+          type: integer
+          format: int64
+          example: 4
+          minimum: 0
+        total_results:
+          type: integer
+          format: int64
+          example: 137
+          minimum: 0
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    UpdateEnvironment:
+      type: object
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Description'
+        name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/EnvironmentName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. Toggle deletion hardening for this environment. When `true`, future DELETE
+
+            calls must include a one-time confirmation code emailed to the tenant address
+
+            (request via `PUT /tenants/{tenant_id}/request_code` with
+
+            `action = "delete_environment"`). Leave unset to keep the current value.'
+          example: true
+    CreateEnvironment:
+      type: object
+      required:
+      - name
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Description'
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. When `true`, deletion is hardened: deleting this environment will require
+
+            a one-time confirmation code emailed to the tenant address (request via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_environment"`).
+
+            Defaults to `false` when omitted.'
+          example: true
+    Description:
+      type: string
+      example: Production deployment for high-throughput streaming.
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    EnvironmentInfo:
+      type: object
+      required:
+      - id
+      - name
+      - deployments_count
+      - protected
+      - created_at
+      - updated_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        deployments_count:
+          type: integer
+          format: int32
+          minimum: 0
+        id:
+          $ref: '#/components/schemas/EnvironmentId'
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        protected:
+          type: boolean
+          description: 'When `true`, deletion is hardened: the DELETE request must include a one-time
+
+            confirmation code emailed to the tenant address. Obtain the code via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_environment"` and
+
+            pass it as the `code` query parameter on the DELETE call.'
+          example: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Resource last-update timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+      example:
+        id: 7261845066528310000
+        name: production
+        deployments_count: 3
+        protected: true
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
+    EnvironmentDetails:
+      allOf:
+      - $ref: '#/components/schemas/EnvironmentInfo'
+      - type: object
+        required:
+        - description
+        properties:
+          description:
+            $ref: '#/components/schemas/Description'
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

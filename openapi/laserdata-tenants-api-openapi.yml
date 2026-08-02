@@ -1,0 +1,1067 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Tenants API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Tenants
+  description: Tenant CRUD, config, structure
+paths:
+  /tenants:
+    get:
+      tags:
+      - Tenants
+      summary: List tenants
+      description: Returns all tenants the calling user is a member of. Used by the console to populate the tenant switcher. With API key auth this is scoped to the key's tenant.
+      operationId: get_tenants
+      responses:
+        '200':
+          description: Tenants accessible to the caller
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TenantInfo'
+        '401':
+          description: No active session or API key
+    post:
+      tags:
+      - Tenants
+      summary: Create tenant
+      description: 'Creates a new tenant with the caller as owner. Optionally provisions a default division in the same request. The new ids are returned in `ld-tenant` and `ld-division` response headers. Subject to per-user `owned_tenants` limit. Session-only: API keys are tenant-scoped and cannot create new tenants.'
+      operationId: create_tenant
+      requestBody:
+        description: Name, description, email, protected, optional initial division
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTenant'
+        required: true
+      responses:
+        '201':
+          description: Tenant created. The new tenant ID is returned in the ld-tenant header
+        '400':
+          description: Invalid name / email / division settings or owned-tenants limit reached
+        '409':
+          description: Email domain already claimed
+      security:
+      - session_cookie: []
+  /tenants/{tenant_id}:
+    get:
+      tags:
+      - Tenants
+      summary: Get tenant
+      description: 'Returns tenant details: status, subscription plan + features, billing email, custom email domain. The caller must be a member of the tenant.'
+      operationId: get_tenant
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '200':
+          description: Tenant details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantDetailsInfo'
+        '403':
+          description: Not a member of the tenant
+        '404':
+          description: Tenant not found
+    put:
+      tags:
+      - Tenants
+      summary: Update tenant
+      description: Partial update of tenant attributes (name, description, email, protected). Owner-only.
+      operationId: update_tenant
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      requestBody:
+        description: Partial update. Null or missing fields are unchanged
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTenant'
+        required: true
+      responses:
+        '204':
+          description: Tenant updated
+        '400':
+          description: Invalid field value
+        '403':
+          description: Not the tenant owner
+        '404':
+          description: Tenant not found
+    delete:
+      tags:
+      - Tenants
+      summary: Delete tenant
+      description: 'Permanently deletes the tenant and all child resources (divisions, environments, deployments will be torn down). Requires a resource confirmation code (obtain via PUT /tenants/{tenant_id}/request_code with action `delete_tenant`). Owner-only. Outstanding deployments and billing must be settled first. Session-only: API keys are tenant-scoped and cannot delete tenants.'
+      operationId: delete_tenant
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: code
+        in: query
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '204':
+          description: Tenant deleted
+        '400':
+          description: Active deployments or unpaid invoices exist, or missing/invalid code
+        '403':
+          description: Not the tenant owner
+        '404':
+          description: Tenant not found
+      security:
+      - session_cookie: []
+  /tenants/{tenant_id}/config:
+    get:
+      tags:
+      - Tenants
+      summary: Get tenant config
+      description: 'Returns the tenant''s organizational policy: join policy, invitation rules, and email-domain claim status.'
+      operationId: get_tenant_config
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '200':
+          description: Tenant config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantConfigInfo'
+        '403':
+          description: Not a member of the tenant
+    put:
+      tags:
+      - Tenants
+      summary: Update tenant config
+      description: 'Updates organizational policy: join_policy (open / invite_only / domain_match), whether external invitations are allowed, and whether invitations must come from the claimed email domain.'
+      operationId: update_tenant_config
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      requestBody:
+        description: Join policy + invitation policies
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTenantConfig'
+        required: true
+      responses:
+        '204':
+          description: Tenant config updated
+        '403':
+          description: Not the tenant owner
+        '404':
+          description: Tenant not found
+  /tenants/{tenant_id}/membership:
+    delete:
+      tags:
+      - Tenants
+      summary: Leave tenant
+      description: 'Removes the current user''s membership from this tenant. The tenant owner cannot leave - they must transfer ownership or delete the tenant first. Session-only: API keys are tenant-scoped and cannot leave tenants.'
+      operationId: leave_tenant
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '204':
+          description: Membership removed for current user
+        '400':
+          description: Caller is the tenant owner and cannot leave
+        '404':
+          description: Not a member of this tenant
+      security:
+      - session_cookie: []
+  /tenants/{tenant_id}/request_code:
+    put:
+      tags:
+      - Tenants
+      summary: Request resource action code
+      description: Mints a one-time confirmation code emailed to the caller. Required for irreversible operations on `protected` resources (delete_tenant, delete_division, delete_environment, delete_deployment). The code is included on the subsequent DELETE call as a query parameter.
+      operationId: request_resource_code
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      requestBody:
+        description: Which destructive action the code authorizes
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestResourceCode'
+        required: true
+      responses:
+        '204':
+          description: Code requested. Sent by email to the caller
+        '403':
+          description: Insufficient permissions for the requested action
+        '429':
+          description: Code already requested recently
+  /tenants/{tenant_id}/structure:
+    get:
+      tags:
+      - Tenants
+      summary: Get tenant resource tree
+      description: 'Returns the entire tenant resource hierarchy as a nested tree: divisions -> environments -> deployments. Single call to prime an agent''s context about everything in the tenant. Permission-filtered, hidden divisions and environments are omitted. Each deployment''s `supervisor_url` points to the supervisor API that owns its lifecycle (status, configuration, telemetry, restart, upgrade, node operations).'
+      operationId: get_tenant_structure
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '200':
+          description: Tenant resource tree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantStructure'
+        '403':
+          description: Not a member of the tenant
+  /tenants/{tenant_id}/summary:
+    get:
+      tags:
+      - Tenants
+      summary: Tenant summary
+      description: 'Aggregate counters for the tenant: total divisions, environments, deployments. Cheap projection for dashboards.'
+      operationId: get_tenant_summary
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '200':
+          description: Tenant summary counters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantSummaryInfo'
+        '403':
+          description: Not a member of the tenant
+components:
+  schemas:
+    Region:
+      type: string
+      example: us-east-1
+    TenantConfig:
+      type: object
+      required:
+      - join_policy
+      - block_external_invitations
+      - enforce_domain_only_invitations
+      properties:
+        block_external_invitations:
+          type: boolean
+        enforce_domain_only_invitations:
+          type: boolean
+        join_policy:
+          $ref: '#/components/schemas/JoinPolicy'
+    Description:
+      type: string
+      example: Production deployment for high-throughput streaming.
+    PlanFeatures:
+      type: object
+      required:
+      - invitations_limit
+      - members_limit
+      - roles_limit
+      - divisions_limit
+      - environments_limit
+      - deployment_tiers
+      - deployment_access_rules_limit
+      - deployment_configs_limit
+      - deployment_backups_limit
+      - private_connections_limit
+      - private_endpoints_limit
+      - byoc_enabled
+      - cluster_enabled
+      - on_premise_enabled
+      - private_networking_enabled
+      - multi_az_enabled
+      - dedicated_enabled
+      - backup_enabled
+      - cross_region_dr_enabled
+      - audit_retention_days
+      - api_keys_limit
+      - cloud_accounts_limit
+      - notification_channels_limit
+      - notification_subscriptions_limit
+      - deployment_snapshots_limit
+      - custom_domains_limit
+      - backup_regions_limit
+      - nodes_per_deployment_limit
+      - backup_retention_days
+      - snapshot_retention_days
+      - pending_invitations_limit
+      - api_key_allowed_ips_limit
+      - divisions_per_role_limit
+      - environments_per_division_limit
+      - concurrent_deployments_limit
+      - verified_domains_limit
+      - audit_export_enabled
+      - advanced_connectors_enabled
+      - custom_idp_enabled
+      - customer_managed_keys_enabled
+      - advanced_notification_channels_enabled
+      - scim_enabled
+      properties:
+        advanced_connectors_enabled:
+          type: boolean
+        advanced_notification_channels_enabled:
+          type: boolean
+        api_key_allowed_ips_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        api_keys_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        audit_export_enabled:
+          type: boolean
+        audit_retention_days:
+          type: integer
+          format: int32
+          minimum: 0
+        backup_enabled:
+          type: boolean
+        backup_regions_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        backup_retention_days:
+          type: integer
+          format: int32
+          minimum: 0
+        byoc_enabled:
+          type: boolean
+        cloud_accounts_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        cluster_enabled:
+          type: boolean
+        concurrent_deployments_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        cross_region_dr_enabled:
+          type: boolean
+        custom_domains_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        custom_idp_enabled:
+          type: boolean
+        customer_managed_keys_enabled:
+          type: boolean
+        dedicated_enabled:
+          type: boolean
+        deployment_access_rules_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        deployment_backups_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        deployment_configs_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        deployment_snapshots_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        deployment_tiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeploymentTierLimit'
+        divisions_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        divisions_per_role_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        environments_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        environments_per_division_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        invitations_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        members_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        multi_az_enabled:
+          type: boolean
+        nodes_per_deployment_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        notification_channels_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        notification_subscriptions_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        on_premise_enabled:
+          type: boolean
+        pending_invitations_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        private_connections_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        private_endpoints_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        private_networking_enabled:
+          type: boolean
+        roles_limit:
+          type: integer
+          format: int32
+          minimum: 0
+        scim_enabled:
+          type: boolean
+        snapshot_retention_days:
+          type: integer
+          format: int32
+          minimum: 0
+        verified_domains_limit:
+          type: integer
+          format: int32
+          minimum: 0
+    DeploymentId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
+    DeleteDeploymentPayload:
+      type: object
+      required:
+      - tenant_id
+      - division_id
+      - environment_id
+      - deployment_id
+      properties:
+        deployment_id:
+          $ref: '#/components/schemas/DeploymentId'
+        division_id:
+          $ref: '#/components/schemas/DivisionId'
+        environment_id:
+          $ref: '#/components/schemas/EnvironmentId'
+        tenant_id:
+          $ref: '#/components/schemas/TenantId'
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
+    DeleteTenantPayload:
+      type: object
+      required:
+      - tenant_id
+      properties:
+        tenant_id:
+          $ref: '#/components/schemas/TenantId'
+    UpdateTenantConfig:
+      type: object
+      required:
+      - join_policy
+      - block_external_invitations
+      - enforce_domain_only_invitations
+      properties:
+        block_external_invitations:
+          type: boolean
+        enforce_domain_only_invitations:
+          type: boolean
+        join_policy:
+          type: string
+    UpdateTenant:
+      type: object
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Description'
+        email:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Email'
+        name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/TenantName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. Toggle deletion hardening for this tenant. When `true`, future DELETE calls
+
+            must include a one-time confirmation code emailed to the tenant address (request via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_tenant"`). Leave unset
+
+            to keep the current value.'
+          example: true
+    TenantDivision:
+      type: object
+      required:
+      - name
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Description'
+        email:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Email'
+        name:
+          $ref: '#/components/schemas/DivisionName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. When `true`, deletion is hardened: deleting this division will require a
+
+            one-time confirmation code emailed to the tenant address (request via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_division"`).
+
+            Defaults to `false` when omitted.'
+          example: false
+    TenantInfo:
+      type: object
+      required:
+      - id
+      - name
+      - protected
+      - created_at
+      - updated_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        id:
+          $ref: '#/components/schemas/TenantId'
+        name:
+          $ref: '#/components/schemas/TenantName'
+        protected:
+          type: boolean
+          description: 'When `true`, deletion is hardened: the DELETE request must include a one-time
+
+            confirmation code emailed to the tenant address. Obtain the code via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_tenant"` and pass it
+
+            as the `code` query parameter on the DELETE call.'
+          example: true
+        remarks:
+          type:
+          - string
+          - 'null'
+        updated_at:
+          type: string
+          format: date-time
+          description: Resource last-update timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+      example:
+        id: 7261845022003200001
+        name: Acme
+        protected: true
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
+    DeploymentStructure:
+      type: object
+      required:
+      - id
+      - name
+      - cloud
+      - variant
+      properties:
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        id:
+          $ref: '#/components/schemas/DeploymentId'
+        name:
+          $ref: '#/components/schemas/DeploymentName'
+        region:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Region'
+        supervisor_url:
+          type:
+          - string
+          - 'null'
+          description: 'Base URL of the supervisor API that owns this deployment''s lifecycle. All status,
+
+            configuration, telemetry, restart, upgrade, and node operations target this host:
+
+            see the Supervisor API reference. Absent for `on_premise` deployments that are not
+
+            fronted by a managed supervisor.'
+          example: https://supervisor-aws-us.laserdata.cloud
+        tier:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentTier'
+        variant:
+          $ref: '#/components/schemas/DeploymentVariant'
+    DeploymentVariant:
+      type: string
+      enum:
+      - managed
+      - byoc
+      - on_premise
+    TenantConfigInfo:
+      allOf:
+      - $ref: '#/components/schemas/TenantConfig'
+      - type: object
+        properties:
+          email_domain:
+            type:
+            - string
+            - 'null'
+          email_domain_verified_at:
+            type:
+            - string
+            - 'null'
+            format: date-time
+            example: '2026-05-20T10:00:00Z'
+    Email:
+      type: string
+      example: alice@laserdata.com
+    DivisionName:
+      type: string
+      example: production
+    TenantStructure:
+      type: object
+      required:
+      - id
+      - name
+      - divisions
+      properties:
+        divisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DivisionStructure'
+        id:
+          $ref: '#/components/schemas/TenantId'
+        name:
+          $ref: '#/components/schemas/TenantName'
+    Cloud:
+      type: string
+      description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
+      enum:
+      - aws
+      - gcp
+      examples:
+      - aws
+    DeploymentName:
+      type: string
+      example: iggy-prod-01
+    EnvironmentStructure:
+      type: object
+      required:
+      - id
+      - name
+      - deployments
+      properties:
+        deployments:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeploymentStructure'
+        id:
+          $ref: '#/components/schemas/EnvironmentId'
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+    JoinPolicy:
+      type: string
+      enum:
+      - invite_only
+      - open
+      - request_to_join
+    RequestResourceCode:
+      type: object
+      required:
+      - action
+      properties:
+        action:
+          $ref: '#/components/schemas/ResourceCodeAction'
+    TenantDetailsInfo:
+      allOf:
+      - $ref: '#/components/schemas/TenantInfo'
+      - type: object
+        required:
+        - description
+        - features
+        - email
+        - starter_available
+        - has_payment_method
+        - has_custom_email_domain
+        properties:
+          description:
+            $ref: '#/components/schemas/Description'
+          email:
+            $ref: '#/components/schemas/Email'
+          features:
+            $ref: '#/components/schemas/PlanFeatures'
+          has_custom_email_domain:
+            type: boolean
+          has_payment_method:
+            type: boolean
+          remarks:
+            type:
+            - string
+            - 'null'
+          starter_available:
+            type: boolean
+          status:
+            oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Status'
+          subscription:
+            oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/TenantSubscriptionInfo'
+    DeploymentTier:
+      type: string
+      enum:
+      - free
+      - small
+      - medium
+      - large
+      - xlarge
+      - 2xlarge
+      - 4xlarge
+      - 8xlarge
+      - 16xlarge
+    EnvironmentName:
+      type: string
+      example: staging
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    DeleteDivisionPayload:
+      type: object
+      required:
+      - tenant_id
+      - division_id
+      properties:
+        division_id:
+          $ref: '#/components/schemas/DivisionId'
+        tenant_id:
+          $ref: '#/components/schemas/TenantId'
+    TenantName:
+      type: string
+      example: acme-corp
+    TenantSubscriptionInfo:
+      type: object
+      required:
+      - id
+      - plan
+      - active
+      - created_at
+      - valid_from
+      - valid_to
+      properties:
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        id:
+          type: integer
+          format: int64
+          minimum: 0
+        plan:
+          type: string
+        valid_from:
+          type: string
+          format: date-time
+          description: Inclusive validity start (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        valid_to:
+          type: string
+          format: date-time
+          description: Exclusive validity end (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+    TenantSummaryInfo:
+      type: object
+      required:
+      - total_divisions
+      - total_environments
+      - total_deployments
+      properties:
+        total_deployments:
+          type: integer
+          format: int32
+          minimum: 0
+        total_divisions:
+          type: integer
+          format: int32
+          minimum: 0
+        total_environments:
+          type: integer
+          format: int32
+          minimum: 0
+    DivisionStructure:
+      type: object
+      required:
+      - id
+      - name
+      - environments
+      properties:
+        environments:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvironmentStructure'
+        id:
+          $ref: '#/components/schemas/DivisionId'
+        name:
+          $ref: '#/components/schemas/DivisionName'
+    DeploymentTierLimit:
+      type: object
+      required:
+      - tier
+      - limit
+      properties:
+        limit:
+          type: integer
+          format: int32
+          minimum: 0
+        tier:
+          $ref: '#/components/schemas/DeploymentTier'
+    DeleteEnvironmentPayload:
+      type: object
+      required:
+      - tenant_id
+      - division_id
+      - environment_id
+      properties:
+        division_id:
+          $ref: '#/components/schemas/DivisionId'
+        environment_id:
+          $ref: '#/components/schemas/EnvironmentId'
+        tenant_id:
+          $ref: '#/components/schemas/TenantId'
+    ResourceCodeAction:
+      oneOf:
+      - type: object
+        required:
+        - payload
+        - action_type
+        properties:
+          action_type:
+            type: string
+            enum:
+            - delete_tenant
+          payload:
+            $ref: '#/components/schemas/DeleteTenantPayload'
+      - type: object
+        required:
+        - payload
+        - action_type
+        properties:
+          action_type:
+            type: string
+            enum:
+            - delete_division
+          payload:
+            $ref: '#/components/schemas/DeleteDivisionPayload'
+      - type: object
+        required:
+        - payload
+        - action_type
+        properties:
+          action_type:
+            type: string
+            enum:
+            - delete_environment
+          payload:
+            $ref: '#/components/schemas/DeleteEnvironmentPayload'
+      - type: object
+        required:
+        - payload
+        - action_type
+        properties:
+          action_type:
+            type: string
+            enum:
+            - delete_deployment
+          payload:
+            $ref: '#/components/schemas/DeleteDeploymentPayload'
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    Status:
+      type: string
+      enum:
+      - inactive
+      - active
+      - locked
+      - deleted
+    CreateTenant:
+      type: object
+      required:
+      - name
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Description'
+        division:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/TenantDivision'
+        email:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Email'
+        name:
+          $ref: '#/components/schemas/TenantName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. When `true`, deletion is hardened: deleting this tenant will require a
+
+            one-time confirmation code emailed to the tenant address (request via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_tenant"`).
+
+            Defaults to `false` when omitted.'
+          example: true
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

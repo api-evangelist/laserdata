@@ -1,0 +1,33 @@
+# LaserData
+
+> LaserData is a hyper-efficient data streaming platform built for AI-native, real-time, and latency-sensitive workloads.
+
+LaserData provides managed, BYOC, and on-premise deployment models powered by Apache Iggy. This file highlights the most useful pages for understanding the product, its architecture, and how to get started.
+
+## Product
+
+- [LaserData Home](https://laserdata.com/): High-level overview of LaserData, positioning, and primary calls to action.
+- [Platform Overview](https://laserdata.com/platform): Control plane, deployment model, isolation, and platform architecture.
+- [Technology](https://laserdata.com/technology): Rust implementation details, performance rationale, and low-latency design.
+- [AI Workloads](https://laserdata.com/agent-streams): How LaserData supports AI-native and agent-driven streaming workloads.
+- [Connectors](https://laserdata.com/connectors): Built-in source and sink integrations for operational and analytical systems.
+- [Security](https://laserdata.com/security): Security posture, network isolation, and access-control model.
+
+## Getting Started
+
+- [Free Tier](https://laserdata.cloud): Primary entry point for requesting access to LaserData Cloud Free Tier.
+- [Documentation](https://docs.laserdata.com): Product docs, deployment guidance, concepts, and operational references.
+- [Presentations](https://laserdata.com/presentations): Conference talks covering LaserData, Apache Iggy, Rust systems design, and streaming architecture.
+
+## Company
+
+- [About](https://laserdata.com/about): Company overview, mission, and team background.
+- [Blog](https://laserdata.com/blog): Product updates and technical writing from the LaserData team.
+- [Careers](https://laserdata.com/careers): Current roles and the kind of systems work LaserData is hiring for.
+
+## Optional
+
+- [Introducing LaserData Cloud Free Tier](https://laserdata.com/blog/introducing-laserdata-cloud): The story behind LaserData, why we built it on Apache Iggy, and why we believe real-time and agentic systems need a new kind of data plane.
+- [Building Ultra-Performant Message Streaming](https://laserdata.com/presentations/2026/krakow/rustmeet/building-ultra-performant-message-streaming): How thread-per-core, io_uring, and zero-copy give Apache Iggy sub-ms p99+ latency, plus Viewstamped Replication.
+- [Building Apache Iggy with Rust & io_uring](https://laserdata.com/presentations/2026/bengaluru/rust-india/building-apache-iggy-with-rust-io-uring): A look inside Apache Iggy's architecture and how Rust plus io_uring unlock sub-ms p99 latency and multi-GB/s throughput.
+- [Fast Isn't Enough](https://laserdata.com/presentations/2026/bengaluru/rust-india/fast-isnt-enough): Why predictable tail latency matters more than headline throughput when building modern streaming infrastructure.

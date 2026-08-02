@@ -1,0 +1,187 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/laserdata-notifier-openapi.json, https://docs.laserdata.cloud/api/notifications
+spec_type: Webhooks
+asyncapi: null
+notes: 'LaserData publishes no AsyncAPI document. Its event surface is the LaserData Cloud Notifier service:
+  tenant-scoped notification channels (slack, webhook, sms, email) subscribed to platform message types.
+  Outbound HTTP webhooks are a first-class channel kind with a configurable destination URL, HTTP method
+  and custom headers. This catalogue is derived from the published OpenAPI 3.1 notifier spec - the message-type
+  list is the spec enum verbatim. Note this is a control-plane event surface (deployment, billing, identity
+  and health events), not the Apache Iggy data-plane streaming protocol, which is a binary TCP/QUIC/HTTP/WebSocket
+  transport rather than a webhook surface.'
+transport:
+  kind: outbound-http-webhook
+  delivery: push
+  auth_to_receiver: Arbitrary custom headers on the channel settings, e.g. an Authorization bearer token.
+channel_kinds:
+- kind: webhook
+  destination: HTTPS endpoint URL
+  settings:
+  - method
+  - headers
+  settings_schema: WebhookSettings
+- kind: slack
+  destination: Slack incoming-webhook URL
+  settings_schema: SlackSettings
+- kind: sms
+  destination: phone number
+  settings_schema: SmsSettings
+- kind: email
+  destination: email address
+  settings_schema: null
+subscription_model:
+  description: A notification subscription binds a channel_id to a list of message_types. A channel can
+    be enabled/disabled and test-fired; delivered notifications are queryable.
+  schemas:
+  - NotificationSubscriptionInfo
+  - NotificationChannelInfo
+  - NotificationInfo
+event_count: 41
+events:
+- type: deployment_created
+- type: deployment_initialized
+- type: deployment_upgraded
+- type: deployment_deleted
+- type: invitation_accepted
+- type: invitation_rejected
+- type: high_cpu_usage
+- type: high_memory_usage
+- type: high_disk_usage
+- type: node_unreachable
+- type: cpu_usage_resolved
+- type: memory_usage_resolved
+- type: disk_usage_resolved
+- type: node_reachable
+- type: certificate_expiring
+- type: billing_limit_reached
+- type: invoice_created
+- type: invoice_paid
+- type: invoice_payment_failed
+- type: payment_method_added
+- type: payment_method_removed
+- type: tenant_created
+- type: tenant_deleted
+- type: user_created
+- type: user_deleted
+- type: division_created
+- type: division_deleted
+- type: environment_created
+- type: environment_deleted
+- type: cert_refresh_failed
+- type: deployment_certificates_rotated
+- type: deployment_secrets_rotated
+- type: tenant_updated
+- type: division_updated
+- type: environment_updated
+- type: invitation_created
+- type: resource_code_requested
+- type: deployment_inactive
+- type: tenant_join_requested
+- type: member_joined
+- type: shared_host_drained
+operations:
+- operationId: get_notification_types
+  method: GET
+  path: /notifications/types
+  summary: List notification types
+- operationId: get_tenant_channels
+  method: GET
+  path: /tenants/{tenant_id}/channels
+  summary: List tenant notification channels
+- operationId: create_tenant_channel
+  method: POST
+  path: /tenants/{tenant_id}/channels
+  summary: Create tenant notification channel
+- operationId: get_tenant_channel
+  method: GET
+  path: /tenants/{tenant_id}/channels/{channel_id}
+  summary: Get tenant notification channel
+- operationId: update_tenant_channel
+  method: PUT
+  path: /tenants/{tenant_id}/channels/{channel_id}
+  summary: Update tenant notification channel
+- operationId: delete_tenant_channel
+  method: DELETE
+  path: /tenants/{tenant_id}/channels/{channel_id}
+  summary: Delete tenant notification channel
+- operationId: get_tenant_notifications
+  method: GET
+  path: /tenants/{tenant_id}/channels/{channel_id}/notifications
+  summary: List tenant channel notifications
+- operationId: get_tenant_subscriptions
+  method: GET
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions
+  summary: List tenant notification subscriptions
+- operationId: set_tenant_subscriptions
+  method: PUT
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions
+  summary: Replace tenant notification subscriptions
+- operationId: create_tenant_subscription
+  method: POST
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions
+  summary: Create tenant notification subscription
+- operationId: get_tenant_subscription
+  method: GET
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions/{subscription_id}
+  summary: Get tenant notification subscription
+- operationId: delete_tenant_subscription
+  method: DELETE
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions/{subscription_id}
+  summary: Delete tenant notification subscription
+- operationId: test_tenant_channel
+  method: POST
+  path: /tenants/{tenant_id}/channels/{channel_id}/test
+  summary: Send test tenant notification
+- operationId: get_division_channels
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels
+  summary: List division notification channels
+- operationId: create_division_channel
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels
+  summary: Create division notification channel
+- operationId: get_division_channel
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}
+  summary: Get division notification channel
+- operationId: update_division_channel
+  method: PUT
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}
+  summary: Update division notification channel
+- operationId: delete_division_channel
+  method: DELETE
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}
+  summary: Delete division notification channel
+- operationId: get_division_notifications
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/notifications
+  summary: List division channel notifications
+- operationId: get_division_subscriptions
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions
+  summary: List division notification subscriptions
+- operationId: set_division_subscriptions
+  method: PUT
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions
+  summary: Replace division notification subscriptions
+- operationId: create_division_subscription
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions
+  summary: Create division notification subscription
+- operationId: get_division_subscription
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions/{subscription_id}
+  summary: Get division notification subscription
+- operationId: delete_division_subscription
+  method: DELETE
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions/{subscription_id}
+  summary: Delete division notification subscription
+- operationId: test_division_channel
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/test
+  summary: Send test division notification
+- operationId: get_user_notifications
+  method: GET
+  path: /users/{user_id}/channels/{channel_id}/notifications
+  summary: List user channel notifications

@@ -1,0 +1,295 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Connectors API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Connectors
+  description: Deployment connectors
+paths:
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/connectors:
+    get:
+      tags:
+      - Connectors
+      summary: List available connectors
+      description: Returns the connector catalog with availability and activation status for the deployment. Filter by `type` query parameter (`source` or `sink`).
+      operationId: get_connectors
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: deployment_id
+        in: path
+        description: Deployment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DeploymentId'
+      - name: type
+        in: path
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+      - name: page
+        in: path
+        required: true
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: path
+        required: true
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 10
+      responses:
+        '200':
+          description: Paged connectors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_ConnectorInfo'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Deployment not found
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/connectors/activate:
+    post:
+      tags:
+      - Connectors
+      summary: Activate connector
+      description: Activates a connector instance on the deployment. The instance starts in Pending status and transitions to Active once nodes process the task. Poll the connector list to confirm readiness.
+      operationId: activate_connector
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: deployment_id
+        in: path
+        description: Deployment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DeploymentId'
+      requestBody:
+        description: Connector type + provider-specific config
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivateConnector'
+        required: true
+      responses:
+        '202':
+          description: Connector activation scheduled
+        '400':
+          description: Invalid or unsupported connector config
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Deployment not found
+components:
+  schemas:
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    Paged_ConnectorInfo:
+      type: object
+      required:
+      - total_pages
+      - total_results
+      - page
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - key
+            - type
+            - name
+            - description
+            - available
+            - permitted
+            properties:
+              available:
+                type: boolean
+              description:
+                type: string
+              key:
+                type: string
+              name:
+                type: string
+              permitted:
+                type: boolean
+              type:
+                $ref: '#/components/schemas/ConnectorType'
+            example:
+              key: iggy.postgres.sink
+              type: sink
+              name: PostgreSQL Sink
+              description: Stream messages from an Iggy topic to a PostgreSQL table.
+              available: true
+              permitted: true
+        page:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        total_pages:
+          type: integer
+          format: int64
+          example: 4
+          minimum: 0
+        total_results:
+          type: integer
+          format: int64
+          example: 137
+          minimum: 0
+    ConnectorType:
+      type: string
+      enum:
+      - sink
+      - source
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    ActivateConnector:
+      type: object
+      required:
+      - connector_key
+      - connector_type
+      properties:
+        connector_key:
+          type: string
+        connector_type:
+          type: string
+        instance_key:
+          type:
+          - string
+          - 'null'
+        instance_name:
+          type:
+          - string
+          - 'null'
+    DeploymentId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

@@ -1,0 +1,412 @@
+aid: laserdata
+name: LaserData
+description: 'LaserData is a hyper-efficient data streaming platform built in Rust for
+  AI-native, real-time, and latency-sensitive workloads. Founded by the creators of Apache
+  Iggy, LaserData packages the Iggy message-streaming engine — io_uring, thread-per-core,
+  zero-copy deserialization, no garbage collection — as a managed cloud, BYOC, and on-premise
+  product with sub-millisecond p99 latency and millions of messages per second per node.
+  LaserData Cloud exposes a public REST control plane across three OpenAPI 3.1 services
+  (Core, Audit, Notifier) covering tenants, divisions, environments, deployments, connectors,
+  networking, API keys, roles and permissions, billing, notifications, and an immutable
+  audit log, plus a per-deployment Supervisor API for configs, metrics, logs, diagnostic
+  snapshots, and backups. The platform ships a first-party Rust SDK, a single-binary
+  CLI with an interactive TUI, and an official Claude Code Agent Skill pack.'
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://assets.laserdata.com/laserdata_dark.png
+url: https://raw.githubusercontent.com/api-evangelist/laserdata/refs/heads/main/apis.yml
+x-type: company
+x-source: vc-portfolio
+x-backed-by:
+- battery-ventures
+x-tier: enriched
+x-tier-reason: public-rest-api-openapi-31
+specificationVersion: '0.20'
+created: '2026-07-17'
+modified: '2026-07-19'
+tags:
+- Streaming
+- Message Streaming
+- Event Streaming
+- Data Infrastructure
+- Real Time
+- Apache Iggy
+- Rust
+- Cloud Infrastructure
+- AI Agents
+- Observability
+- Company
+apis:
+- aid: laserdata:laserdata-account-api
+  name: LaserData Account API
+  description: User account, sign-in, sessions, settings
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Account
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-account-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-api-keys-api
+  name: LaserData API Keys API
+  description: Tenant API key management
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - API Keys
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-api-keys-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-audit-api
+  name: LaserData Audit API
+  description: Tenant audit log + user activity
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Audit
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-audit-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-billing-api
+  name: LaserData Billing API
+  description: Pricing, billing reports, invoices
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Billing
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-billing-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-cloud-accounts-api
+  name: LaserData Cloud Accounts API
+  description: BYOC cloud accounts
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Cloud Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-cloud-accounts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-clouds-api
+  name: LaserData Clouds API
+  description: Available clouds, regions, clusters, storages, tiers
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Clouds
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-clouds-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-connectors-api
+  name: LaserData Connectors API
+  description: Deployment connectors
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Connectors
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-connectors-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-deployments-api
+  name: LaserData Deployments API
+  description: Deployment lifecycle
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Deployments
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-deployments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-divisions-api
+  name: LaserData Divisions API
+  description: Tenant divisions
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Divisions
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-divisions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-environments-api
+  name: LaserData Environments API
+  description: Environments within a division
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Environments
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-environments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-invitations-api
+  name: LaserData Invitations API
+  description: Tenant invitations
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Invitations
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-invitations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-members-api
+  name: LaserData Members API
+  description: Tenant members
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Members
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-members-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-notification-channels-api
+  name: LaserData Notification Channels API
+  description: Notification channels (email, slack, webhook)
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Notification Channels
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-notification-channels-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-notification-subscriptions-api
+  name: LaserData Notification Subscriptions API
+  description: Channel subscriptions to notification types
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Notification Subscriptions
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-notification-subscriptions-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-notifications-api
+  name: LaserData Notifications API
+  description: Notifications listing
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-notifications-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-payments-api
+  name: LaserData Payments API
+  description: Payment methods (Stripe)
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-payments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-roles-api
+  name: LaserData Roles API
+  description: Tenant roles and permissions
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Roles
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-roles-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+- aid: laserdata:laserdata-tenants-api
+  name: LaserData Tenants API
+  description: Tenant CRUD, config, structure
+  humanURL: https://docs.laserdata.cloud/api
+  baseURL: https://api.laserdata.cloud
+  tags:
+  - Tenants
+  properties:
+  - type: OpenAPI
+    url: openapi/laserdata-tenants-api-openapi.yml
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/audit
+  - type: Documentation
+    url: https://docs.laserdata.cloud/api/notifications
+common:
+- type: Website
+  url: https://laserdata.com
+- type: DeveloperPortal
+  url: https://docs.laserdata.cloud
+- type: Documentation
+  url: https://docs.laserdata.cloud
+- type: APIReference
+  url: https://api.laserdata.cloud/docs
+- type: GettingStarted
+  url: https://docs.laserdata.cloud/getting-started/quick-start
+- type: SignUp
+  url: https://laserdata.cloud
+- type: Support
+  url: mailto:hey@laserdata.com
+- type: Blog
+  url: https://laserdata.com/blog
+- type: GitHubOrganization
+  url: https://github.com/laserdata
+- type: TermsOfService
+  url: https://laserdata.com/terms
+- type: PrivacyPolicy
+  url: https://laserdata.com/privacy-policy
+- type: StatusPage
+  url: https://status.laserdata.cloud
+- type: LLMsTxt
+  url: llms/laserdata-llms.txt
+- type: Packages
+  url: packages/laserdata-packages.yml
+- type: SDKs
+  url: packages/laserdata-packages.yml
+- type: CLI
+  url: cli/laserdata-cli.yml
+- type: Authentication
+  url: authentication/laserdata-authentication.yml
+- type: Conventions
+  url: conventions/laserdata-conventions.yml
+- type: Idempotency
+  url: conventions/laserdata-conventions.yml
+- type: ErrorCatalog
+  url: errors/laserdata-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/laserdata-lifecycle.yml
+- type: Conformance
+  url: conformance/laserdata-conformance.yml
+- type: DataModel
+  url: data-model/laserdata-data-model.yml
+- type: Sandbox
+  url: sandbox/laserdata-sandbox.yml
+- type: ChangeLog
+  url: changelog/laserdata-changelog.yml
+- type: Webhooks
+  url: asyncapi/laserdata-notifications-webhooks.yml
+- type: WellKnown
+  url: well-known/laserdata-well-known.yml
+- type: MCPServer
+  url: mcp/laserdata-mcp.yml
+- type: Security
+  url: https://github.com/laserdata/laser-sdk/blob/main/SECURITY.md
+- type: VulnerabilityDisclosure
+  url: security/laserdata-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/laserdata-domain-security.yml
+- type: AgentSkill
+  url: skills/_index.yml
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
+- FN: APIs.json
+  email: info@apis.io
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence

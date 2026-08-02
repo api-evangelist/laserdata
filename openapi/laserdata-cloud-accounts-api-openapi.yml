@@ -1,0 +1,533 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Cloud Accounts API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Cloud Accounts
+  description: BYOC cloud accounts
+paths:
+  /tenants/{tenant_id}/cloud_accounts:
+    get:
+      tags:
+      - Cloud Accounts
+      summary: List cloud accounts
+      description: Returns the tenant's registered cloud accounts.
+      operationId: get_cloud_accounts
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 10
+      - name: name
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudAccountName'
+      - name: cloud
+        in: query
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+      - name: region
+        in: query
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Paged cloud accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_CloudAccountInfo'
+        '403':
+          description: Insufficient permissions
+    post:
+      tags:
+      - Cloud Accounts
+      summary: Register cloud account
+      description: Registers an external cloud provider account (AWS or GCP) for BYOC deployments, VPC peering, and PrivateLink. Stores credentials and network metadata under the tenant.
+      operationId: create_cloud_account
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      requestBody:
+        description: Provider, account ID, region, provider-specific settings
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCloudAccount'
+        required: true
+      responses:
+        '201':
+          description: Cloud account created
+        '400':
+          description: Invalid provider or settings
+        '403':
+          description: Insufficient permissions
+        '409':
+          description: Name already used in this tenant
+  /tenants/{tenant_id}/cloud_accounts/{cloud_account_id}:
+    get:
+      tags:
+      - Cloud Accounts
+      summary: Get cloud account
+      description: Returns full details of a registered cloud account, including provider-specific settings.
+      operationId: get_cloud_account
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: cloud_account_id
+        in: path
+        description: Cloud account identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/CloudAccountId'
+      responses:
+        '200':
+          description: Cloud account details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudAccountDetails'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Cloud account not found
+    put:
+      tags:
+      - Cloud Accounts
+      summary: Update cloud account
+      description: Updates name, region, settings, or remarks. Omitted fields stay unchanged. Account provider type is immutable.
+      operationId: update_cloud_account
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: cloud_account_id
+        in: path
+        description: Cloud account identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/CloudAccountId'
+      requestBody:
+        description: Partial update. Null or missing fields are unchanged
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCloudAccount'
+        required: true
+      responses:
+        '204':
+          description: Cloud account updated
+        '400':
+          description: Invalid settings
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Cloud account not found
+    delete:
+      tags:
+      - Cloud Accounts
+      summary: Delete cloud account
+      description: Removes a registered cloud account. Fails if any deployments, VPC peerings, or PrivateLink endpoints still reference it.
+      operationId: delete_cloud_account
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: cloud_account_id
+        in: path
+        description: Cloud account identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/CloudAccountId'
+      responses:
+        '204':
+          description: Cloud account deleted
+        '400':
+          description: Account still referenced by deployments or network resources
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Cloud account not found
+components:
+  schemas:
+    AwsCloudAccountSettings:
+      type: object
+      properties:
+        external_id:
+          type:
+          - string
+          - 'null'
+        identity_arn:
+          type:
+          - string
+          - 'null'
+        vpc_cidr:
+          type:
+          - string
+          - 'null'
+        vpc_id:
+          type:
+          - string
+          - 'null'
+    Region:
+      type: string
+      example: us-east-1
+    GcpCloudAccountSettings:
+      type: object
+      properties:
+        vpc_cidr:
+          type:
+          - string
+          - 'null'
+        vpc_network:
+          type:
+          - string
+          - 'null'
+    Cloud:
+      type: string
+      description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
+      enum:
+      - aws
+      - gcp
+      examples:
+      - aws
+    CloudAccountId:
+      type: integer
+      format: int64
+      example: 611298765432109069
+      minimum: 0
+    UpdateCloudAccount:
+      type: object
+      properties:
+        account_id:
+          type:
+          - string
+          - 'null'
+        name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudAccountName'
+        region:
+          type:
+          - string
+          - 'null'
+        remarks:
+          type:
+          - string
+          - 'null'
+        settings:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudAccountSettings'
+        status:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Status'
+    CloudAccountInfo:
+      type: object
+      required:
+      - id
+      - cloud
+      - name
+      - account_id
+      - status
+      - created_at
+      - updated_at
+      properties:
+        account_id:
+          type: string
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        id:
+          $ref: '#/components/schemas/CloudAccountId'
+        name:
+          $ref: '#/components/schemas/CloudAccountName'
+        region:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Region'
+        status:
+          $ref: '#/components/schemas/Status'
+        updated_at:
+          type: string
+          format: date-time
+          description: Resource last-update timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        validated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Validation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+      example:
+        id: 7261845211446120000
+        cloud: aws
+        name: acme-prod-aws
+        account_id: '123456789012'
+        region: us-east-1
+        validated_at: '2026-05-20T10:00:00Z'
+        status: active
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
+    CloudAccountSettings:
+      type: object
+      properties:
+        aws:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AwsCloudAccountSettings'
+        gcp:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GcpCloudAccountSettings'
+    CloudAccountName:
+      type: string
+      example: aws-prod
+    Status:
+      type: string
+      enum:
+      - inactive
+      - active
+      - locked
+      - deleted
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    Paged_CloudAccountInfo:
+      type: object
+      required:
+      - total_pages
+      - total_results
+      - page
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - cloud
+            - name
+            - account_id
+            - status
+            - created_at
+            - updated_at
+            properties:
+              account_id:
+                type: string
+              cloud:
+                $ref: '#/components/schemas/Cloud'
+              created_at:
+                type: string
+                format: date-time
+                description: Resource creation timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+              id:
+                $ref: '#/components/schemas/CloudAccountId'
+              name:
+                $ref: '#/components/schemas/CloudAccountName'
+              region:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/Region'
+              status:
+                $ref: '#/components/schemas/Status'
+              updated_at:
+                type: string
+                format: date-time
+                description: Resource last-update timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+              validated_at:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                description: Validation timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+            example:
+              id: 7261845211446120000
+              cloud: aws
+              name: acme-prod-aws
+              account_id: '123456789012'
+              region: us-east-1
+              validated_at: '2026-05-20T10:00:00Z'
+              status: active
+              created_at: '2026-05-20T10:00:00Z'
+              updated_at: '2026-05-20T10:00:00Z'
+        page:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        total_pages:
+          type: integer
+          format: int64
+          example: 4
+          minimum: 0
+        total_results:
+          type: integer
+          format: int64
+          example: 137
+          minimum: 0
+    CloudAccountDetails:
+      allOf:
+      - $ref: '#/components/schemas/CloudAccountInfo'
+      - type: object
+        properties:
+          remarks:
+            type:
+            - string
+            - 'null'
+          settings:
+            oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/CloudAccountSettings'
+    CreateCloudAccount:
+      type: object
+      required:
+      - cloud
+      - name
+      - account_id
+      properties:
+        account_id:
+          type: string
+        cloud:
+          type: string
+        name:
+          $ref: '#/components/schemas/CloudAccountName'
+        region:
+          type:
+          - string
+          - 'null'
+        remarks:
+          type:
+          - string
+          - 'null'
+        settings:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudAccountSettings'
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

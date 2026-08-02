@@ -1,0 +1,376 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Clouds API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Clouds
+  description: Available clouds, regions, clusters, storages, tiers
+paths:
+  /tenants/{tenant_id}/clouds:
+    get:
+      tags:
+      - Clouds
+      summary: List available clouds
+      description: Returns the cloud providers (AWS, GCP) available for deployments in this tenant.
+      operationId: get_clouds
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '200':
+          description: Available clouds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CloudInfo'
+        '403':
+          description: Insufficient permissions
+  /tenants/{tenant_id}/clouds/{cloud}/regions:
+    get:
+      tags:
+      - Clouds
+      summary: List regions
+      description: Returns the regions available for deployment in the selected cloud provider.
+      operationId: get_regions
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: cloud
+        in: path
+        description: Cloud provider (aws, gcp)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Regions for the cloud
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegionInfo'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Unknown cloud provider
+  /tenants/{tenant_id}/clouds/{cloud}/regions/{region}/clusters:
+    get:
+      tags:
+      - Clouds
+      summary: List cluster kinds
+      description: Returns the cluster sizes/kinds (instance types + node counts) available for deployment in the selected cloud + region.
+      operationId: get_clusters
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: cloud
+        in: path
+        description: Cloud provider (aws, gcp)
+        required: true
+        schema:
+          type: string
+      - name: region
+        in: path
+        description: Region code (e.g. us-east-1)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Cluster kinds available in the region
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClusterInfo'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Unknown cloud or region
+  /tenants/{tenant_id}/clouds/{cloud}/regions/{region}/storages:
+    get:
+      tags:
+      - Clouds
+      summary: List storage options
+      description: Returns the storage classes (local, EBS, persistent disk) available for deployment in the selected cloud + region.
+      operationId: get_storages
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: cloud
+        in: path
+        description: Cloud provider (aws, gcp)
+        required: true
+        schema:
+          type: string
+      - name: region
+        in: path
+        description: Region code (e.g. us-east-1)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Storage options available in the region
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StorageInfo'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Unknown cloud or region
+  /tenants/{tenant_id}/clouds/{cloud}/regions/{region}/tiers:
+    get:
+      tags:
+      - Clouds
+      summary: List deployment tiers
+      description: Returns the deployment tiers (e.g. starter, standard, enterprise) available for the selected cloud + region.
+      operationId: get_tiers
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: cloud
+        in: path
+        description: Cloud provider (aws, gcp)
+        required: true
+        schema:
+          type: string
+      - name: region
+        in: path
+        description: Region code (e.g. us-east-1)
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Tier options available in the region
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TierInfo'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Unknown cloud or region
+components:
+  schemas:
+    TierInfo:
+      type: object
+      required:
+      - key
+      - name
+      - description
+      - instance
+      - available
+      - vcpus
+      - memory_gib
+      - clusters
+      - storages
+      properties:
+        available:
+          type: boolean
+        clusters:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        instance:
+          type: string
+        key:
+          type: string
+        limit:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+        memory_gib:
+          type: integer
+          format: int32
+          minimum: 0
+        name:
+          type: string
+        rate_limit:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentNetworkRateLimit'
+        storages:
+          type: array
+          items:
+            type: string
+        vcpus:
+          type: integer
+          format: int32
+          minimum: 0
+    ClusterInfo:
+      type: object
+      required:
+      - key
+      - name
+      - description
+      - available
+      - tiers
+      properties:
+        available:
+          type: boolean
+        description:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        tiers:
+          type: array
+          items:
+            type: string
+    RegionInfo:
+      type: object
+      required:
+      - key
+      - name
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+    CloudInfo:
+      type: object
+      required:
+      - key
+      - name
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+    StorageInfo:
+      type: object
+      required:
+      - key
+      - name
+      - description
+      - available
+      - clusters
+      properties:
+        available:
+          type: boolean
+        clusters:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+    DeploymentNetworkRateLimit:
+      type: string
+      description: Rate limit formatted as `<value> <unit>` (e.g. `1 MB/s`, `500 KB/s`, `2 GB/s`).
+      examples:
+      - 1 MB/s
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

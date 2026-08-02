@@ -1,0 +1,637 @@
+generated: '2026-07-19'
+method: derived
+status: candidate
+source: openapi/laserdata-core-openapi.json, openapi/laserdata-audit-openapi.json, openapi/laserdata-notifier-openapi.json
+notes: LaserData publishes no hosted or remote MCP server as of this pass. It does publish an official
+  Claude Code Agent Skill pack (see skills/) that drives the laser CLI. The tools below are a CANDIDATE
+  MCP surface derived one-to-one from published OpenAPI 3.1 operationIds - not a provider claim.
+server:
+  name: laserdata
+  transport: http
+  url: null
+auth:
+  type: apiKey
+  in: header
+  name: ld-api-key
+tool_count: 124
+tools:
+- name: get_account
+  description: Get account
+  method: GET
+  path: /account
+  source_operation: openapi/laserdata-core-openapi.json#get_account
+- name: auth_callback
+  description: OAuth callback
+  method: GET
+  path: /account/auth/callback
+  source_operation: openapi/laserdata-core-openapi.json#auth_callback
+- name: create_intent
+  description: Create auth intent
+  method: POST
+  path: /account/auth/intents
+  source_operation: openapi/laserdata-core-openapi.json#create_intent
+- name: export_user_data
+  description: Export account data (GDPR)
+  method: GET
+  path: /account/export
+  source_operation: openapi/laserdata-core-openapi.json#export_user_data
+- name: get_invitations
+  description: List my invitations
+  method: GET
+  path: /account/invitations
+  source_operation: openapi/laserdata-core-openapi.json#get_invitations
+- name: accept_invitation
+  description: Accept invitation
+  method: PUT
+  path: /account/invitations/{invitation_id}/accept
+  source_operation: openapi/laserdata-core-openapi.json#accept_invitation
+- name: reject_invitation
+  description: Reject invitation
+  method: PUT
+  path: /account/invitations/{invitation_id}/reject
+  source_operation: openapi/laserdata-core-openapi.json#reject_invitation
+- name: link_account
+  description: Link external account
+  method: POST
+  path: /account/link
+  source_operation: openapi/laserdata-core-openapi.json#link_account
+- name: get_sessions
+  description: List sessions
+  method: GET
+  path: /account/sessions
+  source_operation: openapi/laserdata-core-openapi.json#get_sessions
+- name: refresh_session
+  description: Refresh session
+  method: POST
+  path: /account/sessions
+  source_operation: openapi/laserdata-core-openapi.json#refresh_session
+- name: delete_sessions
+  description: Delete all sessions
+  method: DELETE
+  path: /account/sessions
+  source_operation: openapi/laserdata-core-openapi.json#delete_sessions
+- name: update_settings
+  description: Update settings
+  method: PUT
+  path: /account/settings
+  source_operation: openapi/laserdata-core-openapi.json#update_settings
+- name: sign_in
+  description: Sign in
+  method: POST
+  path: /account/sign_in
+  source_operation: openapi/laserdata-core-openapi.json#sign_in
+- name: sign_out
+  description: Sign out
+  method: DELETE
+  path: /account/sign_out
+  source_operation: openapi/laserdata-core-openapi.json#sign_out
+- name: sign_up
+  description: Sign up
+  method: POST
+  path: /account/sign_up
+  source_operation: openapi/laserdata-core-openapi.json#sign_up
+- name: get_pricing
+  description: Get public pricing
+  method: GET
+  path: /pricing
+  source_operation: openapi/laserdata-core-openapi.json#get_pricing
+- name: get_tenants
+  description: List tenants
+  method: GET
+  path: /tenants
+  source_operation: openapi/laserdata-core-openapi.json#get_tenants
+- name: create_tenant
+  description: Create tenant
+  method: POST
+  path: /tenants
+  source_operation: openapi/laserdata-core-openapi.json#create_tenant
+- name: get_tenant
+  description: Get tenant
+  method: GET
+  path: /tenants/{tenant_id}
+  source_operation: openapi/laserdata-core-openapi.json#get_tenant
+- name: update_tenant
+  description: Update tenant
+  method: PUT
+  path: /tenants/{tenant_id}
+  source_operation: openapi/laserdata-core-openapi.json#update_tenant
+- name: delete_tenant
+  description: Delete tenant
+  method: DELETE
+  path: /tenants/{tenant_id}
+  source_operation: openapi/laserdata-core-openapi.json#delete_tenant
+- name: get_api_keys
+  description: List API keys
+  method: GET
+  path: /tenants/{tenant_id}/api_keys
+  source_operation: openapi/laserdata-core-openapi.json#get_api_keys
+- name: create_api_key
+  description: Create API key
+  method: POST
+  path: /tenants/{tenant_id}/api_keys
+  source_operation: openapi/laserdata-core-openapi.json#create_api_key
+- name: get_api_key_context
+  description: Get caller's key context
+  method: GET
+  path: /tenants/{tenant_id}/api_keys/context
+  source_operation: openapi/laserdata-core-openapi.json#get_api_key_context
+- name: get_api_key
+  description: Get API key
+  method: GET
+  path: /tenants/{tenant_id}/api_keys/{api_key_id}
+  source_operation: openapi/laserdata-core-openapi.json#get_api_key
+- name: delete_api_key
+  description: Delete API key
+  method: DELETE
+  path: /tenants/{tenant_id}/api_keys/{api_key_id}
+  source_operation: openapi/laserdata-core-openapi.json#delete_api_key
+- name: update_api_key_security
+  description: Update API key security
+  method: PUT
+  path: /tenants/{tenant_id}/api_keys/{api_key_id}/security
+  source_operation: openapi/laserdata-core-openapi.json#update_api_key_security
+- name: get_billing_info
+  description: Get billing info
+  method: GET
+  path: /tenants/{tenant_id}/billing/info
+  source_operation: openapi/laserdata-core-openapi.json#get_billing_info
+- name: update_billing_info
+  description: Update billing info
+  method: PUT
+  path: /tenants/{tenant_id}/billing/info
+  source_operation: openapi/laserdata-core-openapi.json#update_billing_info
+- name: get_invoices
+  description: List invoices
+  method: GET
+  path: /tenants/{tenant_id}/billing/invoices
+  source_operation: openapi/laserdata-core-openapi.json#get_invoices
+- name: get_invoice
+  description: Get invoice
+  method: GET
+  path: /tenants/{tenant_id}/billing/invoices/{invoice_id}
+  source_operation: openapi/laserdata-core-openapi.json#get_invoice
+- name: download_invoice_pdf
+  description: Download invoice PDF
+  method: GET
+  path: /tenants/{tenant_id}/billing/invoices/{invoice_id}/pdf
+  source_operation: openapi/laserdata-core-openapi.json#download_invoice_pdf
+- name: create_setup_intent
+  description: Create Stripe setup intent
+  method: POST
+  path: /tenants/{tenant_id}/billing/payments/intents
+  source_operation: openapi/laserdata-core-openapi.json#create_setup_intent
+- name: get_payment_info
+  description: Get payment method
+  method: GET
+  path: /tenants/{tenant_id}/billing/payments/method
+  source_operation: openapi/laserdata-core-openapi.json#get_payment_info
+- name: remove_payment_method
+  description: Remove payment method
+  method: DELETE
+  path: /tenants/{tenant_id}/billing/payments/method
+  source_operation: openapi/laserdata-core-openapi.json#remove_payment_method
+- name: get_billing_reports
+  description: List billing reports
+  method: GET
+  path: /tenants/{tenant_id}/billing/reports
+  source_operation: openapi/laserdata-core-openapi.json#get_billing_reports
+- name: get_billing_report
+  description: Get billing report
+  method: GET
+  path: /tenants/{tenant_id}/billing/reports/{report_id}
+  source_operation: openapi/laserdata-core-openapi.json#get_billing_report
+- name: get_cloud_accounts
+  description: List cloud accounts
+  method: GET
+  path: /tenants/{tenant_id}/cloud_accounts
+  source_operation: openapi/laserdata-core-openapi.json#get_cloud_accounts
+- name: create_cloud_account
+  description: Register cloud account
+  method: POST
+  path: /tenants/{tenant_id}/cloud_accounts
+  source_operation: openapi/laserdata-core-openapi.json#create_cloud_account
+- name: get_cloud_account
+  description: Get cloud account
+  method: GET
+  path: /tenants/{tenant_id}/cloud_accounts/{cloud_account_id}
+  source_operation: openapi/laserdata-core-openapi.json#get_cloud_account
+- name: update_cloud_account
+  description: Update cloud account
+  method: PUT
+  path: /tenants/{tenant_id}/cloud_accounts/{cloud_account_id}
+  source_operation: openapi/laserdata-core-openapi.json#update_cloud_account
+- name: delete_cloud_account
+  description: Delete cloud account
+  method: DELETE
+  path: /tenants/{tenant_id}/cloud_accounts/{cloud_account_id}
+  source_operation: openapi/laserdata-core-openapi.json#delete_cloud_account
+- name: get_clouds
+  description: List available clouds
+  method: GET
+  path: /tenants/{tenant_id}/clouds
+  source_operation: openapi/laserdata-core-openapi.json#get_clouds
+- name: get_regions
+  description: List regions
+  method: GET
+  path: /tenants/{tenant_id}/clouds/{cloud}/regions
+  source_operation: openapi/laserdata-core-openapi.json#get_regions
+- name: get_clusters
+  description: List cluster kinds
+  method: GET
+  path: /tenants/{tenant_id}/clouds/{cloud}/regions/{region}/clusters
+  source_operation: openapi/laserdata-core-openapi.json#get_clusters
+- name: get_storages
+  description: List storage options
+  method: GET
+  path: /tenants/{tenant_id}/clouds/{cloud}/regions/{region}/storages
+  source_operation: openapi/laserdata-core-openapi.json#get_storages
+- name: get_tiers
+  description: List deployment tiers
+  method: GET
+  path: /tenants/{tenant_id}/clouds/{cloud}/regions/{region}/tiers
+  source_operation: openapi/laserdata-core-openapi.json#get_tiers
+- name: get_tenant_config
+  description: Get tenant config
+  method: GET
+  path: /tenants/{tenant_id}/config
+  source_operation: openapi/laserdata-core-openapi.json#get_tenant_config
+- name: update_tenant_config
+  description: Update tenant config
+  method: PUT
+  path: /tenants/{tenant_id}/config
+  source_operation: openapi/laserdata-core-openapi.json#update_tenant_config
+- name: get_divisions
+  description: List divisions
+  method: GET
+  path: /tenants/{tenant_id}/divisions
+  source_operation: openapi/laserdata-core-openapi.json#get_divisions
+- name: create_division
+  description: Create division
+  method: POST
+  path: /tenants/{tenant_id}/divisions
+  source_operation: openapi/laserdata-core-openapi.json#create_division
+- name: get_division
+  description: Get division
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}
+  source_operation: openapi/laserdata-core-openapi.json#get_division
+- name: update_division
+  description: Update division
+  method: PUT
+  path: /tenants/{tenant_id}/divisions/{division_id}
+  source_operation: openapi/laserdata-core-openapi.json#update_division
+- name: delete_division
+  description: Delete division
+  method: DELETE
+  path: /tenants/{tenant_id}/divisions/{division_id}
+  source_operation: openapi/laserdata-core-openapi.json#delete_division
+- name: deploy_starter
+  description: Deploy starter environment
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/deployments/starter
+  source_operation: openapi/laserdata-core-openapi.json#deploy_starter
+- name: get_environments
+  description: List environments
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments
+  source_operation: openapi/laserdata-core-openapi.json#get_environments
+- name: create_environment
+  description: Create environment
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments
+  source_operation: openapi/laserdata-core-openapi.json#create_environment
+- name: get_environment
+  description: Get environment
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}
+  source_operation: openapi/laserdata-core-openapi.json#get_environment
+- name: update_environment
+  description: Update environment
+  method: PUT
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}
+  source_operation: openapi/laserdata-core-openapi.json#update_environment
+- name: delete_environment
+  description: Delete environment
+  method: DELETE
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}
+  source_operation: openapi/laserdata-core-openapi.json#delete_environment
+- name: get_deployments
+  description: List deployments
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments
+  source_operation: openapi/laserdata-core-openapi.json#get_deployments
+- name: deploy_to_your_own_cloud
+  description: Deploy to your own cloud
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/byoc
+  source_operation: openapi/laserdata-core-openapi.json#deploy_to_your_own_cloud
+- name: generate_byoc_setup
+  description: Generate BYOC setup
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/byoc/setup
+  source_operation: openapi/laserdata-core-openapi.json#generate_byoc_setup
+- name: deploy_to_managed_cloud
+  description: Deploy to managed cloud
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/managed
+  source_operation: openapi/laserdata-core-openapi.json#deploy_to_managed_cloud
+- name: preview_deployment
+  description: Preview deployment cost
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/preview
+  source_operation: openapi/laserdata-core-openapi.json#preview_deployment
+- name: get_deployment
+  description: Get deployment
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}
+  source_operation: openapi/laserdata-core-openapi.json#get_deployment
+- name: update_deployment
+  description: Update deployment
+  method: PUT
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}
+  source_operation: openapi/laserdata-core-openapi.json#update_deployment
+- name: delete_deployment
+  description: Delete deployment
+  method: DELETE
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}
+  source_operation: openapi/laserdata-core-openapi.json#delete_deployment
+- name: get_connectors
+  description: List available connectors
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/connectors
+  source_operation: openapi/laserdata-core-openapi.json#get_connectors
+- name: activate_connector
+  description: Activate connector
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/connectors/activate
+  source_operation: openapi/laserdata-core-openapi.json#activate_connector
+- name: extend_deployment
+  description: Extend deployment
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/extend
+  source_operation: openapi/laserdata-core-openapi.json#extend_deployment
+- name: update_retention
+  description: Update deployment retention
+  method: PUT
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/retention
+  source_operation: openapi/laserdata-core-openapi.json#update_retention
+- name: update_spend_limit
+  description: Update deployment spend limit
+  method: PUT
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/spend_limit
+  source_operation: openapi/laserdata-core-openapi.json#update_spend_limit
+- name: upgrade_deployment
+  description: Upgrade deployment
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/upgrade
+  source_operation: openapi/laserdata-core-openapi.json#upgrade_deployment
+- name: get_division_summary
+  description: Division summary
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/summary
+  source_operation: openapi/laserdata-core-openapi.json#get_division_summary
+- name: get_tenant_invitations
+  description: List tenant invitations
+  method: GET
+  path: /tenants/{tenant_id}/invitations
+  source_operation: openapi/laserdata-core-openapi.json#get_tenant_invitations
+- name: invite_member
+  description: Invite member
+  method: POST
+  path: /tenants/{tenant_id}/invitations
+  source_operation: openapi/laserdata-core-openapi.json#invite_member
+- name: delete_invitation
+  description: Delete invitation
+  method: DELETE
+  path: /tenants/{tenant_id}/invitations/{invitation_id}
+  source_operation: openapi/laserdata-core-openapi.json#delete_invitation
+- name: get_members
+  description: List members
+  method: GET
+  path: /tenants/{tenant_id}/members
+  source_operation: openapi/laserdata-core-openapi.json#get_members
+- name: get_all_members
+  description: List all members
+  method: GET
+  path: /tenants/{tenant_id}/members/all
+  source_operation: openapi/laserdata-core-openapi.json#get_all_members
+- name: get_permissions
+  description: Get permissions catalog
+  method: GET
+  path: /tenants/{tenant_id}/members/permissions
+  source_operation: openapi/laserdata-core-openapi.json#get_permissions
+- name: update_member
+  description: Update member
+  method: PUT
+  path: /tenants/{tenant_id}/members/{member_id}
+  source_operation: openapi/laserdata-core-openapi.json#update_member
+- name: delete_member
+  description: Remove member
+  method: DELETE
+  path: /tenants/{tenant_id}/members/{member_id}
+  source_operation: openapi/laserdata-core-openapi.json#delete_member
+- name: leave_tenant
+  description: Leave tenant
+  method: DELETE
+  path: /tenants/{tenant_id}/membership
+  source_operation: openapi/laserdata-core-openapi.json#leave_tenant
+- name: request_resource_code
+  description: Request resource action code
+  method: PUT
+  path: /tenants/{tenant_id}/request_code
+  source_operation: openapi/laserdata-core-openapi.json#request_resource_code
+- name: get_roles
+  description: List roles
+  method: GET
+  path: /tenants/{tenant_id}/roles
+  source_operation: openapi/laserdata-core-openapi.json#get_roles
+- name: add_role
+  description: Create role
+  method: POST
+  path: /tenants/{tenant_id}/roles
+  source_operation: openapi/laserdata-core-openapi.json#add_role
+- name: get_role
+  description: Get role
+  method: GET
+  path: /tenants/{tenant_id}/roles/{role_id}
+  source_operation: openapi/laserdata-core-openapi.json#get_role
+- name: update_role
+  description: Update role
+  method: PUT
+  path: /tenants/{tenant_id}/roles/{role_id}
+  source_operation: openapi/laserdata-core-openapi.json#update_role
+- name: delete_role
+  description: Delete role
+  method: DELETE
+  path: /tenants/{tenant_id}/roles/{role_id}
+  source_operation: openapi/laserdata-core-openapi.json#delete_role
+- name: get_role_members
+  description: List role members
+  method: GET
+  path: /tenants/{tenant_id}/roles/{role_id}/members
+  source_operation: openapi/laserdata-core-openapi.json#get_role_members
+- name: assign_role_members
+  description: Assign members to role
+  method: PUT
+  path: /tenants/{tenant_id}/roles/{role_id}/members/assign
+  source_operation: openapi/laserdata-core-openapi.json#assign_role_members
+- name: revoke_role_members
+  description: Revoke members from role
+  method: PUT
+  path: /tenants/{tenant_id}/roles/{role_id}/members/revoke
+  source_operation: openapi/laserdata-core-openapi.json#revoke_role_members
+- name: get_tenant_structure
+  description: Get tenant resource tree
+  method: GET
+  path: /tenants/{tenant_id}/structure
+  source_operation: openapi/laserdata-core-openapi.json#get_tenant_structure
+- name: get_tenant_summary
+  description: Tenant summary
+  method: GET
+  path: /tenants/{tenant_id}/summary
+  source_operation: openapi/laserdata-core-openapi.json#get_tenant_summary
+- name: get_tenant_audit
+  description: Query tenant audit log
+  method: GET
+  path: /audit/tenants/{tenant_id}
+  source_operation: openapi/laserdata-audit-openapi.json#get_tenant_audit
+- name: get_tenant_audit_types
+  description: List audit event types
+  method: GET
+  path: /audit/types
+  source_operation: openapi/laserdata-audit-openapi.json#get_tenant_audit_types
+- name: get_user_activity
+  description: List my activity
+  method: GET
+  path: /audit/users/activity
+  source_operation: openapi/laserdata-audit-openapi.json#get_user_activity
+- name: get_notification_types
+  description: List notification types
+  method: GET
+  path: /notifications/types
+  source_operation: openapi/laserdata-notifier-openapi.json#get_notification_types
+- name: get_tenant_channels
+  description: List tenant notification channels
+  method: GET
+  path: /tenants/{tenant_id}/channels
+  source_operation: openapi/laserdata-notifier-openapi.json#get_tenant_channels
+- name: create_tenant_channel
+  description: Create tenant notification channel
+  method: POST
+  path: /tenants/{tenant_id}/channels
+  source_operation: openapi/laserdata-notifier-openapi.json#create_tenant_channel
+- name: get_tenant_channel
+  description: Get tenant notification channel
+  method: GET
+  path: /tenants/{tenant_id}/channels/{channel_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#get_tenant_channel
+- name: update_tenant_channel
+  description: Update tenant notification channel
+  method: PUT
+  path: /tenants/{tenant_id}/channels/{channel_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#update_tenant_channel
+- name: delete_tenant_channel
+  description: Delete tenant notification channel
+  method: DELETE
+  path: /tenants/{tenant_id}/channels/{channel_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#delete_tenant_channel
+- name: get_tenant_notifications
+  description: List tenant channel notifications
+  method: GET
+  path: /tenants/{tenant_id}/channels/{channel_id}/notifications
+  source_operation: openapi/laserdata-notifier-openapi.json#get_tenant_notifications
+- name: get_tenant_subscriptions
+  description: List tenant notification subscriptions
+  method: GET
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions
+  source_operation: openapi/laserdata-notifier-openapi.json#get_tenant_subscriptions
+- name: set_tenant_subscriptions
+  description: Replace tenant notification subscriptions
+  method: PUT
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions
+  source_operation: openapi/laserdata-notifier-openapi.json#set_tenant_subscriptions
+- name: create_tenant_subscription
+  description: Create tenant notification subscription
+  method: POST
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions
+  source_operation: openapi/laserdata-notifier-openapi.json#create_tenant_subscription
+- name: get_tenant_subscription
+  description: Get tenant notification subscription
+  method: GET
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions/{subscription_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#get_tenant_subscription
+- name: delete_tenant_subscription
+  description: Delete tenant notification subscription
+  method: DELETE
+  path: /tenants/{tenant_id}/channels/{channel_id}/subscriptions/{subscription_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#delete_tenant_subscription
+- name: test_tenant_channel
+  description: Send test tenant notification
+  method: POST
+  path: /tenants/{tenant_id}/channels/{channel_id}/test
+  source_operation: openapi/laserdata-notifier-openapi.json#test_tenant_channel
+- name: get_division_channels
+  description: List division notification channels
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels
+  source_operation: openapi/laserdata-notifier-openapi.json#get_division_channels
+- name: create_division_channel
+  description: Create division notification channel
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels
+  source_operation: openapi/laserdata-notifier-openapi.json#create_division_channel
+- name: get_division_channel
+  description: Get division notification channel
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#get_division_channel
+- name: update_division_channel
+  description: Update division notification channel
+  method: PUT
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#update_division_channel
+- name: delete_division_channel
+  description: Delete division notification channel
+  method: DELETE
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#delete_division_channel
+- name: get_division_notifications
+  description: List division channel notifications
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/notifications
+  source_operation: openapi/laserdata-notifier-openapi.json#get_division_notifications
+- name: get_division_subscriptions
+  description: List division notification subscriptions
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions
+  source_operation: openapi/laserdata-notifier-openapi.json#get_division_subscriptions
+- name: set_division_subscriptions
+  description: Replace division notification subscriptions
+  method: PUT
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions
+  source_operation: openapi/laserdata-notifier-openapi.json#set_division_subscriptions
+- name: create_division_subscription
+  description: Create division notification subscription
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions
+  source_operation: openapi/laserdata-notifier-openapi.json#create_division_subscription
+- name: get_division_subscription
+  description: Get division notification subscription
+  method: GET
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions/{subscription_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#get_division_subscription
+- name: delete_division_subscription
+  description: Delete division notification subscription
+  method: DELETE
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/subscriptions/{subscription_id}
+  source_operation: openapi/laserdata-notifier-openapi.json#delete_division_subscription
+- name: test_division_channel
+  description: Send test division notification
+  method: POST
+  path: /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/test
+  source_operation: openapi/laserdata-notifier-openapi.json#test_division_channel
+- name: get_user_notifications
+  description: List user channel notifications
+  method: GET
+  path: /users/{user_id}/channels/{channel_id}/notifications
+  source_operation: openapi/laserdata-notifier-openapi.json#get_user_notifications

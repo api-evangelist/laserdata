@@ -1,0 +1,437 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Notifications API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Notifications
+  description: Notifications listing
+paths:
+  /notifications/types:
+    get:
+      tags:
+      - Notifications
+      summary: List notification types
+      description: Returns public notification event types that can be subscribed to by tenants, divisions, and users.
+      operationId: get_notification_types
+      responses:
+        '200':
+          description: Notification type catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationTypeInfo'
+  /tenants/{tenant_id}/channels/{channel_id}/notifications:
+    get:
+      tags:
+      - Notifications
+      summary: List tenant channel notifications
+      description: Returns notifications already delivered to a tenant-owned channel. Supports pagination and optional filtering by notification message type.
+      operationId: get_tenant_notifications
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      - name: page
+        in: path
+        required: true
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: path
+        required: true
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 10
+      - name: message_type
+        in: path
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Paged notifications for tenant channel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_NotificationInfo'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Tenant or channel not found
+  /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/notifications:
+    get:
+      tags:
+      - Notifications
+      summary: List division channel notifications
+      description: Returns notifications delivered to a division-owned channel. Supports pagination and optional filtering by notification message type.
+      operationId: get_division_notifications
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      - name: page
+        in: path
+        required: true
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: path
+        required: true
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 10
+      - name: message_type
+        in: path
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Paged notifications for division channel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_NotificationInfo'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Tenant, division, or channel not found
+  /users/{user_id}/channels/{channel_id}/notifications:
+    get:
+      tags:
+      - Notifications
+      summary: List user channel notifications
+      description: Returns notifications delivered to a user-owned notification channel. Supports pagination and optional filtering by notification message type.
+      operationId: get_user_notifications
+      parameters:
+      - name: user_id
+        in: path
+        description: User identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/UserId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      - name: page
+        in: path
+        required: true
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: path
+        required: true
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 10
+      - name: message_type
+        in: path
+        required: true
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '200':
+          description: Paged notifications for user channel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_NotificationInfo'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: User or channel not found
+components:
+  schemas:
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    NotificationId:
+      type: integer
+      format: int64
+      example: 7261845612345672000
+      minimum: 0
+    NotificationChannelId:
+      type: integer
+      format: int64
+      example: 7261845612345670000
+      minimum: 0
+    NotificationMessageType:
+      type: string
+      enum:
+      - deployment_created
+      - deployment_initialized
+      - deployment_upgraded
+      - deployment_deleted
+      - invitation_accepted
+      - invitation_rejected
+      - high_cpu_usage
+      - high_memory_usage
+      - high_disk_usage
+      - node_unreachable
+      - cpu_usage_resolved
+      - memory_usage_resolved
+      - disk_usage_resolved
+      - node_reachable
+      - certificate_expiring
+      - billing_limit_reached
+      - invoice_created
+      - invoice_paid
+      - invoice_payment_failed
+      - payment_method_added
+      - payment_method_removed
+      - tenant_created
+      - tenant_deleted
+      - user_created
+      - user_deleted
+      - division_created
+      - division_deleted
+      - environment_created
+      - environment_deleted
+      - cert_refresh_failed
+      - deployment_certificates_rotated
+      - deployment_secrets_rotated
+      - tenant_updated
+      - division_updated
+      - environment_updated
+      - invitation_created
+      - resource_code_requested
+      - deployment_inactive
+      - tenant_join_requested
+      - member_joined
+      - shared_host_drained
+    NotificationTypeInfo:
+      type: object
+      required:
+      - type
+      - name
+      properties:
+        name:
+          type: string
+          example: Deployment created
+        type:
+          type: string
+          example: deployment_created
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    UserId:
+      type: integer
+      format: int64
+      example: 7261844898910240000
+      minimum: 0
+    Paged_NotificationInfo:
+      type: object
+      required:
+      - total_pages
+      - total_results
+      - page
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - message_type
+            - content
+            - created_at
+            properties:
+              content:
+                type: string
+                example: Deployment ld-prod-01 created successfully
+              created_at:
+                type: string
+                format: date-time
+                description: Resource creation timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+              deployment_id:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/DeploymentId'
+              division_id:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/DivisionId'
+              environment_id:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/EnvironmentId'
+              id:
+                $ref: '#/components/schemas/NotificationId'
+              message_type:
+                $ref: '#/components/schemas/NotificationMessageType'
+              tenant_id:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/TenantId'
+            example:
+              id: 7261845478998350000
+              tenant_id: 7261845022003200001
+              division_id: 7261844974723780000
+              environment_id: 7261845066528310000
+              deployment_id: 7261845127892140000
+              message_type: deployment_created
+              content: Deployment ld-prod-01 created successfully
+              created_at: '2026-05-20T10:00:00Z'
+        page:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        total_pages:
+          type: integer
+          format: int64
+          example: 4
+          minimum: 0
+        total_results:
+          type: integer
+          format: int64
+          example: 137
+          minimum: 0
+    DeploymentId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

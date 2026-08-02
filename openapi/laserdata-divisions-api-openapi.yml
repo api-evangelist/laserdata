@@ -1,0 +1,489 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Divisions API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Divisions
+  description: Tenant divisions
+paths:
+  /tenants/{tenant_id}/divisions:
+    get:
+      tags:
+      - Divisions
+      summary: List divisions
+      description: 'Returns the tenant''s divisions visible to the caller. Permission-filtered: only divisions where the calling role has at least read access are included.'
+      operationId: get_divisions
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 10
+      responses:
+        '200':
+          description: Paged divisions listing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_DivisionInfo'
+        '403':
+          description: Insufficient permissions on the tenant
+    post:
+      tags:
+      - Divisions
+      summary: Create division
+      description: Creates a division inside the tenant. `protected` divisions require a resource confirmation code on delete. The new division ID is returned in the `ld-division` response header.
+      operationId: create_division
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      requestBody:
+        description: Name (required), description, billing email, protected flag
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDivision'
+        required: true
+      responses:
+        '201':
+          description: Division created. The new division ID is returned in the ld-division header
+        '400':
+          description: Invalid name / description / email or tenant divisions limit reached
+        '403':
+          description: Insufficient permissions on the tenant
+        '409':
+          description: Name already used
+  /tenants/{tenant_id}/divisions/{division_id}:
+    get:
+      tags:
+      - Divisions
+      summary: Get division
+      description: Returns division details including description, billing email, and whether a payment method is attached. Divisions are tenant subunits used for billing isolation and environment grouping.
+      operationId: get_division
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      responses:
+        '200':
+          description: Division details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DivisionDetails'
+        '403':
+          description: Insufficient permissions on the division
+        '404':
+          description: Division not found
+    put:
+      tags:
+      - Divisions
+      summary: Update division
+      description: Updates division attributes. All fields are optional - omitted fields are unchanged. Toggling `protected` from false to true requires the division to be in a known-good state.
+      operationId: update_division
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      requestBody:
+        description: Partial update. Null or missing fields are unchanged
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDivision'
+        required: true
+      responses:
+        '204':
+          description: Division updated
+        '400':
+          description: Invalid field value
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Division not found
+    delete:
+      tags:
+      - Divisions
+      summary: Delete division
+      description: Deletes the division. Protected divisions require a resource code (obtain via PUT /tenants/{tenant_id}/request_code with action `delete_division`). The division must be empty of environments/deployments first.
+      operationId: delete_division
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: code
+        in: query
+        required: false
+        schema:
+          type:
+          - string
+          - 'null'
+      responses:
+        '204':
+          description: Division deleted
+        '400':
+          description: Division still contains environments / deployments, or missing code on protected division
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Division not found
+  /tenants/{tenant_id}/divisions/{division_id}/summary:
+    get:
+      tags:
+      - Divisions
+      summary: Division summary
+      description: 'Aggregate counters for the division: environments + deployments totals. Cheap projection for dashboards and agent context priming.'
+      operationId: get_division_summary
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      responses:
+        '200':
+          description: Division summary counters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DivisionSummaryInfo'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Division not found
+components:
+  schemas:
+    DivisionName:
+      type: string
+      example: production
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    UpdateDivision:
+      type: object
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Description'
+        email:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Email'
+        name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. Toggle deletion hardening for this division. When `true`, future DELETE
+
+            calls must include a one-time confirmation code emailed to the tenant address
+
+            (request via `PUT /tenants/{tenant_id}/request_code` with
+
+            `action = "delete_division"`). Leave unset to keep the current value.'
+          example: true
+    Paged_DivisionInfo:
+      type: object
+      required:
+      - total_pages
+      - total_results
+      - page
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - name
+            - protected
+            - created_at
+            - updated_at
+            properties:
+              created_at:
+                type: string
+                format: date-time
+                description: Resource creation timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+              id:
+                $ref: '#/components/schemas/DivisionId'
+              name:
+                $ref: '#/components/schemas/DivisionName'
+              protected:
+                type: boolean
+                description: 'When `true`, deletion is hardened: the DELETE request must include a one-time
+
+                  confirmation code emailed to the tenant address. Obtain the code via
+
+                  `PUT /tenants/{tenant_id}/request_code` with `action = "delete_division"` and pass
+
+                  it as the `code` query parameter on the DELETE call.'
+                example: true
+              updated_at:
+                type: string
+                format: date-time
+                description: Resource last-update timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+            example:
+              id: 7261844974723780000
+              name: Engineering
+              protected: true
+              created_at: '2026-05-20T10:00:00Z'
+              updated_at: '2026-05-20T10:00:00Z'
+        page:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        total_pages:
+          type: integer
+          format: int64
+          example: 4
+          minimum: 0
+        total_results:
+          type: integer
+          format: int64
+          example: 137
+          minimum: 0
+    Description:
+      type: string
+      example: Production deployment for high-throughput streaming.
+    DivisionSummaryInfo:
+      type: object
+      required:
+      - total_environments
+      - total_deployments
+      properties:
+        total_deployments:
+          type: integer
+          format: int32
+          minimum: 0
+        total_environments:
+          type: integer
+          format: int32
+          minimum: 0
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    DivisionDetails:
+      allOf:
+      - $ref: '#/components/schemas/DivisionInfo'
+      - type: object
+        required:
+        - description
+        - email
+        - has_payment_method
+        properties:
+          description:
+            $ref: '#/components/schemas/Description'
+          email:
+            $ref: '#/components/schemas/Email'
+          has_payment_method:
+            type: boolean
+    CreateDivision:
+      type: object
+      required:
+      - name
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Description'
+        email:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Email'
+        name:
+          $ref: '#/components/schemas/DivisionName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. When `true`, deletion is hardened: deleting this division will require a
+
+            one-time confirmation code emailed to the tenant address (request via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_division"`).
+
+            Defaults to `false` when omitted.'
+          example: true
+    DivisionInfo:
+      type: object
+      required:
+      - id
+      - name
+      - protected
+      - created_at
+      - updated_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        id:
+          $ref: '#/components/schemas/DivisionId'
+        name:
+          $ref: '#/components/schemas/DivisionName'
+        protected:
+          type: boolean
+          description: 'When `true`, deletion is hardened: the DELETE request must include a one-time
+
+            confirmation code emailed to the tenant address. Obtain the code via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_division"` and pass
+
+            it as the `code` query parameter on the DELETE call.'
+          example: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Resource last-update timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+      example:
+        id: 7261844974723780000
+        name: Engineering
+        protected: true
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
+    Email:
+      type: string
+      example: alice@laserdata.com
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

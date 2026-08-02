@@ -1,0 +1,1526 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Deployments API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Deployments
+  description: Deployment lifecycle
+paths:
+  /tenants/{tenant_id}/divisions/{division_id}/deployments/starter:
+    post:
+      tags:
+      - Deployments
+      summary: Deploy starter environment
+      description: Creates or reuses an environment and schedules a starter deployment for the tenant/division.
+      operationId: deploy_starter
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      requestBody:
+        description: Starter deployment request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeployStarter'
+        required: true
+      responses:
+        '202':
+          description: Starter deployment scheduled. The ld-environment and ld-deployment headers are set
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments:
+    get:
+      tags:
+      - Deployments
+      summary: List deployments
+      description: Returns the environment's deployments visible to the caller. Permission-filtered.
+      operationId: get_deployments
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      responses:
+        '200':
+          description: Paged deployments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_DeploymentInfo'
+        '403':
+          description: Insufficient permissions
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/byoc:
+    post:
+      tags:
+      - Deployments
+      summary: Deploy to your own cloud
+      description: Schedules a BYOC deployment into the caller's AWS or GCP account. Cloud-specific identity and network settings are included in the request body.
+      operationId: deploy_to_your_own_cloud
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      requestBody:
+        description: BYOC deployment spec
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeployToYourOwnCloud'
+        required: true
+      responses:
+        '202':
+          description: BYOC deployment scheduled. The ld-environment and ld-deployment headers are set
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/byoc/setup:
+    post:
+      tags:
+      - Deployments
+      summary: Generate BYOC setup
+      description: Returns cloud-specific onboarding instructions and values required before creating a BYOC deployment.
+      operationId: generate_byoc_setup
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      requestBody:
+        description: Target cloud and region
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateByocSetup'
+        required: true
+      responses:
+        '200':
+          description: BYOC setup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ByocSetup'
+        '400':
+          description: Invalid cloud or region
+        '403':
+          description: Insufficient permissions
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/managed:
+    post:
+      tags:
+      - Deployments
+      summary: Deploy to managed cloud
+      description: Creates a LaserData-managed deployment inside an existing environment. Returns accepted immediately. Provisioning continues asynchronously.
+      operationId: deploy_to_managed_cloud
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      requestBody:
+        description: Managed deployment spec
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeployToManagedCloud'
+        required: true
+      responses:
+        '202':
+          description: Deployment scheduled. The ld-environment and ld-deployment headers are set
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/preview:
+    post:
+      tags:
+      - Deployments
+      summary: Preview deployment cost
+      description: Returns a rough monthly cost estimate for a hypothetical deployment based on cloud, region, tier, storage, throughput, and topology. The figure is an estimate only - it is computed from public list pricing without tenant-specific discounts or final billing rules, and may differ from what is actually invoiced. Free tier always returns zero. The endpoint never creates a deployment.
+      operationId: preview_deployment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      requestBody:
+        description: Deployment shape to estimate
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewDeployment'
+        required: true
+      responses:
+        '200':
+          description: Predicted deployment cost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentPreview'
+        '400':
+          description: Invalid request body
+        '403':
+          description: Insufficient permissions
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}:
+    get:
+      tags:
+      - Deployments
+      summary: Get deployment
+      description: 'Returns deployment details including cluster size, region, runtime status, and storage configuration. The `supervisor_url` field is the base URL of the supervisor API that owns this deployment''s lifecycle (status, configuration, telemetry, restart, upgrade, node operations) - direct subsequent management calls there. Example: `https://supervisor-aws-us.laserdata.cloud`.'
+      operationId: get_deployment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: deployment_id
+        in: path
+        description: Deployment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DeploymentId'
+      responses:
+        '200':
+          description: Deployment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentDetails'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Deployment not found
+    put:
+      tags:
+      - Deployments
+      summary: Update deployment
+      description: Updates mutable deployment metadata such as protection flag and description.
+      operationId: update_deployment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: deployment_id
+        in: path
+        description: Deployment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DeploymentId'
+      requestBody:
+        description: Deployment metadata update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDeployment'
+        required: true
+      responses:
+        '200':
+          description: Deployment updated
+    delete:
+      tags:
+      - Deployments
+      summary: Delete deployment
+      description: Schedules deletion of the deployment. Protected deployments require a resource code (obtain via PUT /tenants/{tenant_id}/request_code with action `delete_deployment`).
+      operationId: delete_deployment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: deployment_id
+        in: path
+        description: Deployment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DeploymentId'
+      - name: code
+        in: query
+        description: Resource confirmation code for protected deployments
+        required: false
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Deployment deletion scheduled
+        '400':
+          description: Missing or invalid code on protected deployment
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Deployment not found
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/extend:
+    post:
+      tags:
+      - Deployments
+      summary: Extend deployment
+      description: Schedules horizontal scaling for a deployment by adding nodes.
+      operationId: extend_deployment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: deployment_id
+        in: path
+        description: Deployment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DeploymentId'
+      requestBody:
+        description: Nodes to add by runtime group
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtendDeployment'
+        required: true
+      responses:
+        '202':
+          description: Deployment extension scheduled
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/retention:
+    put:
+      tags:
+      - Deployments
+      summary: Update deployment retention
+      description: Updates telemetry retention policy for the deployment.
+      operationId: update_retention
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: deployment_id
+        in: path
+        description: Deployment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DeploymentId'
+      requestBody:
+        description: Retention settings
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRetention'
+        required: true
+      responses:
+        '200':
+          description: Retention updated
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/spend_limit:
+    put:
+      tags:
+      - Deployments
+      summary: Update deployment spend limit
+      description: Sets or clears the monthly spend cap for the deployment.
+      operationId: update_spend_limit
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: deployment_id
+        in: path
+        description: Deployment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DeploymentId'
+      requestBody:
+        description: Optional monthly spend limit
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSpendLimit'
+        required: true
+      responses:
+        '200':
+          description: Spend limit updated
+  /tenants/{tenant_id}/divisions/{division_id}/environments/{environment_id}/deployments/{deployment_id}/upgrade:
+    post:
+      tags:
+      - Deployments
+      summary: Upgrade deployment
+      description: Schedules a deployment upgrade such as tier or storage changes.
+      operationId: upgrade_deployment
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: environment_id
+        in: path
+        description: Environment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/EnvironmentId'
+      - name: deployment_id
+        in: path
+        description: Deployment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DeploymentId'
+      requestBody:
+        description: Requested deployment upgrade
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpgradeDeployment'
+        required: true
+      responses:
+        '202':
+          description: Deployment upgrade scheduled
+components:
+  schemas:
+    Area:
+      type: string
+      enum:
+      - us
+      - eu
+      - ap
+      - ca
+      - sa
+    Region:
+      type: string
+      example: us-east-1
+    DeployToYourOwnCloud:
+      type: object
+      required:
+      - name
+      - cloud
+      - tier
+      - cluster
+      - region
+      properties:
+        availability_mode:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AvailabilityMode'
+        aws:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AwsByocDeployment'
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        cluster:
+          $ref: '#/components/schemas/ClusterKind'
+        encrypted:
+          type:
+          - boolean
+          - 'null'
+        gcp:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GcpByocDeployment'
+        name:
+          $ref: '#/components/schemas/DeploymentName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. When `true`, deletion is hardened: deleting this BYOC deployment will
+
+            require a one-time confirmation code emailed to the tenant address (request via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_deployment"`).
+
+            Defaults to `false` when omitted.'
+          example: true
+        public_ip_enabled:
+          type:
+          - boolean
+          - 'null'
+        region:
+          $ref: '#/components/schemas/Region'
+        retention:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RetentionSettings'
+        spend_limit:
+          type:
+          - string
+          - 'null'
+        storage:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudStorageSettings'
+        subdomain_enabled:
+          type:
+          - boolean
+          - 'null'
+        target_network_tput:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NetworkTput'
+        tier:
+          $ref: '#/components/schemas/DeploymentTier'
+    GcpByocDeployment:
+      type: object
+      required:
+      - project_id
+      - service_account_email
+      - vpc_name
+      properties:
+        project_id:
+          $ref: '#/components/schemas/GcpProjectId'
+        service_account_email:
+          $ref: '#/components/schemas/GcpServiceAccountEmail'
+        vpc_name:
+          $ref: '#/components/schemas/HyphenName'
+    PreviewDeployment:
+      type: object
+      required:
+      - cloud
+      - region
+      - tier
+      properties:
+        availability_mode:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AvailabilityMode'
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        nodes:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of nodes in the cluster. Defaults to 3 if unset.
+          minimum: 0
+        region:
+          $ref: '#/components/schemas/Region'
+        storage:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudStorageSettings'
+        target_network_tput:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NetworkTput'
+        telemetry_extra_days:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Extra telemetry retention days on top of the included window. Defaults to 0.
+          minimum: 0
+        tier:
+          $ref: '#/components/schemas/DeploymentTier'
+    AwsVpcId:
+      type: string
+      description: 'AWS VPC ID, e.g. `vpc-1234567890abcdef0`.
+
+        Must start with `vpc-` followed by 1-17 hex characters.'
+      example: vpc-0abc1234def567890
+    AwsByocDeployment:
+      type: object
+      required:
+      - account_id
+      - identity_arn
+      - external_id
+      - vpc_id
+      - vpc_cidr
+      properties:
+        account_id:
+          $ref: '#/components/schemas/AwsAccountId'
+        external_id:
+          type: string
+        identity_arn:
+          type: string
+        vpc_cidr:
+          $ref: '#/components/schemas/CidrBlock'
+        vpc_id:
+          $ref: '#/components/schemas/AwsVpcId'
+    ClusterKind:
+      type: string
+      enum:
+      - standalone
+      - cluster
+    GcpServiceAccountEmail:
+      type: string
+      description: "A validated GCP service account email address.\n\nGCP service account emails follow the format:\n  `{name}@{project}.iam.gserviceaccount.com`\n\nValidation rules:\n- Must contain exactly one `@`\n- Must end with `.iam.gserviceaccount.com`\n- Must not contain path-traversal or control characters (`/`, `\\`, `:`)\n- The local part (before `@`) must be non-empty\n\nThis newtype prevents URL injection when the email is interpolated into\nthe IAM Credentials API impersonation endpoint."
+      example: laserdata-byoc@acme-prod-123456.iam.gserviceaccount.com
+    AwsAccountId:
+      type: string
+      description: AWS Account ID - exactly 12 digits.
+      example: '123456789012'
+    Description:
+      type: string
+      example: Production deployment for high-throughput streaming.
+    NodeToExtend:
+      type: object
+      required:
+      - count
+      properties:
+        count:
+          type: integer
+          format: int32
+          example: 3
+          minimum: 0
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
+    StorageType:
+      type: string
+      description: 'Storage type for deployments
+
+
+        Frontend should use these exact values: "ssd" or "network" (lowercase)
+
+        These are the only two supported storage types currently.'
+      enum:
+      - local_ssd
+      - network_balanced
+      - network_optimized
+      - network_extreme
+    StorageSize:
+      type: integer
+      format: int32
+      description: Storage size in GB
+      minimum: 0
+    UpdateSpendLimit:
+      type: object
+      properties:
+        spend_limit:
+          type:
+          - string
+          - 'null'
+    RetentionSettings:
+      type: object
+      required:
+      - telemetry_days
+      properties:
+        telemetry_days:
+          type: integer
+          format: int32
+          example: 14
+          minimum: 0
+    DeploymentInfo:
+      type: object
+      required:
+      - id
+      - name
+      - code
+      - variant
+      - domain
+      - cloud
+      - area
+      - cluster
+      - runtimes
+      - nodes_count
+      - protected
+      - encrypted
+      - dedicated
+      - shared
+      - storage_type
+      - storage_size
+      - availability_mode
+      - retention
+      - can_upgrade
+      - created_at
+      - updated_at
+      properties:
+        area:
+          $ref: '#/components/schemas/Area'
+        availability_mode:
+          $ref: '#/components/schemas/AvailabilityMode'
+        can_upgrade:
+          type: boolean
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        cluster:
+          $ref: '#/components/schemas/ClusterKind'
+        code:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-05-20T10:00:00Z'
+        dedicated:
+          type: boolean
+        domain:
+          type: string
+        encrypted:
+          type: boolean
+        id:
+          $ref: '#/components/schemas/DeploymentId'
+        name:
+          $ref: '#/components/schemas/DeploymentName'
+        nodes_count:
+          type: integer
+          format: int32
+          minimum: 0
+        protected:
+          type: boolean
+          example: true
+        rate_limit:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentNetworkRateLimit'
+        region:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Region'
+        retention:
+          $ref: '#/components/schemas/DeploymentRetention'
+        runtimes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuntimeType'
+        shared:
+          type: boolean
+        storage_size:
+          $ref: '#/components/schemas/StorageSize'
+        storage_type:
+          $ref: '#/components/schemas/StorageType'
+        supervisor_url:
+          type:
+          - string
+          - 'null'
+          example: https://supervisor-aws-us.laserdata.cloud
+        target_network_tput:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NetworkTput'
+        tier:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentTier'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2026-05-20T10:00:00Z'
+        upgraded_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          example: '2026-05-20T10:00:00Z'
+        variant:
+          $ref: '#/components/schemas/DeploymentVariant'
+      example:
+        id: 7261845127892140000
+        name: iggy-prod-01
+        code: AXJ-7Q2
+        variant: managed
+        domain: iggy-prod-01.acme.laserdata.cloud
+        cloud: aws
+        area: us
+        region: us-east-1
+        cluster: standalone
+        tier: small
+        runtimes:
+        - iggy
+        - warden
+        nodes_count: 3
+        protected: true
+        encrypted: true
+        dedicated: false
+        shared: false
+        storage_type: network_balanced
+        storage_size: 500
+        availability_mode: multi_az
+        supervisor_url: https://supervisor-aws-us.laserdata.cloud
+        retention:
+          telemetry:
+            logs_days: 7
+            metrics_days: 7
+            heartbeats_days: 7
+        upgraded_at: null
+        can_upgrade: true
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
+    RuntimeType:
+      type: string
+      description: 'Runtime identifier: `warden`, `iggy`, `connectors`, `connector:{id}`, `plane`, or `mcp`.'
+      examples:
+      - iggy
+    UpgradeDeployment:
+      type: object
+      properties:
+        storage:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudStorageSettings'
+        tier:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentTier'
+    Paged_DeploymentInfo:
+      type: object
+      required:
+      - total_pages
+      - total_results
+      - page
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - name
+            - code
+            - variant
+            - domain
+            - cloud
+            - area
+            - cluster
+            - runtimes
+            - nodes_count
+            - protected
+            - encrypted
+            - dedicated
+            - shared
+            - storage_type
+            - storage_size
+            - availability_mode
+            - retention
+            - can_upgrade
+            - created_at
+            - updated_at
+            properties:
+              area:
+                $ref: '#/components/schemas/Area'
+              availability_mode:
+                $ref: '#/components/schemas/AvailabilityMode'
+              can_upgrade:
+                type: boolean
+              cloud:
+                $ref: '#/components/schemas/Cloud'
+              cluster:
+                $ref: '#/components/schemas/ClusterKind'
+              code:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+                example: '2026-05-20T10:00:00Z'
+              dedicated:
+                type: boolean
+              domain:
+                type: string
+              encrypted:
+                type: boolean
+              id:
+                $ref: '#/components/schemas/DeploymentId'
+              name:
+                $ref: '#/components/schemas/DeploymentName'
+              nodes_count:
+                type: integer
+                format: int32
+                minimum: 0
+              protected:
+                type: boolean
+                example: true
+              rate_limit:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/DeploymentNetworkRateLimit'
+              region:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/Region'
+              retention:
+                $ref: '#/components/schemas/DeploymentRetention'
+              runtimes:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RuntimeType'
+              shared:
+                type: boolean
+              storage_size:
+                $ref: '#/components/schemas/StorageSize'
+              storage_type:
+                $ref: '#/components/schemas/StorageType'
+              supervisor_url:
+                type:
+                - string
+                - 'null'
+                example: https://supervisor-aws-us.laserdata.cloud
+              target_network_tput:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/NetworkTput'
+              tier:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/DeploymentTier'
+              updated_at:
+                type: string
+                format: date-time
+                example: '2026-05-20T10:00:00Z'
+              upgraded_at:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                example: '2026-05-20T10:00:00Z'
+              variant:
+                $ref: '#/components/schemas/DeploymentVariant'
+            example:
+              id: 7261845127892140000
+              name: iggy-prod-01
+              code: AXJ-7Q2
+              variant: managed
+              domain: iggy-prod-01.acme.laserdata.cloud
+              cloud: aws
+              area: us
+              region: us-east-1
+              cluster: standalone
+              tier: small
+              runtimes:
+              - iggy
+              - warden
+              nodes_count: 3
+              protected: true
+              encrypted: true
+              dedicated: false
+              shared: false
+              storage_type: network_balanced
+              storage_size: 500
+              availability_mode: multi_az
+              supervisor_url: https://supervisor-aws-us.laserdata.cloud
+              retention:
+                telemetry:
+                  logs_days: 7
+                  metrics_days: 7
+                  heartbeats_days: 7
+              upgraded_at: null
+              can_upgrade: true
+              created_at: '2026-05-20T10:00:00Z'
+              updated_at: '2026-05-20T10:00:00Z'
+        page:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        total_pages:
+          type: integer
+          format: int64
+          example: 4
+          minimum: 0
+        total_results:
+          type: integer
+          format: int64
+          example: 137
+          minimum: 0
+    NetworkTput:
+      type: integer
+      format: int32
+      description: Network throughput in decimal KB/s (1000 KB = 1 MB)
+      example: 1024
+      minimum: 0
+    HyphenName:
+      type: string
+      example: iggy-prod-vpc
+    CidrBlock:
+      type: string
+      example: 10.0.0.0/16
+    DeploymentUpgrade:
+      type: object
+      required:
+      - upgraded_at
+      properties:
+        instance_type:
+          type:
+          - string
+          - 'null'
+        nodes_after:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+        nodes_before:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+        rate_limit:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentNetworkRateLimit'
+        storage_size:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/StorageSize'
+        storage_type:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/StorageType'
+        target_network_tput:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NetworkTput'
+        tier:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentTier'
+        upgraded_at:
+          type: string
+          format: date-time
+          description: Last upgrade timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+    TelemetryRetention:
+      type: object
+      required:
+      - logs_days
+      - metrics_days
+      - heartbeats_days
+      properties:
+        heartbeats_days:
+          type: integer
+          format: int32
+          minimum: 0
+        logs_days:
+          type: integer
+          format: int32
+          minimum: 0
+        metrics_days:
+          type: integer
+          format: int32
+          minimum: 0
+    ByocSetup:
+      allOf:
+      - {}
+      - {}
+      - type: object
+        required:
+        - supervisor
+        - steps
+        properties:
+          steps:
+            type: array
+            items:
+              type: string
+          supervisor:
+            type: string
+    DeploymentVariant:
+      type: string
+      enum:
+      - managed
+      - byoc
+      - on_premise
+    Cloud:
+      type: string
+      description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
+      enum:
+      - aws
+      - gcp
+      examples:
+      - aws
+    ExtendDeployment:
+      type: object
+      required:
+      - nodes
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeToExtend'
+    DeploymentPreview:
+      type: object
+      required:
+      - cloud
+      - region
+      - tier
+      - nodes
+      - instance
+      - monthly_total_usd
+      - breakdown
+      properties:
+        breakdown:
+          $ref: '#/components/schemas/DeploymentPreviewBreakdown'
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        instance:
+          type: string
+        monthly_total_usd:
+          type: string
+        nodes:
+          type: integer
+          format: int32
+          minimum: 0
+        region:
+          $ref: '#/components/schemas/Region'
+        tier:
+          $ref: '#/components/schemas/DeploymentTier'
+    DeploymentName:
+      type: string
+      example: iggy-prod-01
+    DeploymentPreviewBreakdown:
+      type: object
+      required:
+      - compute_usd
+      - storage_usd
+      - network_usd
+      - telemetry_usd
+      - data_retention_usd
+      properties:
+        compute_usd:
+          type: string
+        data_retention_usd:
+          type: string
+        network_usd:
+          type: string
+        storage_usd:
+          type: string
+        telemetry_usd:
+          type: string
+    GcpProjectId:
+      type: string
+      description: 'A validated GCP project ID.
+
+
+        GCP project IDs must follow these rules:
+
+        - 6–30 characters
+
+        - Lowercase letters, digits, and hyphens only
+
+        - Starts with a lowercase letter
+
+        - Does not end with a hyphen'
+      example: acme-prod-123456
+    AvailabilityMode:
+      type: string
+      enum:
+      - single_az
+      - multi_az
+    DeploymentDetails:
+      allOf:
+      - $ref: '#/components/schemas/DeploymentInfo'
+      - type: object
+        required:
+        - upgrades
+        properties:
+          description:
+            oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Description'
+          upgrades:
+            type: array
+            items:
+              $ref: '#/components/schemas/DeploymentUpgrade'
+    DeploymentNetworkRateLimit:
+      type: string
+      description: Rate limit formatted as `<value> <unit>` (e.g. `1 MB/s`, `500 KB/s`, `2 GB/s`).
+      examples:
+      - 1 MB/s
+    DeploymentTier:
+      type: string
+      enum:
+      - free
+      - small
+      - medium
+      - large
+      - xlarge
+      - 2xlarge
+      - 4xlarge
+      - 8xlarge
+      - 16xlarge
+    DeployToManagedCloud:
+      type: object
+      required:
+      - name
+      - cloud
+      - tier
+      - cluster
+      - region
+      properties:
+        availability_mode:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AvailabilityMode'
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        cluster:
+          $ref: '#/components/schemas/ClusterKind'
+        dedicated:
+          type:
+          - boolean
+          - 'null'
+        encrypted:
+          type:
+          - boolean
+          - 'null'
+        name:
+          $ref: '#/components/schemas/DeploymentName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          example: true
+        public_ip_enabled:
+          type:
+          - boolean
+          - 'null'
+        region:
+          $ref: '#/components/schemas/Region'
+        retention:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RetentionSettings'
+        shared:
+          type:
+          - boolean
+          - 'null'
+        spend_limit:
+          type:
+          - string
+          - 'null'
+        storage:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudStorageSettings'
+        subdomain_enabled:
+          type:
+          - boolean
+          - 'null'
+        target_network_tput:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NetworkTput'
+        tier:
+          $ref: '#/components/schemas/DeploymentTier'
+    UpdateDeployment:
+      type: object
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Description'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. Toggle deletion hardening for this deployment. When `true`, future DELETE
+
+            calls must include a one-time confirmation code emailed to the tenant address
+
+            (request via `PUT /tenants/{tenant_id}/request_code` with
+
+            `action = "delete_deployment"`). Leave unset to keep the current value.'
+          example: true
+    UpdateRetention:
+      type: object
+      required:
+      - retention
+      properties:
+        retention:
+          $ref: '#/components/schemas/RetentionSettings'
+    EnvironmentName:
+      type: string
+      example: staging
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    DeployStarter:
+      type: object
+      required:
+      - cloud
+      - region
+      properties:
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        deployment_name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentName'
+        environment_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/EnvironmentId'
+        environment_name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/EnvironmentName'
+        region:
+          $ref: '#/components/schemas/Region'
+    DeploymentRetention:
+      type: object
+      required:
+      - telemetry
+      properties:
+        data_storage_gb:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Optional S3 data retention storage in GB.
+          minimum: 0
+        telemetry:
+          $ref: '#/components/schemas/TelemetryRetention'
+    CloudStorageSettings:
+      type: object
+      description: 'Simplified storage configuration for API requests.
+
+        Contains only storage type and optional size. IOPS and throughput are
+
+        automatically calculated based on tier and storage type when converted to CloudStorage.'
+      required:
+      - type
+      properties:
+        size:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/StorageSize'
+            description: Size in GB. Required for network storage types.
+        type:
+          $ref: '#/components/schemas/StorageType'
+    GenerateByocSetup:
+      type: object
+      required:
+      - cloud
+      - region
+      properties:
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        region:
+          $ref: '#/components/schemas/Region'
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    DeploymentId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

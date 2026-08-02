@@ -1,0 +1,31 @@
+generated: '2026-07-19'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: laserdata.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Sep 28 06:16:26 2026 GMT
+  hsts: false
+- host: docs.laserdata.cloud
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Sep  7 10:16:36 2026 GMT
+  hsts: false
+- host: api.laserdata.cloud
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Sep 22 22:01:39 2026 GMT
+  hsts: null
+domains:
+- domain: laserdata.com
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: none
+- domain: laserdata.cloud
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: false

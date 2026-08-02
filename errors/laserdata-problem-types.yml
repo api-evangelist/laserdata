@@ -1,0 +1,484 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/laserdata-core-openapi.json, openapi/laserdata-audit-openapi.json, openapi/laserdata-notifier-openapi.json
+docs: https://docs.laserdata.cloud/api/authentication
+format: rfc7807
+media_type: application/problem+json
+envelope:
+  fields:
+  - name: type
+    description: RFC 7807 type URI for the error class. about:blank when no type is registered.
+  - name: title
+    description: Short human-readable title derived from code (acronyms capitalised).
+  - name: code
+    description: Stable machine-readable error code, e.g. invalid_email, tenant_not_found, insufficient_permissions.
+  - name: reason
+    description: Long-form human explanation of this occurrence.
+  - name: instance
+    description: Mirrors the ld-request response header (simple-form UUID, 32 hex chars). Quote when filing
+      support.
+  - name: field
+    description: Single field name when the error is bound to one field. Emitted for back-compat.
+  - name: field_issues
+    description: Array of per-field validation issues; each has code, reason and an optional dotted path.
+  - name: status
+    description: Mirror of the HTTP status code so agents can branch on the body.
+  - name: retryable
+    description: true for retryable conditions (408, 425, 429, 500, 502, 503, 504), false otherwise.
+retryable_statuses:
+- 408
+- 425
+- 429
+- 500
+- 502
+- 503
+- 504
+problems:
+- status: 400
+  title: Account still referenced by deployments or network resources
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#delete_cloud_account
+- status: 400
+  title: Active deployments or unpaid invoices exist, or missing/invalid code
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#delete_tenant
+- status: 400
+  title: Caller is the tenant owner and cannot leave
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#leave_tenant
+- status: 400
+  title: Cannot delete yourself or the tenant owner
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#delete_member
+- status: 400
+  title: Cannot update self or tenant owner
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#update_member
+- status: 400
+  title: Channel disabled or cannot send to private address
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#test_tenant_channel
+  - openapi/laserdata-notifier-openapi.json#test_division_channel
+- status: 400
+  title: Division still contains environments / deployments, or missing code on protected division
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#delete_division
+- status: 400
+  title: Empty members list or cannot revoke from self
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#revoke_role_members
+- status: 400
+  title: Empty members list, members not in tenant, or cannot assign self
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#assign_role_members
+- status: 400
+  title: Environment contains deployments or missing code on protected env
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#delete_environment
+- status: 400
+  title: Identity source disabled
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_intent
+- status: 400
+  title: Invalid CIDR, or validate_ip=true with empty allowed_ips
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#update_api_key_security
+- status: 400
+  title: Invalid channel configuration
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#create_tenant_channel
+  - openapi/laserdata-notifier-openapi.json#update_tenant_channel
+  - openapi/laserdata-notifier-openapi.json#create_division_channel
+  - openapi/laserdata-notifier-openapi.json#update_division_channel
+- status: 400
+  title: Invalid cloud or region
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#generate_byoc_setup
+- status: 400
+  title: Invalid email, violates tenant invitation policy, already invited, or already a member
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#invite_member
+- status: 400
+  title: Invalid field value
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#update_tenant
+  - openapi/laserdata-core-openapi.json#update_division
+  - openapi/laserdata-core-openapi.json#update_environment
+- status: 400
+  title: Invalid input or already-existing user
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#sign_up
+- status: 400
+  title: Invalid name / description / email or tenant divisions limit reached
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_division
+- status: 400
+  title: Invalid name / description or environments limit reached
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_environment
+- status: 400
+  title: Invalid name / email / division settings or owned-tenants limit reached
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_tenant
+- status: 400
+  title: Invalid name or permissions
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#update_role
+- status: 400
+  title: Invalid name, expiry beyond 365 days, or both role_id and permissions provided
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_api_key
+- status: 400
+  title: Invalid name, invalid permissions tree, or roles limit reached
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#add_role
+- status: 400
+  title: Invalid notification type
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#create_tenant_subscription
+  - openapi/laserdata-notifier-openapi.json#create_division_subscription
+- status: 400
+  title: Invalid notification types
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#set_tenant_subscriptions
+  - openapi/laserdata-notifier-openapi.json#set_division_subscriptions
+- status: 400
+  title: Invalid or unsupported connector config
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#activate_connector
+- status: 400
+  title: Invalid provider or settings
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_cloud_account
+- status: 400
+  title: Invalid request body
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#preview_deployment
+- status: 400
+  title: Invalid settings
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#update_cloud_account
+- status: 400
+  title: Invalid theme or tenant/division reference
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#update_settings
+- status: 400
+  title: Missing or invalid code on protected deployment
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#delete_deployment
+- status: 401
+  title: Caller is not authenticated via API key
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_api_key_context
+- status: 401
+  title: Invalid credentials or expired intent
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#sign_in
+- status: 401
+  title: Invalid or expired intent
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#link_account
+  - openapi/laserdata-core-openapi.json#sign_up
+- status: 401
+  title: No active session
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_account
+  - openapi/laserdata-core-openapi.json#export_user_data
+  - openapi/laserdata-core-openapi.json#get_invitations
+  - openapi/laserdata-core-openapi.json#get_sessions
+- status: 401
+  title: No active session or API key
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_tenants
+- status: 401
+  title: No valid session cookie
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#refresh_session
+- status: 403
+  title: Cannot delete system role or insufficient permissions
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#delete_role
+- status: 403
+  title: Cannot modify system role or insufficient permissions
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#update_role
+- status: 403
+  title: Insufficient permissions
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_api_key
+  - openapi/laserdata-core-openapi.json#delete_api_key
+  - openapi/laserdata-core-openapi.json#update_api_key_security
+  - openapi/laserdata-core-openapi.json#get_billing_info
+- status: 403
+  title: Insufficient permissions (requires audit:read)
+  content_types: []
+  source_operations:
+  - openapi/laserdata-audit-openapi.json#get_tenant_audit
+- status: 403
+  title: Insufficient permissions for the requested action
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#request_resource_code
+- status: 403
+  title: Insufficient permissions on the division
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_division
+- status: 403
+  title: Insufficient permissions on the environment
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_environment
+- status: 403
+  title: Insufficient permissions on the tenant
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_api_keys
+  - openapi/laserdata-core-openapi.json#create_api_key
+  - openapi/laserdata-core-openapi.json#get_divisions
+  - openapi/laserdata-core-openapi.json#create_division
+- status: 403
+  title: Not a member of the tenant
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_tenant
+  - openapi/laserdata-core-openapi.json#get_tenant_config
+  - openapi/laserdata-core-openapi.json#get_tenant_structure
+  - openapi/laserdata-core-openapi.json#get_tenant_summary
+- status: 403
+  title: Not the tenant owner
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#update_tenant
+  - openapi/laserdata-core-openapi.json#delete_tenant
+  - openapi/laserdata-core-openapi.json#update_tenant_config
+- status: 403
+  title: User account locked or disabled
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#sign_in
+- status: 404
+  title: API key not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_api_key
+  - openapi/laserdata-core-openapi.json#delete_api_key
+  - openapi/laserdata-core-openapi.json#update_api_key_security
+- status: 404
+  title: Channel not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#get_tenant_channel
+  - openapi/laserdata-notifier-openapi.json#update_tenant_channel
+  - openapi/laserdata-notifier-openapi.json#delete_tenant_channel
+  - openapi/laserdata-notifier-openapi.json#get_tenant_subscriptions
+- status: 404
+  title: Cloud account not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_cloud_account
+  - openapi/laserdata-core-openapi.json#update_cloud_account
+  - openapi/laserdata-core-openapi.json#delete_cloud_account
+- status: 404
+  title: Deployment not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_deployment
+  - openapi/laserdata-core-openapi.json#delete_deployment
+  - openapi/laserdata-core-openapi.json#get_connectors
+  - openapi/laserdata-core-openapi.json#activate_connector
+- status: 404
+  title: Division not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_division
+  - openapi/laserdata-core-openapi.json#update_division
+  - openapi/laserdata-core-openapi.json#delete_division
+  - openapi/laserdata-core-openapi.json#get_division_summary
+- status: 404
+  title: Environment not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_environment
+  - openapi/laserdata-core-openapi.json#update_environment
+  - openapi/laserdata-core-openapi.json#delete_environment
+- status: 404
+  title: Invitation not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#accept_invitation
+  - openapi/laserdata-core-openapi.json#reject_invitation
+  - openapi/laserdata-core-openapi.json#delete_invitation
+- status: 404
+  title: Member not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#update_member
+  - openapi/laserdata-core-openapi.json#delete_member
+- status: 404
+  title: Not a member of this tenant
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#leave_tenant
+- status: 404
+  title: Role not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_role
+  - openapi/laserdata-core-openapi.json#update_role
+  - openapi/laserdata-core-openapi.json#delete_role
+  - openapi/laserdata-core-openapi.json#get_role_members
+- status: 404
+  title: Subscription not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#get_tenant_subscription
+  - openapi/laserdata-notifier-openapi.json#delete_tenant_subscription
+  - openapi/laserdata-notifier-openapi.json#get_division_subscription
+  - openapi/laserdata-notifier-openapi.json#delete_division_subscription
+- status: 404
+  title: Tenant not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_tenant
+  - openapi/laserdata-core-openapi.json#update_tenant
+  - openapi/laserdata-core-openapi.json#delete_tenant
+  - openapi/laserdata-core-openapi.json#update_tenant_config
+- status: 404
+  title: Tenant or channel not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#get_tenant_notifications
+- status: 404
+  title: Tenant, division, or channel not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#get_division_notifications
+- status: 404
+  title: Unknown cloud or region
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_clusters
+  - openapi/laserdata-core-openapi.json#get_storages
+  - openapi/laserdata-core-openapi.json#get_tiers
+- status: 404
+  title: Unknown cloud provider
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#get_regions
+- status: 404
+  title: User or channel not found
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#get_user_notifications
+- status: 409
+  title: Channel already exists or limit reached
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#create_tenant_channel
+  - openapi/laserdata-notifier-openapi.json#create_division_channel
+- status: 409
+  title: Email domain already claimed
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_tenant
+- status: 409
+  title: External account already linked to another user
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#link_account
+- status: 409
+  title: Name already used
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_division
+  - openapi/laserdata-core-openapi.json#add_role
+- status: 409
+  title: Name already used in this division
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_environment
+- status: 409
+  title: Name already used in this tenant
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_cloud_account
+- status: 409
+  title: Name already used in this tenant or limit reached
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_api_key
+- status: 409
+  title: Subscription already exists or limit reached
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#create_tenant_subscription
+  - openapi/laserdata-notifier-openapi.json#create_division_subscription
+- status: 410
+  title: Invitation expired
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#accept_invitation
+- status: 429
+  title: Code already requested recently
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#request_resource_code
+- status: 429
+  title: Rate limit exceeded
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#create_intent
+  - openapi/laserdata-core-openapi.json#refresh_session
+  - openapi/laserdata-core-openapi.json#sign_in
+- status: 429
+  title: Test channel rate limited
+  content_types: []
+  source_operations:
+  - openapi/laserdata-notifier-openapi.json#test_tenant_channel
+  - openapi/laserdata-notifier-openapi.json#test_division_channel
+- status: 500
+  title: Missing id/token, invalid intent, or IdP failure
+  content_types: []
+  source_operations:
+  - openapi/laserdata-core-openapi.json#auth_callback

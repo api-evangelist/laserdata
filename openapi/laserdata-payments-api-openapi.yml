@@ -1,0 +1,234 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Payments API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Payments
+  description: Payment methods (Stripe)
+paths:
+  /tenants/{tenant_id}/billing/payments/intents:
+    post:
+      tags:
+      - Payments
+      summary: Create Stripe setup intent
+      description: Creates a Stripe setup intent so the client can collect and attach a payment method for the tenant.
+      operationId: create_setup_intent
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '200':
+          description: Stripe setup intent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupIntentResponse'
+        '403':
+          description: Insufficient permissions
+  /tenants/{tenant_id}/billing/payments/method:
+    get:
+      tags:
+      - Payments
+      summary: Get payment method
+      description: Returns the tenant's current payment provider and stored payment method metadata.
+      operationId: get_payment_info
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '200':
+          description: Payment method info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInfo'
+        '403':
+          description: Insufficient permissions
+    delete:
+      tags:
+      - Payments
+      summary: Remove payment method
+      description: Detaches the current payment method for the tenant.
+      operationId: remove_payment_method
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '204':
+          description: Payment method removed
+components:
+  schemas:
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    PaymentProvider:
+      type: string
+      enum:
+      - manual
+      - stripe
+      - pay_pal
+      - bank_transfer
+      - aws_marketplace
+    PaymentInfo:
+      type: object
+      required:
+      - provider
+      - auto_charge
+      properties:
+        auto_charge:
+          type: boolean
+        card_brand:
+          type:
+          - string
+          - 'null'
+        card_exp_month:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+        card_exp_year:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+        card_last4:
+          type:
+          - string
+          - 'null'
+        coupon_id:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        customer_id:
+          type:
+          - string
+          - 'null'
+        discount_percent:
+          type:
+          - string
+          - 'null'
+        invoice_prefix:
+          type:
+          - string
+          - 'null'
+        metadata:
+          type:
+          - string
+          - 'null'
+        payment_method_id:
+          type:
+          - string
+          - 'null'
+        payment_terms_days:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+        provider:
+          $ref: '#/components/schemas/PaymentProvider'
+        subscription_id:
+          type:
+          - string
+          - 'null'
+        tax_exempt:
+          type:
+          - string
+          - 'null'
+    SetupIntentResponse:
+      type: object
+      required:
+      - client_secret
+      properties:
+        client_secret:
+          type: string
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

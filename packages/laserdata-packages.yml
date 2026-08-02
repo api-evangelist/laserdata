@@ -1,0 +1,72 @@
+generated: '2026-07-19'
+method: searched
+source: https://crates.io, https://pypi.org, https://github.com/laserdata, https://docs.laserdata.cloud/cli
+notes: >-
+  LaserData ships a first-party Rust SDK (published to crates.io and, as Python bindings,
+  to PyPI) plus the `laser` CLI single binary distributed by an install script from
+  cli.laserdata.cloud with tarballs in the public laser-cli-releases repo. Apache Iggy is the
+  upstream open-source streaming engine created by the LaserData founders but stewarded by the
+  Apache Software Foundation, so it is recorded here as related rather than as a LaserData
+  first-party client library. The npm package named `laser-sdk` is an unrelated third-party
+  wallet SDK and is deliberately NOT listed.
+packages:
+- language: rust
+  registry: crates.io
+  name: laser-sdk
+  version: 0.0.1-rc.16
+  url: https://crates.io/crates/laser-sdk
+  install: cargo add laser-sdk
+  repository: https://github.com/laserdata/laser-sdk
+  description: Open data-platform SDK over Apache Iggy - typed streaming, declared projections
+    and a query DSL, a key-value store, copy-on-write semantics.
+  official: true
+- language: rust
+  registry: crates.io
+  name: laser-wire
+  version: 0.0.1-rc.16
+  url: https://crates.io/crates/laser-wire
+  install: cargo add laser-wire
+  repository: https://github.com/laserdata/laser-sdk
+  description: LaserData wire contract - managed command codes and CBOR envelopes, including
+    the Agent Data Exchange protocol. Decodes untrusted bytes under a never-panic guarantee
+    backed by a robustness suite and fuzzing.
+  official: true
+- language: python
+  registry: pypi
+  name: laser-sdk
+  version: 0.0.1rc16
+  url: https://pypi.org/project/laser-sdk/
+  install: pip install laser-sdk
+  repository: https://github.com/laserdata/laser-sdk
+  description: Python bindings over the Rust laser-sdk (foreign/python in the SDK repo).
+  official: true
+- language: binary
+  registry: install-script
+  name: laser
+  url: https://cli.laserdata.cloud/install.sh
+  install: curl -fsSL https://cli.laserdata.cloud/install.sh | sh
+  repository: https://github.com/laserdata/laser-cli-releases
+  description: The `laser` CLI single binary - headless one-shot verbs plus a full-screen
+    Ratatui TUI. Installer detects OS/arch, verifies the SHA-256 checksum, installs to
+    $HOME/.local/bin. macOS arm64 and Linux x86_64/arm64.
+  official: true
+  command_surface: cli/laserdata-cli.yml
+- language: docker
+  registry: ghcr.io
+  name: ghcr.io/laserdata/quickstart
+  url: https://github.com/laserdata
+  install: docker pull ghcr.io/laserdata/quickstart:latest
+  description: Quickstart producer/consumer image used by the getting-started guide to push
+    and read sample messages against a deployment.
+  official: true
+related:
+- language: rust
+  registry: crates.io
+  name: iggy
+  version: 0.10.3-edge.1
+  url: https://crates.io/crates/iggy
+  repository: https://github.com/apache/iggy
+  description: Apache Iggy - the persistent message streaming platform written in Rust
+    (QUIC, TCP, HTTP transports) that LaserData is built on. Created by the LaserData
+    founders, governed by the Apache Software Foundation.
+  official: false

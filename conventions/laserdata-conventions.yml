@@ -1,0 +1,128 @@
+generated: '2026-07-19'
+method: searched
+source: https://docs.laserdata.cloud/api
+docs:
+  api_overview: https://docs.laserdata.cloud/api
+  authentication: https://docs.laserdata.cloud/api/authentication
+  roles_permissions: https://docs.laserdata.cloud/organization/roles-permissions
+notes: >-
+  Cross-cutting request/response semantics for the LaserData Cloud REST surface. All three
+  public services (Core, Audit, Notifier) plus the per-deployment Supervisor API share one
+  authentication model, one error envelope, one pagination contract and one idempotency
+  contract.
+authentication:
+  style: api-key-header
+  header: ld-api-key
+  alternate: Browser session cookie (`session`) issued by POST /account/sign_in, required for
+    user-scope endpoints (/account/*) and tenant creation; mutating cookie requests also
+    require an X-CSRF-Token echo.
+  oauth: false
+  key_properties:
+    recoverable: false
+    storage: server stores only the hash - copy the secret at creation time
+    expiry_mandatory: true
+    max_expiry_days: 365
+    ip_allowlist: supported, updatable on existing keys without recreation
+    permission_model: every key is bound to a role granting tenant-scope and division/environment-scope
+      permissions
+  artifact: authentication/laserdata-authentication.yml
+idempotency:
+  supported: true
+  header: idempotency-key
+  applies_to:
+  - POST
+  - PUT
+  - PATCH
+  max_key_length: 255
+  scope: per (api_key, idempotency-key) pair
+  retention: 10 minutes
+  replay_signal_header: idempotent-replayed
+  replay_signal_value: 'true'
+  semantics: >-
+    The first response per (api_key, idempotency-key) pair is cached. Retrying with the same key
+    and the same request body returns the original response with idempotent-replayed: true and
+    the handler is not re-run.
+pagination:
+  style: page-number
+  request_params:
+  - name: page
+    default: 1
+    description: Page number, 1-indexed.
+  - name: results
+    default: 10
+    max: 100
+    description: Items per page.
+  response_fields:
+  - items
+  - page
+  - total_results
+  - total_pages
+  link_header:
+    supported: true
+    standard: RFC 8288
+    rels:
+    - first
+    - prev
+    - next
+    - last
+    description: Clients can walk pages from the Link response header without parsing the body.
+request_tracing:
+  response_header: ld-request
+  format: simple-form UUID, 32 hex chars
+  mirrored_in_error_body: instance
+  guidance: Include the ld-request value in support requests.
+created_resource_headers:
+  description: Created-resource ID headers set on the matching POST endpoint when a new resource
+    is created.
+  headers:
+  - ld-tenant
+  - ld-division
+  - ld-environment
+  - ld-deployment
+  - ld-role
+rate_limiting:
+  scope: per API key
+  signal_status: 429
+  signal_header: retry-after
+  retry_after_also_on: transient 5xx
+  ip_allowlist_denial: 403
+errors:
+  media_type: application/problem+json
+  standard: RFC 7807
+  envelope_fields:
+  - type
+  - title
+  - code
+  - reason
+  - instance
+  - field
+  - field_issues
+  - status
+  - retryable
+  validation_shape: 400 with one or more field_issues entries (code, reason, optional dotted path)
+  retryable_flag: body carries retryable true for 408, 425, 429, 500, 502, 503, 504
+  artifact: errors/laserdata-problem-types.yml
+versioning:
+  scheme: spec-version
+  current: 0.0.66
+  in_path: false
+  notes: The public specs carry an info.version (0.0.66 across Core, Audit and Notifier). Paths
+    are unversioned; there is no /v1 prefix.
+  artifact: lifecycle/laserdata-lifecycle.yml
+api_layers:
+- name: Main API
+  base_url: https://api.laserdata.cloud
+  purpose: Resource management - org, deployments, API keys, billing, notifications.
+- name: Supervisor API
+  base_url: per-deployment supervisor_url returned by List/Get Deployment, e.g. https://supervisor-aws-us.laserdata.cloud
+  purpose: Deployment operations - configs, networking, metrics, logs, diagnostic snapshots,
+    data backups.
+- name: Audit API
+  base_url: https://audit.laserdata.cloud
+  purpose: Immutable audit log and compliance exports.
+specs:
+  format: OpenAPI 3.1
+  browser: https://api.laserdata.cloud/docs
+  examples_in_spec: true
+  per_region_supervisor_specs: Each supervisor exposes its own spec at /docs, one UI per cloud
+    and area pair (AWS/GCP x US/EU/AP).

@@ -1,0 +1,141 @@
+generated: '2026-07-19'
+method: searched
+source: https://docs.laserdata.cloud/cli, https://docs.laserdata.cloud/cli/commands
+name: laser
+description: >-
+  Single-binary first-party CLI for LaserData Cloud. Two modes in one binary - headless one-shot
+  verbs for pipes, scripts, cron and CI (exit 0 on success), and a full-screen Ratatui TUI
+  dashboard with mouse and keyboard support, a command palette and persistent history. The CLI is
+  tenant-scoped: it authenticates with an API key rather than a user account and operates on the
+  tenant hierarchy of divisions, environments and deployments.
+docs: https://docs.laserdata.cloud/cli
+repository: https://github.com/laserdata/laser-cli-releases
+version: v0.0.1
+platforms:
+- macos-arm64
+- linux-x86_64
+- linux-arm64
+install:
+- method: install-script
+  command: curl -fsSL https://cli.laserdata.cloud/install.sh | sh
+  description: Detects OS and arch, downloads the matching tarball from the public release repo,
+    verifies the SHA-256 checksum, and drops `laser` into $HOME/.local/bin (or $LD_PREFIX).
+    Re-run any time to upgrade.
+  flags:
+  - flag: --to <dir>
+    effect: Install dir (default $HOME/.local/bin). Alternative to LD_PREFIX.
+  - flag: --version <vX.Y.Z>
+    effect: Pin a release tag (default latest). Alternative to LD_VERSION.
+  - flag: --with-cc-skills
+    effect: Also install/update the Claude Code skill pack from cli.laserdata.cloud/claude.sh.
+  - flag: --help
+    effect: Show usage.
+  env:
+  - name: LD_VERSION
+    effect: Pin release tag.
+  - name: LD_PREFIX
+    effect: Override install dir.
+modes:
+- name: headless
+  description: One-shot verbs such as `laser tenant get`, `laser deployment list`. The default.
+    Exit code 0 on success, non-zero on failure.
+- name: tui
+  description: Full-screen Ratatui dashboard. Launched via `laser tui`, or by passing
+    --interactive to any verb.
+credentials:
+  storage: OS keyring (Keychain on macOS, Secret Service on Linux)
+  env_alternative:
+  - LD_API_KEY
+  - LD_TENANT_ID
+  notes: CI and agents can skip `laser auth login` by exporting LD_API_KEY and LD_TENANT_ID.
+    Inline --api-key is discouraged because it leaks into shell history.
+output:
+  json_flag: -o json
+  silent_flag: --silent
+  notes: Scripts and agents should parse `-o json` rather than scraping the table renderer.
+commands:
+- group: auth
+  requires_context: false
+  commands:
+  - laser auth login [--context NAME] [--api-key KEY] [--tenant-id ID]
+  - laser auth logout [--context NAME] [--all]
+  - laser auth purge
+  notes: login prompts for a masked API key when --api-key is omitted, validates it against the
+    platform, and stores the secret in the OS keyring. purge is destructive - it drops every
+    context and keyring entry.
+- group: context
+  alias: ctx
+  requires_context: false
+  commands:
+  - laser context create NAME [--api-key KEY] [--tenant-id ID] [--division-id ID] [--environment-id
+    ID] [--deployment-id ID] [--activate]
+  - laser context list
+  - laser context current
+  - laser context show [NAME]
+  - laser context switch NAME
+  - laser context delete NAME
+  - laser context rename FROM TO
+  - laser context set FIELD VALUE
+- group: tenant
+  alias: tn
+  commands:
+  - laser tenant get
+  - laser tenant structure
+  - laser tenant summary
+  - laser tenant update [--name NAME] [--description TEXT] [--email EMAIL] [--protected true|false]
+  - laser tenant config get
+  - laser tenant config update
+  notes: 'laser tenant structure prints the full tree: divisions -> environments -> deployments.'
+- group: deployment
+  commands:
+  - laser deployment list
+  - laser deployment create-managed
+  - laser deployment create-starter
+  - laser deployment create-byoc
+  - laser deployment preview
+  - laser deployment upgrade
+  - laser deployment extend
+  - laser deployment retention
+  - laser deployment spend-limit
+  - laser deployment update
+  - laser deployment delete
+  - laser deployment byoc setup
+  - laser deployment byoc validate
+- group: cloud
+  commands:
+  - laser cloud tiers --cloud <c> --region <r>
+  notes: Source of truth for provisionable clouds, regions, tiers and storage. Each tier object
+    carries an `available` boolean keyed off the active tenant's plan.
+- group: setup
+  requires_context: false
+  commands:
+  - laser version
+  - laser update
+  - laser tui
+key_flows:
+- name: onboard
+  description: Install the binary, sign in against a tenant, and sanity-check the active context.
+- name: deploy
+  description: Discover cloud/region/tier/storage from the API, preview cost, then provision a
+    Managed, Starter or BYOC deployment.
+- name: troubleshoot
+  description: Pull metrics, heartbeats, activity, runtime logs, network, tasks and access rules
+    for a deployment, including per-runtime restart on a single node.
+- name: config
+  description: Manage versioned deployment configs (Iggy, connectors, Warden, connector instances)
+    - list, view, create new versions from a JSON file, activate, delete.
+- name: snapshot
+  description: Manage diagnostic HTML snapshots covering system state, runtimes, certificates,
+    network, kernel parameters and logs.
+- name: backup
+  description: Manage point-in-time storage volume backups (AWS network-storage deployments on Pro
+    and Enterprise plans).
+- name: access
+  description: Manage CIDR access rules with per-protocol toggles (Iggy TCP/HTTP/WebSocket/UDP).
+- name: channel
+  description: Manage tenant notification channels (Slack, webhook, email) - create, list, update,
+    delete, test, inspect delivered notifications.
+agent_integration:
+  claude_code_skills: skills/_index.yml
+  install: curl -fsSL https://cli.laserdata.cloud/install.sh | sh -s -- --with-cc-skills
+  marketplace: /plugin marketplace add laserdata/laser-cli-claude

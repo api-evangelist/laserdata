@@ -1,0 +1,54 @@
+generated: '2026-07-19'
+method: searched
+source: https://docs.laserdata.cloud/getting-started/quick-start, https://laserdata.cloud
+notes: >-
+  LaserData does not run a separate test-vs-live key namespace or a mock API. Its equivalent of a
+  sandbox is a real Free Tier Managed deployment on AWS or GCP, provisioned with no credit card,
+  plus a published quickstart producer/consumer container image that reads and writes a sample
+  stream. No magic/test credential values are published - a Free Tier deployment issues real
+  credentials from the Console - so none are recorded here.
+free_tier:
+  available: true
+  signup_url: https://laserdata.cloud
+  credit_card_required: false
+  clouds:
+  - AWS
+  - GCP
+  tier_flag_value: free
+  default_access_rule: 0.0.0.0/0
+  notes: Free-tier Managed deployments are created with a default global access rule so you can
+    connect immediately. Paid-tier deployments start with zero network access and require an
+    explicit CIDR access rule first.
+test_harness:
+- kind: container-image
+  name: ghcr.io/laserdata/quickstart
+  install: docker pull ghcr.io/laserdata/quickstart:latest
+  binaries:
+  - /producer
+  - /consumer
+  sample_stream: sample-stream
+  sample_topic: sample-topic
+  producer_command: docker run ghcr.io/laserdata/quickstart /producer {DOMAIN} -u {USERNAME} -p
+    {PASSWORD}
+  consumer_command: docker run ghcr.io/laserdata/quickstart /consumer {DOMAIN} -u {USERNAME} -p
+    {PASSWORD}
+  connection_options:
+  - flag: -t, --token <TOKEN>
+    description: Use a Personal Access Token instead of username/password.
+  - flag: --transport <tcp|quic|http|ws>
+    description: 'Transport protocol (default: tcp).'
+  - flag: --no-tls
+    description: Disable TLS (local development only).
+  - flag: --messages-count <N>
+    description: Number of messages to produce.
+credentials:
+  source: Credentials tab of the LaserData Console
+  published_test_values: none
+  notes: Deployment credentials are issued per deployment in the Console; LaserData publishes no
+    shared or magic test credentials.
+api_console:
+  url: https://api.laserdata.cloud/docs
+  description: Scalar-hosted OpenAPI browser for the Core, Audit and Notifier specs. Accepts an
+    ld-api-key and tenant_id so examples auto-fill and requests can be run in-browser.
+  in_browser_requests: true
+test_clocks: null

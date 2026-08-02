@@ -1,0 +1,35 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for LaserData Cloud Core API
+  version: 1.0.0
+extends: openapi/laserdata-core-openapi.json
+actions:
+- target: $.info
+  update:
+    x-apievangelist-slug: laserdata
+    x-apievangelist-service: core
+    x-apievangelist-harvested: '2026-07-19'
+    x-apievangelist-source: https://api.laserdata.cloud/openapi/core.json
+    x-apievangelist-artifacts:
+      authentication: authentication/laserdata-authentication.yml
+      conventions: conventions/laserdata-conventions.yml
+      errors: errors/laserdata-problem-types.yml
+      lifecycle: lifecycle/laserdata-lifecycle.yml
+      data_model: data-model/laserdata-data-model.yml
+      skills: skills/_index.yml
+- target: $
+  update:
+    x-agent-conventions:
+      idempotency_header: idempotency-key
+      idempotency_retention: 10 minutes per (api_key, idempotency-key) pair
+      idempotent_replay_header: idempotent-replayed
+      request_id_header: ld-request
+      pagination:
+        style: page-number
+        params:
+        - page
+        - results
+        max_results: 100
+        link_header: RFC 8288
+      error_media_type: application/problem+json
+      rate_limit_signal: 429 + retry-after

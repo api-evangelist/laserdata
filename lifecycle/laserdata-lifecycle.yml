@@ -1,0 +1,53 @@
+generated: '2026-07-19'
+method: searched
+source: https://api.laserdata.cloud/openapi/core.json, https://status.laserdata.cloud, https://docs.laserdata.cloud
+versioning:
+  scheme: spec-version
+  current: 0.0.66
+  in_path: false
+  docs: https://api.laserdata.cloud/docs
+  notes: Core, Audit and Notifier all publish info.version 0.0.66. Paths carry no version prefix;
+    the OpenAPI 3.1 document version is the contract marker. The product is pre-1.0.
+status_page:
+  url: https://status.laserdata.cloud
+  provider: Better Stack
+  title: LaserData Inc status
+sla:
+  url: null
+  uptime_target: null
+  notes: No published SLA or uptime target was found on the marketing site or docs as of this
+    pass.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  rfc8594: false
+  notes: >-
+    No deprecation policy, Sunset header support, or RFC 8594 signalling is documented, and no
+    operation in any of the three published specs carries deprecated: true. Recorded as verified
+    absence. The SDK repo does publish a support-window statement for its own releases: pre-1.0,
+    only the latest 0.0.x line receives security fixes.
+deprecated_operations: []
+support_windows:
+- scope: laser-sdk / laser-wire crates
+  policy: Pre-1.0 - only the latest published 0.0.x release line receives security fixes; pin an
+    exact version and upgrade promptly.
+  source: https://github.com/laserdata/laser-sdk/blob/main/SECURITY.md
+credential_lifecycle:
+  api_key_expiry_mandatory: true
+  api_key_max_expiry_days: 365
+  expired_key_behaviour: 401 Unauthorized
+  guidance: Create a replacement key before expiry and rotate it in CI/CD.
+  source: https://docs.laserdata.cloud/api/authentication
+platform_availability:
+  clouds:
+  - AWS
+  - GCP
+  regions:
+  - US
+  - EU
+  - AP
+  deployment_models:
+  - Managed
+  - BYOC
+  - On-premise
+  source: https://docs.laserdata.cloud/deployments

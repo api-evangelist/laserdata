@@ -1,0 +1,128 @@
+generated: '2026-07-19'
+method: searched
+source: https://docs.laserdata.cloud/api/authentication; openapi/laserdata-core-openapi.json, openapi/laserdata-audit-openapi.json,
+  openapi/laserdata-notifier-openapi.json
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - cookie
+  - header
+  oauth2: false
+  oauth2_flows: []
+  primary: ld_api_key
+schemes:
+- name: ld_api_key
+  type: apiKey
+  in: header
+  parameter: ld-api-key
+  description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads.
+    Cannot be used on user-scope endpoints (`/audit/users/activity`).
+  sources:
+  - openapi/laserdata-audit-openapi.json
+  - openapi/laserdata-core-openapi.json
+  - openapi/laserdata-notifier-openapi.json
+- name: session_cookie
+  type: apiKey
+  in: cookie
+  parameter: session
+  description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope
+    endpoints.
+  sources:
+  - openapi/laserdata-audit-openapi.json
+  - openapi/laserdata-core-openapi.json
+  - openapi/laserdata-notifier-openapi.json
+docs: https://docs.laserdata.cloud/api/authentication
+permissions_docs: https://docs.laserdata.cloud/organization/roles-permissions
+notes: Docs are explicit that there are no sessions, cookies or OAuth flows for API access - the session_cookie
+  scheme exists only for Console/user-scope endpoints (/account/*) and tenant creation, and is rejected
+  at runtime on API-key paths. No scopes/ artifact is emitted because LaserData has no OAuth scope surface;
+  authorization is a role/permission model, captured below.
+key_lifecycle:
+  issued_by: POST /tenants/{tenant_id}/api_keys
+  recoverable: false
+  storage: only the hash is stored server-side - copy the secret immediately after creation
+  format: long-entropy random secret
+  expiry_mandatory: true
+  max_expiry_days: 365
+  expired_behaviour: 401 Unauthorized
+  rotation_guidance: Create a replacement key before expiry and rotate it in CI/CD.
+controls:
+  ip_allowlist:
+    supported: true
+    updatable_in_place: true
+    denied_status: 403
+  rate_limit:
+    scope: per API key
+    status: 429
+    header: retry-after
+  csrf:
+    applies_to: cookie-authenticated mutating endpoints
+    header: X-CSRF-Token
+authorization:
+  model: role-based, hierarchical
+  docs: https://docs.laserdata.cloud/organization/roles-permissions
+  hierarchy:
+  - tenant
+  - division
+  - environment
+  assignment: Every API key is tied to a role. When creating a key you can assign an existing role or
+    define inline permissions, which auto-creates a dedicated role.
+  scoping:
+  - scope: global
+    description: Three top-level blanket grants - tenant, division and environment - applied across the
+      whole tenant.
+  - scope: per-division
+    description: Override the role's default division permissions for specific divisions.
+  - scope: per-environment
+    description: Within a per-division override, further scope environment permissions to specific environments.
+  tenant_permissions:
+  - resource: info
+    read: View tenant information
+    manage: Update tenant information
+  - resource: audit
+    read: View audit logs
+    manage: null
+  - resource: settings
+    read: View tenant settings
+    manage: Update tenant settings
+  - resource: role
+    read: View roles
+    manage: Create, update, and delete roles
+  - resource: member
+    read: View members
+    manage: Invite, update, and remove members
+  - resource: subscription
+    read: View subscription plan
+    manage: Change subscription plan
+  - resource: billing
+    read: View billing and payment
+    manage: Update billing and payment
+  - resource: division
+    read: View divisions
+    manage: Create, update, and delete divisions
+  - resource: api_key
+    read: View API keys
+    manage: Create and delete API keys
+  - resource: notifications
+    read: View notification channels
+    manage: Create, update, and delete notification channels
+  example_permission_strings:
+  - member:read
+  - api_key:manage
+  - deployment:manage
+  - deployment:config:read
+  - billing:manage
+  - subscription:manage
+errors:
+  '401': Key missing, malformed, expired, or revoked.
+  '403': Key valid but missing the required permission, or request from a blocked IP.
+  '404': Resource does not exist or is not visible to this key.
+  '429': Per-key rate limit exceeded; check Retry-After.
+  envelope: errors/laserdata-problem-types.yml
+cli_credentials:
+  keyring: OS keyring (Keychain on macOS, Secret Service on Linux)
+  env:
+  - LD_API_KEY
+  - LD_TENANT_ID
+  guidance: Do not pass --api-key inline; it leaks into shell history.

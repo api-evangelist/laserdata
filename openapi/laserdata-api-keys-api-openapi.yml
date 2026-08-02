@@ -1,0 +1,646 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account API Keys API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: API Keys
+  description: Tenant API key management
+paths:
+  /tenants/{tenant_id}/api_keys:
+    get:
+      tags:
+      - API Keys
+      summary: List API keys
+      description: Returns the tenant's API keys. Metadata only - the `token` secret is never included in list responses.
+      operationId: get_api_keys
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 50
+      - name: name
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ApiKeyName'
+      responses:
+        '200':
+          description: Paged API key listing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_ApiKeyInfo'
+        '403':
+          description: Insufficient permissions on the tenant
+    post:
+      tags:
+      - API Keys
+      summary: Create API key
+      description: Creates a tenant-scoped API key. Provide `role_id` to reuse an existing role, or `permissions` to mint a dedicated single-purpose role automatically. The returned `token` is shown ONCE - store it immediately, it cannot be retrieved again.
+      operationId: create_api_key
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      requestBody:
+        description: Name, expiry (max 365 days), role_id OR inline permissions, optional IP allowlist
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKey'
+        required: true
+      responses:
+        '201':
+          description: API key created. `token` returned once and never again
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyToken'
+        '400':
+          description: Invalid name, expiry beyond 365 days, or both role_id and permissions provided
+        '403':
+          description: Insufficient permissions on the tenant
+        '409':
+          description: Name already used in this tenant or limit reached
+  /tenants/{tenant_id}/api_keys/context:
+    get:
+      tags:
+      - API Keys
+      summary: Get caller's key context
+      description: 'Returns metadata about the API key making this call: role, permissions, expiry, IP allowlist. Lets an autonomous agent introspect its own authority before attempting actions.'
+      operationId: get_api_key_context
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      responses:
+        '200':
+          description: Calling API key context and permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyDetails'
+        '401':
+          description: Caller is not authenticated via API key
+  /tenants/{tenant_id}/api_keys/{api_key_id}:
+    get:
+      tags:
+      - API Keys
+      summary: Get API key
+      description: 'Returns full metadata for an API key: role, permission tree, IP allowlist. Token secret is never returned.'
+      operationId: get_api_key
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: api_key_id
+        in: path
+        description: API key identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ApiKeyId'
+      responses:
+        '200':
+          description: API key details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyDetails'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: API key not found
+    delete:
+      tags:
+      - API Keys
+      summary: Delete API key
+      description: Immediately revokes the API key. Subsequent requests using its token will return 401. In-flight requests complete normally. Cannot be undone - create a new key if you need to restore access.
+      operationId: delete_api_key
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: api_key_id
+        in: path
+        description: API key identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ApiKeyId'
+      responses:
+        '204':
+          description: API key deleted
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: API key not found
+  /tenants/{tenant_id}/api_keys/{api_key_id}/security:
+    put:
+      tags:
+      - API Keys
+      summary: Update API key security
+      description: Updates only the security policy (IP validation + allowed_ips list). Role and permissions cannot be changed - delete and recreate the key instead, which keeps audit trails clean.
+      operationId: update_api_key_security
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: api_key_id
+        in: path
+        description: API key identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ApiKeyId'
+      requestBody:
+        description: Toggle validate_ip and/or replace allowed_ips list
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateApiKeySecurity'
+        required: true
+      responses:
+        '204':
+          description: API key security updated
+        '400':
+          description: Invalid CIDR, or validate_ip=true with empty allowed_ips
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: API key not found
+components:
+  schemas:
+    ApiKeyId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
+    EnvironmentPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      properties:
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        permissions:
+          type: array
+          items:
+            type: string
+    UpdateApiKeySecurity:
+      type: object
+      properties:
+        allowed_ips:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        validate_ip:
+          type:
+          - boolean
+          - 'null'
+    RoleName:
+      type: string
+      example: tenant-admin
+    DivisionPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      - environment
+      - environments
+      properties:
+        environment:
+          type: array
+          items:
+            type: string
+        environments:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EnvironmentPermissionsInfo'
+          propertyNames:
+            type: string
+        name:
+          $ref: '#/components/schemas/DivisionName'
+        permissions:
+          type: array
+          items:
+            type: string
+    ApiKeyDetails:
+      allOf:
+      - $ref: '#/components/schemas/ApiKeyInfo'
+      - type: object
+        required:
+        - permissions
+        properties:
+          permissions:
+            $ref: '#/components/schemas/RolePermissionsInfo'
+    CreateApiKey:
+      type: object
+      required:
+      - name
+      - expiry_at
+      - validate_ip
+      properties:
+        allowed_ips:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        division_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionId'
+        expiry_at:
+          type: string
+          format: date-time
+          description: Expiration timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        name:
+          $ref: '#/components/schemas/ApiKeyName'
+        permissions:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RolePermissions'
+        role_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RoleId'
+        validate_ip:
+          type: boolean
+    DivisionName:
+      type: string
+      example: production
+    ApiKeyName:
+      type: string
+      example: ci-deployer
+    DivisionPermissions:
+      type: object
+      properties:
+        environment:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        environments:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          propertyNames:
+            type: string
+        permissions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    Paged_ApiKeyInfo:
+      type: object
+      required:
+      - total_pages
+      - total_results
+      - page
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - user_id
+            - role_id
+            - role_name
+            - name
+            - validate_ip
+            - allowed_ips
+            - expiry_at
+            - created_at
+            properties:
+              allowed_ips:
+                type: array
+                items:
+                  type: string
+              created_at:
+                type: string
+                format: date-time
+                description: Resource creation timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+              division_id:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/DivisionId'
+              division_name:
+                oneOf:
+                - type: 'null'
+                - $ref: '#/components/schemas/DivisionName'
+              expiry_at:
+                type: string
+                format: date-time
+                description: Expiration timestamp (RFC 3339 UTC).
+                example: '2026-05-20T10:00:00Z'
+              id:
+                $ref: '#/components/schemas/ApiKeyId'
+              name:
+                $ref: '#/components/schemas/ApiKeyName'
+              role_id:
+                $ref: '#/components/schemas/RoleId'
+              role_name:
+                $ref: '#/components/schemas/RoleName'
+              user_id:
+                $ref: '#/components/schemas/UserId'
+              validate_ip:
+                type: boolean
+            example:
+              id: 7261845198004700001
+              division_id: 7261844974723780000
+              division_name: Engineering
+              user_id: 611298765432109069
+              role_id: 611298765432109010
+              role_name: ci-deployer
+              name: ci-pipeline
+              validate_ip: true
+              allowed_ips:
+              - 203.0.113.10
+              - 203.0.113.11
+              expiry_at: '2027-01-15T12:00:00Z'
+              created_at: '2026-05-20T10:00:00Z'
+        page:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        total_pages:
+          type: integer
+          format: int64
+          example: 4
+          minimum: 0
+        total_results:
+          type: integer
+          format: int64
+          example: 137
+          minimum: 0
+    ApiKeyToken:
+      type: object
+      required:
+      - id
+      - token
+      properties:
+        id:
+          $ref: '#/components/schemas/ApiKeyId'
+        token:
+          type: string
+          example: ld_pk_AbCdEf0123456789AbCdEf0123456789
+    EnvironmentName:
+      type: string
+      example: staging
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    RolePermissions:
+      type: object
+      properties:
+        division:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        divisions:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/DivisionPermissions'
+          propertyNames:
+            type: string
+        environment:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        tenant:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    RoleId:
+      type: integer
+      format: int64
+      example: 7261845001236500000
+      minimum: 0
+    ApiKeyInfo:
+      type: object
+      required:
+      - id
+      - user_id
+      - role_id
+      - role_name
+      - name
+      - validate_ip
+      - allowed_ips
+      - expiry_at
+      - created_at
+      properties:
+        allowed_ips:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        division_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionId'
+        division_name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionName'
+        expiry_at:
+          type: string
+          format: date-time
+          description: Expiration timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        id:
+          $ref: '#/components/schemas/ApiKeyId'
+        name:
+          $ref: '#/components/schemas/ApiKeyName'
+        role_id:
+          $ref: '#/components/schemas/RoleId'
+        role_name:
+          $ref: '#/components/schemas/RoleName'
+        user_id:
+          $ref: '#/components/schemas/UserId'
+        validate_ip:
+          type: boolean
+      example:
+        id: 7261845198004700001
+        division_id: 7261844974723780000
+        division_name: Engineering
+        user_id: 611298765432109069
+        role_id: 611298765432109010
+        role_name: ci-deployer
+        name: ci-pipeline
+        validate_ip: true
+        allowed_ips:
+        - 203.0.113.10
+        - 203.0.113.11
+        expiry_at: '2027-01-15T12:00:00Z'
+        created_at: '2026-05-20T10:00:00Z'
+    RolePermissionsInfo:
+      type: object
+      required:
+      - tenant
+      - division
+      - environment
+      - divisions
+      properties:
+        division:
+          type: array
+          items:
+            type: string
+        divisions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DivisionPermissionsInfo'
+          propertyNames:
+            type: string
+        environment:
+          type: array
+          items:
+            type: string
+        tenant:
+          type: array
+          items:
+            type: string
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    UserId:
+      type: integer
+      format: int64
+      example: 7261844898910240000
+      minimum: 0
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

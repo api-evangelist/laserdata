@@ -1,0 +1,790 @@
+openapi: 3.1.0
+info:
+  title: LaserData Cloud Audit Account Notification Channels API
+  description: 'Tenant audit log and per-user activity feed.
+
+
+    Public REST API for the LaserData Cloud audit service.
+
+
+    ## Authentication
+
+
+    Every endpoint accepts either of two auth methods:
+
+    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
+
+    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
+
+
+    Audit endpoints are read-only and replay-safe by definition.
+
+
+    ## Pagination
+
+
+    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
+
+
+    ## Errors
+
+
+    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
+
+
+    ## Response headers
+
+
+    - `ld-request`: request ID. Include it when reporting issues.
+
+    - `link`: pagination relations.
+
+    - `retry-after`: wait hint on 429 / 503.'
+  termsOfService: https://laserdata.com/terms
+  contact:
+    name: LaserData Support
+    url: https://docs.laserdata.com
+    email: support@laserdata.com
+  license:
+    name: Proprietary
+  version: 0.0.66
+  x-logo:
+    url: https://assets.laserdata.com/laserdata_dark.png
+    altText: LaserData
+    href: https://laserdata.com
+servers:
+- url: https://api.laserdata.cloud
+  description: Production
+security:
+- ld_api_key: []
+- session_cookie: []
+tags:
+- name: Notification Channels
+  description: Notification channels (email, slack, webhook)
+paths:
+  /tenants/{tenant_id}/channels:
+    get:
+      tags:
+      - Notification Channels
+      summary: List tenant notification channels
+      description: Returns paged tenant-owned channels. Supports filtering by channel kind.
+      operationId: get_tenant_channels
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 10
+      - name: channel
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NotificationChannelKind'
+      responses:
+        '200':
+          description: Paged channels
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_NotificationChannelInfo'
+        '403':
+          description: Insufficient permissions
+    post:
+      tags:
+      - Notification Channels
+      summary: Create tenant notification channel
+      description: Creates a tenant-owned notification channel such as Slack, webhook, email, or SMS. Destination validation depends on the chosen channel kind.
+      operationId: create_tenant_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      requestBody:
+        description: Channel type, destination, name, optional settings and remarks
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChannel'
+        required: true
+      responses:
+        '201':
+          description: Channel created
+        '400':
+          description: Invalid channel configuration
+        '403':
+          description: Insufficient permissions
+        '409':
+          description: Channel already exists or limit reached
+  /tenants/{tenant_id}/channels/{channel_id}:
+    get:
+      tags:
+      - Notification Channels
+      summary: Get tenant notification channel
+      description: Returns configuration and metadata for one tenant-owned notification channel.
+      operationId: get_tenant_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      responses:
+        '200':
+          description: Channel details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationChannelDetails'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Channel not found
+    put:
+      tags:
+      - Notification Channels
+      summary: Update tenant notification channel
+      description: Partially updates a tenant-owned notification channel. Omitted fields are left unchanged.
+      operationId: update_tenant_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      requestBody:
+        description: Partial channel update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateChannel'
+        required: true
+      responses:
+        '204':
+          description: Channel updated
+        '400':
+          description: Invalid channel configuration
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Channel not found
+    delete:
+      tags:
+      - Notification Channels
+      summary: Delete tenant notification channel
+      description: Deletes a tenant-owned notification channel and all subscriptions attached to it.
+      operationId: delete_tenant_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      responses:
+        '204':
+          description: Channel deleted
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Channel not found
+  /tenants/{tenant_id}/channels/{channel_id}/test:
+    post:
+      tags:
+      - Notification Channels
+      summary: Send test tenant notification
+      description: Sends a test message through a tenant-owned notification channel. Rate limited to prevent abuse.
+      operationId: test_tenant_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      responses:
+        '204':
+          description: Test notification sent
+        '400':
+          description: Channel disabled or cannot send to private address
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Channel not found
+        '429':
+          description: Test channel rate limited
+  /tenants/{tenant_id}/divisions/{division_id}/channels:
+    get:
+      tags:
+      - Notification Channels
+      summary: List division notification channels
+      description: Returns paged division-owned channels. Supports filtering by channel kind.
+      operationId: get_division_channels
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 1
+      - name: results
+        in: query
+        required: false
+        schema:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 1
+        example: 10
+      - name: channel
+        in: query
+        required: false
+        schema:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NotificationChannelKind'
+      responses:
+        '200':
+          description: Paged channels
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paged_NotificationChannelInfo'
+        '403':
+          description: Insufficient permissions
+    post:
+      tags:
+      - Notification Channels
+      summary: Create division notification channel
+      description: Creates a division-owned notification channel using the same payload contract as tenant channels.
+      operationId: create_division_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      requestBody:
+        description: Channel type, destination, name, optional settings and remarks
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChannel'
+        required: true
+      responses:
+        '201':
+          description: Channel created
+        '400':
+          description: Invalid channel configuration
+        '403':
+          description: Insufficient permissions
+        '409':
+          description: Channel already exists or limit reached
+  /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}:
+    get:
+      tags:
+      - Notification Channels
+      summary: Get division notification channel
+      description: Returns configuration and metadata for one division-owned notification channel.
+      operationId: get_division_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      responses:
+        '200':
+          description: Channel details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationChannelDetails'
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Channel not found
+    put:
+      tags:
+      - Notification Channels
+      summary: Update division notification channel
+      description: Partially updates a division-owned notification channel. Omitted fields are left unchanged.
+      operationId: update_division_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      requestBody:
+        description: Partial channel update
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateChannel'
+        required: true
+      responses:
+        '204':
+          description: Channel updated
+        '400':
+          description: Invalid channel configuration
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Channel not found
+    delete:
+      tags:
+      - Notification Channels
+      summary: Delete division notification channel
+      description: Deletes a division-owned notification channel and all subscriptions attached to it.
+      operationId: delete_division_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      responses:
+        '204':
+          description: Channel deleted
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Channel not found
+  /tenants/{tenant_id}/divisions/{division_id}/channels/{channel_id}/test:
+    post:
+      tags:
+      - Notification Channels
+      summary: Send test division notification
+      description: Sends a test message through a division-owned notification channel. Rate limited to prevent abuse.
+      operationId: test_division_channel
+      parameters:
+      - name: tenant_id
+        in: path
+        description: Tenant identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TenantId'
+      - name: division_id
+        in: path
+        description: Division identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DivisionId'
+      - name: channel_id
+        in: path
+        description: Channel identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationChannelId'
+      responses:
+        '204':
+          description: Test notification sent
+        '400':
+          description: Channel disabled or cannot send to private address
+        '403':
+          description: Insufficient permissions
+        '404':
+          description: Channel not found
+        '429':
+          description: Test channel rate limited
+components:
+  schemas:
+    Paged_NotificationChannelInfo:
+      type: object
+      required:
+      - total_pages
+      - total_results
+      - page
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - owner_kind
+            - owner_id
+            - channel
+            - name
+            - enabled
+            - created_at
+            - updated_at
+            properties:
+              channel:
+                $ref: '#/components/schemas/NotificationChannelKind'
+              created_at:
+                type: string
+                format: date-time
+              enabled:
+                type: boolean
+              id:
+                $ref: '#/components/schemas/NotificationChannelId'
+              name:
+                $ref: '#/components/schemas/NotificationChannelName'
+              owner_id:
+                type: integer
+                format: int64
+                example: 7261845022003200001
+                minimum: 0
+              owner_kind:
+                $ref: '#/components/schemas/OwnerKind'
+              updated_at:
+                type: string
+                format: date-time
+            example:
+              id: 7261845330120500000
+              owner_kind: tenant
+              owner_id: 7261845022003200001
+              channel: email
+              name: ops-team-email
+              enabled: true
+              created_at: '2026-05-20T10:00:00Z'
+              updated_at: '2026-05-20T10:00:00Z'
+        page:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        total_pages:
+          type: integer
+          format: int64
+          example: 4
+          minimum: 0
+        total_results:
+          type: integer
+          format: int64
+          example: 137
+          minimum: 0
+    NotificationChannelName:
+      type: string
+      example: ops-webhook
+    NotificationChannelDestination:
+      type: string
+      example: https://hooks.slack.com/services/REDACTED
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    OwnerKind:
+      type: string
+      enum:
+      - user
+      - tenant
+      - division
+      - system
+    NotificationChannelId:
+      type: integer
+      format: int64
+      example: 7261845612345670000
+      minimum: 0
+    UpdateChannel:
+      type: object
+      properties:
+        destination:
+          type:
+          - string
+          - 'null'
+          example: https://hooks.example.com/laserdata/ops-v2
+        enabled:
+          type:
+          - boolean
+          - 'null'
+        name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NotificationChannelName'
+        remarks:
+          type:
+          - string
+          - 'null'
+          example: Migrated to rotated webhook URL
+        settings:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ChannelSettings'
+    WebhookSettings:
+      type: object
+      properties:
+        headers:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          propertyNames:
+            type: string
+        method:
+          type:
+          - string
+          - 'null'
+          example: POST
+      example:
+        headers:
+          Authorization: Bearer secret-token
+        method: POST
+    NotificationChannelInfo:
+      type: object
+      required:
+      - id
+      - owner_kind
+      - owner_id
+      - channel
+      - name
+      - enabled
+      - created_at
+      - updated_at
+      properties:
+        channel:
+          $ref: '#/components/schemas/NotificationChannelKind'
+        created_at:
+          type: string
+          format: date-time
+        enabled:
+          type: boolean
+        id:
+          $ref: '#/components/schemas/NotificationChannelId'
+        name:
+          $ref: '#/components/schemas/NotificationChannelName'
+        owner_id:
+          type: integer
+          format: int64
+          example: 7261845022003200001
+          minimum: 0
+        owner_kind:
+          $ref: '#/components/schemas/OwnerKind'
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 7261845330120500000
+        owner_kind: tenant
+        owner_id: 7261845022003200001
+        channel: email
+        name: ops-team-email
+        enabled: true
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
+    ChannelSettings:
+      type: object
+      properties:
+        slack:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/SlackSettings'
+        sms:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/SmsSettings'
+        webhook:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/WebhookSettings'
+    NotificationChannelKind:
+      type: string
+      enum:
+      - slack
+      - webhook
+      - sms
+      - email
+    SlackSettings:
+      type: object
+      properties:
+        channel:
+          type:
+          - string
+          - 'null'
+          example: laser-alerts
+        icon_emoji:
+          type:
+          - string
+          - 'null'
+          example: ':rotating_light:'
+        username:
+          type:
+          - string
+          - 'null'
+          example: LaserData Cloud
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    SmsSettings:
+      type: object
+      properties:
+        sender_id:
+          type:
+          - string
+          - 'null'
+          example: LaserData
+    NotificationChannelDetails:
+      allOf:
+      - $ref: '#/components/schemas/NotificationChannelInfo'
+      - type: object
+        required:
+        - destination
+        properties:
+          destination:
+            $ref: '#/components/schemas/NotificationChannelDestination'
+          remarks:
+            type:
+            - string
+            - 'null'
+          settings:
+            oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/ChannelSettings'
+    CreateChannel:
+      type: object
+      required:
+      - channel
+      - name
+      - destination
+      properties:
+        channel:
+          $ref: '#/components/schemas/NotificationChannelKind'
+        destination:
+          type: string
+          example: https://hooks.example.com/laserdata/ops
+        name:
+          $ref: '#/components/schemas/NotificationChannelName'
+        remarks:
+          type:
+          - string
+          - 'null'
+          example: Primary production incident sink
+        settings:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ChannelSettings'
+  securitySchemes:
+    ld_api_key:
+      type: apiKey
+      in: header
+      name: ld-api-key
+      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+    session_cookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+externalDocs:
+  url: https://docs.laserdata.com
+  description: LaserData Cloud documentation

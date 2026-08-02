@@ -1,0 +1,1936 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/laserdata-core-openapi.json, openapi/laserdata-audit-openapi.json, openapi/laserdata-notifier-openapi.json
+docs: https://api.laserdata.cloud/docs
+notes: Entity graph derived from OpenAPI 3.1 components.schemas $ref links and *_id reference fields.
+  Request-shaped schemas (Create*/Update*/Paged_*) excluded.
+entity_count: 93
+entities:
+- name: AddRole
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - name
+  - permissions
+  relationships:
+  - target: RoleName
+    kind: has_one
+    via: name
+  - target: RolePermissions
+    kind: has_one
+    via: permissions
+- name: ApiKeyInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - allowed_ips
+  - created_at
+  - division_id
+  - division_name
+  - expiry_at
+  - id
+  - name
+  - role_id
+  - role_name
+  - user_id
+  - validate_ip
+  relationships:
+  - target: DivisionId
+    kind: has_one
+    via: division_id
+  - target: division
+    kind: belongs_to
+    via: division_id
+  - target: DivisionName
+    kind: has_one
+    via: division_name
+  - target: ApiKeyId
+    kind: has_one
+    via: id
+  - target: ApiKeyName
+    kind: has_one
+    via: name
+  - target: RoleId
+    kind: has_one
+    via: role_id
+  - target: role
+    kind: belongs_to
+    via: role_id
+  - target: RoleName
+    kind: has_one
+    via: role_name
+  - target: UserId
+    kind: has_one
+    via: user_id
+  - target: user
+    kind: belongs_to
+    via: user_id
+- name: ApiKeyToken
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - id
+  - token
+  relationships:
+  - target: ApiKeyId
+    kind: has_one
+    via: id
+- name: AssignRoleMembers
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - members
+  relationships:
+  - target: UserId
+    kind: has_many
+    via: members
+- name: AwsByocDeployment
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - account_id
+  - external_id
+  - identity_arn
+  - vpc_cidr
+  - vpc_id
+  relationships:
+  - target: AwsAccountId
+    kind: has_one
+    via: account_id
+  - target: account
+    kind: belongs_to
+    via: account_id
+  - target: external
+    kind: belongs_to
+    via: external_id
+  - target: CidrBlock
+    kind: has_one
+    via: vpc_cidr
+  - target: AwsVpcId
+    kind: has_one
+    via: vpc_id
+  - target: vpc
+    kind: belongs_to
+    via: vpc_id
+- name: AwsCloudAccountSettings
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - external_id
+  - identity_arn
+  - vpc_cidr
+  - vpc_id
+  relationships:
+  - target: external
+    kind: belongs_to
+    via: external_id
+  - target: vpc
+    kind: belongs_to
+    via: vpc_id
+- name: BillingInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - address
+  - city
+  - company
+  - country
+  - email
+  - name
+  - phone
+  - postal_code
+  - state
+  - tax_id
+  relationships:
+  - target: tax
+    kind: belongs_to
+    via: tax_id
+- name: BillingReportInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - cloud
+  - currency
+  - deployment_id
+  - from
+  - id
+  - name
+  - region
+  - tier
+  - to
+  - total_cost
+  - variant
+  relationships:
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: Currency
+    kind: has_one
+    via: currency
+  - target: DeploymentId
+    kind: has_one
+    via: deployment_id
+  - target: deployment
+    kind: belongs_to
+    via: deployment_id
+  - target: DeploymentReportId
+    kind: has_one
+    via: id
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+  - target: DeploymentVariant
+    kind: has_one
+    via: variant
+- name: CloudAccountInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - account_id
+  - cloud
+  - created_at
+  - id
+  - name
+  - region
+  - status
+  - updated_at
+  - validated_at
+  relationships:
+  - target: account
+    kind: belongs_to
+    via: account_id
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: CloudAccountId
+    kind: has_one
+    via: id
+  - target: CloudAccountName
+    kind: has_one
+    via: name
+  - target: Region
+    kind: has_one
+    via: region
+  - target: Status
+    kind: has_one
+    via: status
+- name: CloudAccountSettings
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - aws
+  - gcp
+  relationships:
+  - target: AwsCloudAccountSettings
+    kind: has_one
+    via: aws
+  - target: GcpCloudAccountSettings
+    kind: has_one
+    via: gcp
+- name: CloudPricing
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - compute
+  - disk
+  - network
+  - overhead
+  - storage
+  - telemetry
+  - transfer
+  relationships:
+  - target: ComputePricing
+    kind: has_one
+    via: compute
+  - target: DiskPricing
+    kind: has_one
+    via: disk
+  - target: NetworkPricing
+    kind: has_one
+    via: network
+  - target: OverheadPricing
+    kind: has_one
+    via: overhead
+  - target: StoragePricing
+    kind: has_one
+    via: storage
+  - target: TelemetryPricing
+    kind: has_one
+    via: telemetry
+  - target: TransferPricing
+    kind: has_one
+    via: transfer
+- name: CloudStorageSettings
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - size
+  - type
+  relationships:
+  - target: StorageSize
+    kind: has_one
+    via: size
+  - target: StorageType
+    kind: has_one
+    via: type
+- name: ComputePricing
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - network_disk_tiers
+  - nvme_tiers
+  relationships:
+  - target: ComputeTier
+    kind: has_many
+    via: network_disk_tiers
+  - target: ComputeTier
+    kind: has_many
+    via: nvme_tiers
+- name: ConnectorInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - available
+  - description
+  - key
+  - name
+  - permitted
+  - type
+  relationships:
+  - target: ConnectorType
+    kind: has_one
+    via: type
+- name: CustomerInvoiceInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - created_at
+  - currency
+  - division_id
+  - id
+  - number
+  - period_end
+  - period_start
+  - status
+  - tenant_id
+  - total
+  relationships:
+  - target: Currency
+    kind: has_one
+    via: currency
+  - target: DivisionId
+    kind: has_one
+    via: division_id
+  - target: division
+    kind: belongs_to
+    via: division_id
+  - target: InvoiceId
+    kind: has_one
+    via: id
+  - target: InvoiceStatus
+    kind: has_one
+    via: status
+  - target: TenantId
+    kind: has_one
+    via: tenant_id
+  - target: tenant
+    kind: belongs_to
+    via: tenant_id
+- name: DeleteDeploymentPayload
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - deployment_id
+  - division_id
+  - environment_id
+  - tenant_id
+  relationships:
+  - target: DeploymentId
+    kind: has_one
+    via: deployment_id
+  - target: deployment
+    kind: belongs_to
+    via: deployment_id
+  - target: DivisionId
+    kind: has_one
+    via: division_id
+  - target: division
+    kind: belongs_to
+    via: division_id
+  - target: EnvironmentId
+    kind: has_one
+    via: environment_id
+  - target: environment
+    kind: belongs_to
+    via: environment_id
+  - target: TenantId
+    kind: has_one
+    via: tenant_id
+  - target: tenant
+    kind: belongs_to
+    via: tenant_id
+- name: DeleteDivisionPayload
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - division_id
+  - tenant_id
+  relationships:
+  - target: DivisionId
+    kind: has_one
+    via: division_id
+  - target: division
+    kind: belongs_to
+    via: division_id
+  - target: TenantId
+    kind: has_one
+    via: tenant_id
+  - target: tenant
+    kind: belongs_to
+    via: tenant_id
+- name: DeleteEnvironmentPayload
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - division_id
+  - environment_id
+  - tenant_id
+  relationships:
+  - target: DivisionId
+    kind: has_one
+    via: division_id
+  - target: division
+    kind: belongs_to
+    via: division_id
+  - target: EnvironmentId
+    kind: has_one
+    via: environment_id
+  - target: environment
+    kind: belongs_to
+    via: environment_id
+  - target: TenantId
+    kind: has_one
+    via: tenant_id
+  - target: tenant
+    kind: belongs_to
+    via: tenant_id
+- name: DeleteTenantPayload
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - tenant_id
+  relationships:
+  - target: TenantId
+    kind: has_one
+    via: tenant_id
+  - target: tenant
+    kind: belongs_to
+    via: tenant_id
+- name: DeployStarter
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - cloud
+  - deployment_name
+  - environment_id
+  - environment_name
+  - region
+  relationships:
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: DeploymentName
+    kind: has_one
+    via: deployment_name
+  - target: EnvironmentId
+    kind: has_one
+    via: environment_id
+  - target: environment
+    kind: belongs_to
+    via: environment_id
+  - target: EnvironmentName
+    kind: has_one
+    via: environment_name
+  - target: Region
+    kind: has_one
+    via: region
+- name: DeployToManagedCloud
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - availability_mode
+  - cloud
+  - cluster
+  - dedicated
+  - encrypted
+  - name
+  - protected
+  - public_ip_enabled
+  - region
+  - retention
+  - shared
+  - spend_limit
+  - storage
+  - subdomain_enabled
+  - target_network_tput
+  - tier
+  relationships:
+  - target: AvailabilityMode
+    kind: has_one
+    via: availability_mode
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: ClusterKind
+    kind: has_one
+    via: cluster
+  - target: DeploymentName
+    kind: has_one
+    via: name
+  - target: Region
+    kind: has_one
+    via: region
+  - target: RetentionSettings
+    kind: has_one
+    via: retention
+  - target: CloudStorageSettings
+    kind: has_one
+    via: storage
+  - target: NetworkTput
+    kind: has_one
+    via: target_network_tput
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+- name: DeployToYourOwnCloud
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - availability_mode
+  - aws
+  - cloud
+  - cluster
+  - encrypted
+  - gcp
+  - name
+  - protected
+  - public_ip_enabled
+  - region
+  - retention
+  - spend_limit
+  - storage
+  - subdomain_enabled
+  - target_network_tput
+  - tier
+  relationships:
+  - target: AvailabilityMode
+    kind: has_one
+    via: availability_mode
+  - target: AwsByocDeployment
+    kind: has_one
+    via: aws
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: ClusterKind
+    kind: has_one
+    via: cluster
+  - target: GcpByocDeployment
+    kind: has_one
+    via: gcp
+  - target: DeploymentName
+    kind: has_one
+    via: name
+  - target: Region
+    kind: has_one
+    via: region
+  - target: RetentionSettings
+    kind: has_one
+    via: retention
+  - target: CloudStorageSettings
+    kind: has_one
+    via: storage
+  - target: NetworkTput
+    kind: has_one
+    via: target_network_tput
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+- name: DeploymentInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - area
+  - availability_mode
+  - can_upgrade
+  - cloud
+  - cluster
+  - code
+  - created_at
+  - dedicated
+  - domain
+  - encrypted
+  - id
+  - name
+  - nodes_count
+  - protected
+  - rate_limit
+  - region
+  - retention
+  - runtimes
+  - shared
+  - storage_size
+  - storage_type
+  - supervisor_url
+  - target_network_tput
+  - tier
+  - updated_at
+  relationships:
+  - target: Area
+    kind: has_one
+    via: area
+  - target: AvailabilityMode
+    kind: has_one
+    via: availability_mode
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: ClusterKind
+    kind: has_one
+    via: cluster
+  - target: DeploymentId
+    kind: has_one
+    via: id
+  - target: DeploymentName
+    kind: has_one
+    via: name
+  - target: DeploymentNetworkRateLimit
+    kind: has_one
+    via: rate_limit
+  - target: Region
+    kind: has_one
+    via: region
+  - target: DeploymentRetention
+    kind: has_one
+    via: retention
+  - target: RuntimeType
+    kind: has_many
+    via: runtimes
+  - target: StorageSize
+    kind: has_one
+    via: storage_size
+  - target: StorageType
+    kind: has_one
+    via: storage_type
+  - target: NetworkTput
+    kind: has_one
+    via: target_network_tput
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+  - target: DeploymentVariant
+    kind: has_one
+    via: variant
+- name: DeploymentPreview
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - breakdown
+  - cloud
+  - instance
+  - monthly_total_usd
+  - nodes
+  - region
+  - tier
+  relationships:
+  - target: DeploymentPreviewBreakdown
+    kind: has_one
+    via: breakdown
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: Region
+    kind: has_one
+    via: region
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+- name: DeploymentRetention
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - data_storage_gb
+  - telemetry
+  relationships:
+  - target: TelemetryRetention
+    kind: has_one
+    via: telemetry
+- name: DeploymentStructure
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - cloud
+  - id
+  - name
+  - region
+  - supervisor_url
+  - tier
+  - variant
+  relationships:
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: DeploymentId
+    kind: has_one
+    via: id
+  - target: DeploymentName
+    kind: has_one
+    via: name
+  - target: Region
+    kind: has_one
+    via: region
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+  - target: DeploymentVariant
+    kind: has_one
+    via: variant
+- name: DeploymentTierLimit
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - limit
+  - tier
+  relationships:
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+- name: DeploymentUpgrade
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - instance_type
+  - nodes_after
+  - nodes_before
+  - rate_limit
+  - storage_size
+  - storage_type
+  - target_network_tput
+  - tier
+  - upgraded_at
+  relationships:
+  - target: DeploymentNetworkRateLimit
+    kind: has_one
+    via: rate_limit
+  - target: StorageSize
+    kind: has_one
+    via: storage_size
+  - target: StorageType
+    kind: has_one
+    via: storage_type
+  - target: NetworkTput
+    kind: has_one
+    via: target_network_tput
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+- name: DivisionInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - created_at
+  - id
+  - name
+  - protected
+  - updated_at
+  relationships:
+  - target: DivisionId
+    kind: has_one
+    via: id
+  - target: DivisionName
+    kind: has_one
+    via: name
+- name: DivisionPermissionsInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - environment
+  - environments
+  - name
+  - permissions
+  relationships:
+  - target: EnvironmentPermissionsInfo
+    kind: has_one
+    via: environments
+  - target: DivisionName
+    kind: has_one
+    via: name
+- name: DivisionStructure
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - environments
+  - id
+  - name
+  relationships:
+  - target: EnvironmentStructure
+    kind: has_many
+    via: environments
+  - target: DivisionId
+    kind: has_one
+    via: id
+  - target: DivisionName
+    kind: has_one
+    via: name
+- name: EnvironmentInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - created_at
+  - deployments_count
+  - id
+  - name
+  - protected
+  - updated_at
+  relationships:
+  - target: EnvironmentId
+    kind: has_one
+    via: id
+  - target: EnvironmentName
+    kind: has_one
+    via: name
+- name: EnvironmentPermissionsInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - name
+  - permissions
+  relationships:
+  - target: EnvironmentName
+    kind: has_one
+    via: name
+- name: EnvironmentStructure
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - deployments
+  - id
+  - name
+  relationships:
+  - target: DeploymentStructure
+    kind: has_many
+    via: deployments
+  - target: EnvironmentId
+    kind: has_one
+    via: id
+  - target: EnvironmentName
+    kind: has_one
+    via: name
+- name: ErrorResponse
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - code
+  - field
+  - field_issues
+  - instance
+  - reason
+  - retryable
+  - status
+  - title
+  - type
+  relationships:
+  - target: FieldIssue
+    kind: has_many
+    via: field_issues
+- name: ExportedIdentity
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - created_at
+  - external_id
+  - source
+  relationships:
+  - target: external
+    kind: belongs_to
+    via: external_id
+  - target: IdentityProvider
+    kind: has_one
+    via: source
+- name: ExportedInvitation
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - created_at
+  - status
+  - tenant_id
+  relationships:
+  - target: InvitationStatus
+    kind: has_one
+    via: status
+  - target: TenantId
+    kind: has_one
+    via: tenant_id
+  - target: tenant
+    kind: belongs_to
+    via: tenant_id
+- name: ExportedMembership
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - joined_at
+  - permissions
+  - roles
+  - tenant_id
+  - tenant_name
+  relationships:
+  - target: RoleName
+    kind: has_many
+    via: roles
+  - target: TenantId
+    kind: has_one
+    via: tenant_id
+  - target: tenant
+    kind: belongs_to
+    via: tenant_id
+  - target: TenantName
+    kind: has_one
+    via: tenant_name
+- name: ExportedSession
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - created_at
+  - expiry_at
+  - id
+  relationships:
+  - target: SessionId
+    kind: has_one
+    via: id
+- name: ExportedSettings
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - default_division_id
+  - default_tenant_id
+  - ip_binding
+  - theme
+  relationships:
+  - target: DivisionId
+    kind: has_one
+    via: default_division_id
+  - target: default_division
+    kind: belongs_to
+    via: default_division_id
+  - target: TenantId
+    kind: has_one
+    via: default_tenant_id
+  - target: default_tenant
+    kind: belongs_to
+    via: default_tenant_id
+  - target: Theme
+    kind: has_one
+    via: theme
+- name: ExportedUser
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - created_at
+  - email
+  - id
+  - name
+  relationships:
+  - target: Email
+    kind: has_one
+    via: email
+  - target: UserId
+    kind: has_one
+    via: id
+  - target: FullName
+    kind: has_one
+    via: name
+- name: ExtendDeployment
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - nodes
+  relationships:
+  - target: NodeToExtend
+    kind: has_many
+    via: nodes
+- name: GcpByocDeployment
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - project_id
+  - service_account_email
+  - vpc_name
+  relationships:
+  - target: GcpProjectId
+    kind: has_one
+    via: project_id
+  - target: project
+    kind: belongs_to
+    via: project_id
+  - target: GcpServiceAccountEmail
+    kind: has_one
+    via: service_account_email
+  - target: HyphenName
+    kind: has_one
+    via: vpc_name
+- name: GenerateByocSetup
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - cloud
+  - region
+  relationships:
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: Region
+    kind: has_one
+    via: region
+- name: InvitationInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - id
+  - roles
+  - status
+  - tenant
+  relationships:
+  - target: InvitationId
+    kind: has_one
+    via: id
+  - target: InvitationStatus
+    kind: has_one
+    via: status
+  - target: TenantName
+    kind: has_one
+    via: tenant
+- name: InviteMember
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - division_id
+  - email
+  - roles
+  relationships:
+  - target: DivisionId
+    kind: has_one
+    via: division_id
+  - target: division
+    kind: belongs_to
+    via: division_id
+  - target: Email
+    kind: has_one
+    via: email
+  - target: RoleId
+    kind: has_many
+    via: roles
+- name: LinkAccount
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - id
+  - source
+  - token
+  relationships:
+  - target: IdentityProvider
+    kind: has_one
+    via: source
+- name: MemberDetails
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - active
+  - created_at
+  - email
+  - id
+  - name
+  - roles
+  relationships:
+  - target: Email
+    kind: has_one
+    via: email
+  - target: UserId
+    kind: has_one
+    via: id
+  - target: FullName
+    kind: has_one
+    via: name
+- name: MemberInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - email
+  - id
+  - name
+  relationships:
+  - target: Email
+    kind: has_one
+    via: email
+  - target: UserId
+    kind: has_one
+    via: id
+  - target: FullName
+    kind: has_one
+    via: name
+- name: NetworkPricing
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - cross_region
+  - cross_region_same_cloud
+  - same_region
+  - throughput_to_gb_factor
+  - topology_surcharge_per_gb
+  relationships:
+  - target: NetworkTier
+    kind: has_many
+    via: cross_region
+  - target: NetworkTier
+    kind: has_many
+    via: cross_region_same_cloud
+  - target: NetworkTier
+    kind: has_many
+    via: same_region
+  - target: TopologySurcharge
+    kind: has_one
+    via: topology_surcharge_per_gb
+- name: NewAccount
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - division_id
+  - division_name
+  - linked_accounts
+  - session
+  - tenant_id
+  - tenant_name
+  - verified
+  - workspace
+  relationships:
+  - target: DivisionId
+    kind: has_one
+    via: division_id
+  - target: division
+    kind: belongs_to
+    via: division_id
+  - target: DivisionName
+    kind: has_one
+    via: division_name
+  - target: IdentityProvider
+    kind: has_many
+    via: linked_accounts
+  - target: SessionInfo
+    kind: has_one
+    via: session
+  - target: TenantId
+    kind: has_one
+    via: tenant_id
+  - target: tenant
+    kind: belongs_to
+    via: tenant_id
+  - target: TenantName
+    kind: has_one
+    via: tenant_name
+  - target: WorkspaceState
+    kind: has_one
+    via: workspace
+- name: NvmeStorageProfile
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - rate_per_gb_month
+  - tiers
+  relationships:
+  - target: NvmeTier
+    kind: has_many
+    via: tiers
+- name: PaymentInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - auto_charge
+  - card_brand
+  - card_exp_month
+  - card_exp_year
+  - card_last4
+  - coupon_id
+  - currency
+  - customer_id
+  - discount_percent
+  - invoice_prefix
+  - metadata
+  - payment_method_id
+  - payment_terms_days
+  - provider
+  - subscription_id
+  - tax_exempt
+  relationships:
+  - target: coupon
+    kind: belongs_to
+    via: coupon_id
+  - target: customer
+    kind: belongs_to
+    via: customer_id
+  - target: payment_method
+    kind: belongs_to
+    via: payment_method_id
+  - target: PaymentProvider
+    kind: has_one
+    via: provider
+  - target: subscription
+    kind: belongs_to
+    via: subscription_id
+- name: PlanFeatures
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - advanced_connectors_enabled
+  - advanced_notification_channels_enabled
+  - api_key_allowed_ips_limit
+  - api_keys_limit
+  - audit_export_enabled
+  - audit_retention_days
+  - backup_enabled
+  - backup_regions_limit
+  - backup_retention_days
+  - byoc_enabled
+  - cloud_accounts_limit
+  - cluster_enabled
+  - concurrent_deployments_limit
+  - cross_region_dr_enabled
+  - custom_domains_limit
+  - custom_idp_enabled
+  - customer_managed_keys_enabled
+  - dedicated_enabled
+  - deployment_access_rules_limit
+  - deployment_backups_limit
+  - deployment_configs_limit
+  - deployment_snapshots_limit
+  - deployment_tiers
+  - divisions_limit
+  - divisions_per_role_limit
+  relationships:
+  - target: DeploymentTierLimit
+    kind: has_many
+    via: deployment_tiers
+- name: PreviewDeployment
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - availability_mode
+  - cloud
+  - nodes
+  - region
+  - storage
+  - target_network_tput
+  - telemetry_extra_days
+  - tier
+  relationships:
+  - target: AvailabilityMode
+    kind: has_one
+    via: availability_mode
+  - target: Cloud
+    kind: has_one
+    via: cloud
+  - target: Region
+    kind: has_one
+    via: region
+  - target: CloudStorageSettings
+    kind: has_one
+    via: storage
+  - target: NetworkTput
+    kind: has_one
+    via: target_network_tput
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+- name: PricingResponse
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - aws
+  - cluster
+  - gcp
+  relationships:
+  - target: CloudPricing
+    kind: has_one
+    via: aws
+  - target: ClusterConfig
+    kind: has_one
+    via: cluster
+  - target: CloudPricing
+    kind: has_one
+    via: gcp
+- name: RequestResourceCode
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - action
+  relationships:
+  - target: ResourceCodeAction
+    kind: has_one
+    via: action
+- name: RevokeRoleMembers
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - members
+  relationships:
+  - target: UserId
+    kind: has_many
+    via: members
+- name: RoleBasicInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - id
+  - kind
+  - name
+  relationships:
+  - target: RoleId
+    kind: has_one
+    via: id
+  - target: TenantRoleKind
+    kind: has_one
+    via: kind
+  - target: RoleName
+    kind: has_one
+    via: name
+- name: RoleMemberInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - active
+  - email
+  - id
+  - name
+  relationships:
+  - target: Email
+    kind: has_one
+    via: email
+  - target: UserId
+    kind: has_one
+    via: id
+  - target: FullName
+    kind: has_one
+    via: name
+- name: RolePermissions
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - division
+  - divisions
+  - environment
+  - tenant
+  relationships:
+  - target: DivisionPermissions
+    kind: has_one
+    via: divisions
+- name: RolePermissionsInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - division
+  - divisions
+  - environment
+  - tenant
+  relationships:
+  - target: DivisionPermissionsInfo
+    kind: has_one
+    via: divisions
+- name: SessionInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - csrf_token
+  - email
+  - expiry
+  relationships:
+  - target: Email
+    kind: has_one
+    via: email
+- name: SignIn
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - id
+  - source
+  - token
+  relationships:
+  - target: IdentityProvider
+    kind: has_one
+    via: source
+- name: SignUp
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - feedback
+  - id
+  - invitation
+  - name
+  - source
+  - tenant
+  - title
+  - token
+  relationships:
+  - target: FullName
+    kind: has_one
+    via: name
+  - target: IdentityProvider
+    kind: has_one
+    via: source
+  - target: TenantName
+    kind: has_one
+    via: tenant
+  - target: Title
+    kind: has_one
+    via: title
+- name: StoragePricing
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - data_retention
+  - network_disk
+  - nvme_ssd
+  relationships:
+  - target: DataRetentionPricing
+    kind: has_one
+    via: data_retention
+  - target: StorageProfile
+    kind: has_one
+    via: network_disk
+  - target: NvmeStorageProfile
+    kind: has_one
+    via: nvme_ssd
+- name: TenantConfig
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - block_external_invitations
+  - enforce_domain_only_invitations
+  - join_policy
+  relationships:
+  - target: JoinPolicy
+    kind: has_one
+    via: join_policy
+- name: TenantDivision
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - description
+  - email
+  - name
+  - protected
+  relationships:
+  - target: Description
+    kind: has_one
+    via: description
+  - target: Email
+    kind: has_one
+    via: email
+  - target: DivisionName
+    kind: has_one
+    via: name
+- name: TenantInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - created_at
+  - id
+  - name
+  - protected
+  - remarks
+  - updated_at
+  relationships:
+  - target: TenantId
+    kind: has_one
+    via: id
+  - target: TenantName
+    kind: has_one
+    via: name
+- name: TenantInvitationInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - email
+  - id
+  - roles
+  - status
+  relationships:
+  - target: Email
+    kind: has_one
+    via: email
+  - target: InvitationId
+    kind: has_one
+    via: id
+  - target: InvitationStatus
+    kind: has_one
+    via: status
+- name: TenantPermissions
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - division
+  - environment
+  - tenant
+  relationships:
+  - target: PermissionInfo
+    kind: has_many
+    via: division
+  - target: PermissionInfo
+    kind: has_many
+    via: environment
+  - target: PermissionInfo
+    kind: has_many
+    via: tenant
+- name: TenantStructure
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - divisions
+  - id
+  - name
+  relationships:
+  - target: DivisionStructure
+    kind: has_many
+    via: divisions
+  - target: TenantId
+    kind: has_one
+    via: id
+  - target: TenantName
+    kind: has_one
+    via: name
+- name: TierInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - available
+  - clusters
+  - description
+  - instance
+  - key
+  - limit
+  - memory_gib
+  - name
+  - rate_limit
+  - storages
+  - vcpus
+  relationships:
+  - target: DeploymentNetworkRateLimit
+    kind: has_one
+    via: rate_limit
+- name: UpgradeDeployment
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - storage
+  - tier
+  relationships:
+  - target: CloudStorageSettings
+    kind: has_one
+    via: storage
+  - target: DeploymentTier
+    kind: has_one
+    via: tier
+- name: UserBasicInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - email
+  - id
+  - name
+  - remarks
+  - role
+  - status
+  - title
+  - verified
+  relationships:
+  - target: Email
+    kind: has_one
+    via: email
+  - target: UserId
+    kind: has_one
+    via: id
+  - target: FullName
+    kind: has_one
+    via: name
+  - target: UserRole
+    kind: has_one
+    via: role
+  - target: Status
+    kind: has_one
+    via: status
+  - target: Title
+    kind: has_one
+    via: title
+- name: UserDataExport
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - exported_at
+  - identities
+  - invitations
+  - memberships
+  - sessions
+  - settings
+  - user
+  relationships:
+  - target: ExportedIdentity
+    kind: has_many
+    via: identities
+  - target: ExportedInvitation
+    kind: has_many
+    via: invitations
+  - target: ExportedMembership
+    kind: has_many
+    via: memberships
+  - target: ExportedSession
+    kind: has_many
+    via: sessions
+  - target: ExportedSettings
+    kind: has_one
+    via: settings
+  - target: ExportedUser
+    kind: has_one
+    via: user
+- name: UserDivisionBasicInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - id
+  - name
+  relationships:
+  - target: DivisionId
+    kind: has_one
+    via: id
+  - target: DivisionName
+    kind: has_one
+    via: name
+- name: UserEnvironmentBasicInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - id
+  - name
+  relationships:
+  - target: EnvironmentId
+    kind: has_one
+    via: id
+  - target: EnvironmentName
+    kind: has_one
+    via: name
+- name: UserIdentity
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - created_at
+  - enabled
+  - external_id
+  - source
+  relationships:
+  - target: external
+    kind: belongs_to
+    via: external_id
+  - target: IdentityProvider
+    kind: has_one
+    via: source
+- name: UserPermissionsInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - division
+  - divisions
+  - tenant
+  relationships:
+  - target: UserDivisionPermissionsInfo
+    kind: has_many
+    via: divisions
+- name: UserSettingsInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - default_division
+  - default_tenant
+  - ip_binding
+  - theme
+  relationships:
+  - target: UserDivisionBasicInfo
+    kind: has_one
+    via: default_division
+  - target: UserTenantBasicInfo
+    kind: has_one
+    via: default_tenant
+  - target: Theme
+    kind: has_one
+    via: theme
+- name: UserTenantBasicInfo
+  service: core
+  source: openapi/laserdata-core-openapi.json
+  fields:
+  - id
+  - name
+  relationships:
+  - target: TenantId
+    kind: has_one
+    via: id
+  - target: TenantName
+    kind: has_one
+    via: name
+- name: ErrorResponse
+  service: audit
+  source: openapi/laserdata-audit-openapi.json
+  fields:
+  - code
+  - field
+  - field_issues
+  - instance
+  - reason
+  - retryable
+  - status
+  - title
+  - type
+  relationships:
+  - target: FieldIssue
+    kind: has_many
+    via: field_issues
+- name: TenantAuditInfo
+  service: audit
+  source: openapi/laserdata-audit-openapi.json
+  fields:
+  - api_key
+  - author
+  - correlation_id
+  - data
+  - deployment
+  - division
+  - environment
+  - name
+  - timestamp
+  - type
+  - user
+  relationships:
+  - target: AuditResource
+    kind: has_one
+    via: api_key
+  - target: AuditResource
+    kind: has_one
+    via: author
+  - target: correlation
+    kind: belongs_to
+    via: correlation_id
+  - target: AuditResource
+    kind: has_one
+    via: deployment
+  - target: AuditResource
+    kind: has_one
+    via: division
+  - target: AuditResource
+    kind: has_one
+    via: environment
+  - target: AuditResource
+    kind: has_one
+    via: user
+- name: UserActivityInfo
+  service: audit
+  source: openapi/laserdata-audit-openapi.json
+  fields:
+  - data
+  - deployment
+  - division
+  - environment
+  - name
+  - tenant
+  - timestamp
+  - type
+  relationships:
+  - target: AuditResource
+    kind: has_one
+    via: deployment
+  - target: AuditResource
+    kind: has_one
+    via: division
+  - target: AuditResource
+    kind: has_one
+    via: environment
+  - target: AuditResource
+    kind: has_one
+    via: tenant
+- name: ChannelSettings
+  service: notifier
+  source: openapi/laserdata-notifier-openapi.json
+  fields:
+  - slack
+  - sms
+  - webhook
+  relationships:
+  - target: SlackSettings
+    kind: has_one
+    via: slack
+  - target: SmsSettings
+    kind: has_one
+    via: sms
+  - target: WebhookSettings
+    kind: has_one
+    via: webhook
+- name: ErrorResponse
+  service: notifier
+  source: openapi/laserdata-notifier-openapi.json
+  fields:
+  - code
+  - field
+  - field_issues
+  - instance
+  - reason
+  - retryable
+  - status
+  - title
+  - type
+  relationships:
+  - target: FieldIssue
+    kind: has_many
+    via: field_issues
+- name: NotificationChannelInfo
+  service: notifier
+  source: openapi/laserdata-notifier-openapi.json
+  fields:
+  - channel
+  - created_at
+  - enabled
+  - id
+  - name
+  - owner_id
+  - owner_kind
+  - updated_at
+  relationships:
+  - target: NotificationChannelKind
+    kind: has_one
+    via: channel
+  - target: NotificationChannelId
+    kind: has_one
+    via: id
+  - target: NotificationChannelName
+    kind: has_one
+    via: name
+  - target: owner
+    kind: belongs_to
+    via: owner_id
+  - target: OwnerKind
+    kind: has_one
+    via: owner_kind
+- name: NotificationInfo
+  service: notifier
+  source: openapi/laserdata-notifier-openapi.json
+  fields:
+  - content
+  - created_at
+  - deployment_id
+  - division_id
+  - environment_id
+  - id
+  - message_type
+  - tenant_id
+  relationships:
+  - target: DeploymentId
+    kind: has_one
+    via: deployment_id
+  - target: deployment
+    kind: belongs_to
+    via: deployment_id
+  - target: DivisionId
+    kind: has_one
+    via: division_id
+  - target: division
+    kind: belongs_to
+    via: division_id
+  - target: EnvironmentId
+    kind: has_one
+    via: environment_id
+  - target: environment
+    kind: belongs_to
+    via: environment_id
+  - target: NotificationId
+    kind: has_one
+    via: id
+  - target: NotificationMessageType
+    kind: has_one
+    via: message_type
+  - target: TenantId
+    kind: has_one
+    via: tenant_id
+  - target: tenant
+    kind: belongs_to
+    via: tenant_id
+- name: NotificationSubscriptionInfo
+  service: notifier
+  source: openapi/laserdata-notifier-openapi.json
+  fields:
+  - channel_id
+  - created_at
+  - id
+  - message_types
+  - scope_deployments
+  - scope_divisions
+  - scope_environments
+  - scope_tenants
+  - updated_at
+  relationships:
+  - target: NotificationChannelId
+    kind: has_one
+    via: channel_id
+  - target: channel
+    kind: belongs_to
+    via: channel_id
+  - target: NotificationSubscriptionId
+    kind: has_one
+    via: id
+  - target: NotificationMessageType
+    kind: has_many
+    via: message_types
+  - target: ScopeEntry_DeploymentId
+    kind: has_many
+    via: scope_deployments
+  - target: ScopeEntry_DivisionId
+    kind: has_many
+    via: scope_divisions
+  - target: ScopeEntry_EnvironmentId
+    kind: has_many
+    via: scope_environments
+  - target: ScopeEntry_TenantId
+    kind: has_many
+    via: scope_tenants
+- name: SetSubscriptions
+  service: notifier
+  source: openapi/laserdata-notifier-openapi.json
+  fields:
+  - subscriptions
+  relationships:
+  - target: SubscriptionEntry
+    kind: has_many
+    via: subscriptions
+- name: SmsSettings
+  service: notifier
+  source: openapi/laserdata-notifier-openapi.json
+  fields:
+  - sender_id
+  relationships:
+  - target: sender
+    kind: belongs_to
+    via: sender_id
+- name: SubscriptionEntry
+  service: notifier
+  source: openapi/laserdata-notifier-openapi.json
+  fields:
+  - message_types
+  - scope_deployment_ids
+  - scope_division_ids
+  - scope_environment_ids
+  - scope_tenant_ids
+  relationships:
+  - target: NotificationMessageType
+    kind: has_many
+    via: message_types
