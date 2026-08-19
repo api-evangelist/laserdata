@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: LaserData Cloud Audit Account API Keys API
   description: 'Tenant audit log and per-user activity feed.
@@ -268,107 +268,51 @@ components:
       format: int64
       example: 7261845127892140000
       minimum: 0
-    EnvironmentPermissionsInfo:
-      type: object
-      required:
-      - name
-      - permissions
-      properties:
-        name:
-          $ref: '#/components/schemas/EnvironmentName'
-        permissions:
-          type: array
-          items:
-            type: string
-    UpdateApiKeySecurity:
+    RoleId:
+      type: integer
+      format: int64
+      example: 7261845001236500000
+      minimum: 0
+    RolePermissions:
       type: object
       properties:
-        allowed_ips:
+        division:
           type:
           - array
           - 'null'
           items:
             type: string
-        validate_ip:
+        divisions:
           type:
-          - boolean
+          - object
           - 'null'
-    RoleName:
-      type: string
-      example: tenant-admin
-    DivisionPermissionsInfo:
-      type: object
-      required:
-      - name
-      - permissions
-      - environment
-      - environments
-      properties:
-        environment:
-          type: array
-          items:
-            type: string
-        environments:
-          type: object
           additionalProperties:
-            $ref: '#/components/schemas/EnvironmentPermissionsInfo'
+            $ref: '#/components/schemas/DivisionPermissions'
           propertyNames:
             type: string
-        name:
-          $ref: '#/components/schemas/DivisionName'
-        permissions:
-          type: array
-          items:
-            type: string
-    ApiKeyDetails:
-      allOf:
-      - $ref: '#/components/schemas/ApiKeyInfo'
-      - type: object
-        required:
-        - permissions
-        properties:
-          permissions:
-            $ref: '#/components/schemas/RolePermissionsInfo'
-    CreateApiKey:
-      type: object
-      required:
-      - name
-      - expiry_at
-      - validate_ip
-      properties:
-        allowed_ips:
+        environment:
           type:
           - array
           - 'null'
           items:
             type: string
-        division_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DivisionId'
-        expiry_at:
+        tenant:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    ApiKeyToken:
+      type: object
+      required:
+      - id
+      - token
+      properties:
+        id:
+          $ref: '#/components/schemas/ApiKeyId'
+        token:
           type: string
-          format: date-time
-          description: Expiration timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        name:
-          $ref: '#/components/schemas/ApiKeyName'
-        permissions:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RolePermissions'
-        role_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RoleId'
-        validate_ip:
-          type: boolean
-    DivisionName:
-      type: string
-      example: production
-    ApiKeyName:
-      type: string
-      example: ci-deployer
+          example: ld_pk_AbCdEf0123456789AbCdEf0123456789
     DivisionPermissions:
       type: object
       properties:
@@ -480,59 +424,36 @@ components:
           format: int64
           example: 137
           minimum: 0
-    ApiKeyToken:
-      type: object
-      required:
-      - id
-      - token
-      properties:
-        id:
-          $ref: '#/components/schemas/ApiKeyId'
-        token:
-          type: string
-          example: ld_pk_AbCdEf0123456789AbCdEf0123456789
-    EnvironmentName:
+    ApiKeyName:
       type: string
-      example: staging
+      example: ci-deployer
+    UpdateApiKeySecurity:
+      type: object
+      properties:
+        allowed_ips:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        validate_ip:
+          type:
+          - boolean
+          - 'null'
+    RoleName:
+      type: string
+      example: tenant-admin
     DivisionId:
       type: integer
       format: int64
       example: 7261844974723780000
       minimum: 0
-    RolePermissions:
-      type: object
-      properties:
-        division:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        divisions:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            $ref: '#/components/schemas/DivisionPermissions'
-          propertyNames:
-            type: string
-        environment:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        tenant:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-    RoleId:
-      type: integer
-      format: int64
-      example: 7261845001236500000
-      minimum: 0
+    EnvironmentName:
+      type: string
+      example: staging
+    DivisionName:
+      type: string
+      example: production
     ApiKeyInfo:
       type: object
       required:
@@ -620,15 +541,94 @@ components:
           type: array
           items:
             type: string
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
+    ApiKeyDetails:
+      allOf:
+      - $ref: '#/components/schemas/ApiKeyInfo'
+      - type: object
+        required:
+        - permissions
+        properties:
+          permissions:
+            $ref: '#/components/schemas/RolePermissionsInfo'
     UserId:
       type: integer
       format: int64
       example: 7261844898910240000
+      minimum: 0
+    EnvironmentPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      properties:
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        permissions:
+          type: array
+          items:
+            type: string
+    CreateApiKey:
+      type: object
+      required:
+      - name
+      - expiry_at
+      - validate_ip
+      properties:
+        allowed_ips:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        division_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionId'
+        expiry_at:
+          type: string
+          format: date-time
+          description: Expiration timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        name:
+          $ref: '#/components/schemas/ApiKeyName'
+        permissions:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RolePermissions'
+        role_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RoleId'
+        validate_ip:
+          type: boolean
+    DivisionPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      - environment
+      - environments
+      properties:
+        environment:
+          type: array
+          items:
+            type: string
+        environments:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EnvironmentPermissionsInfo'
+          propertyNames:
+            type: string
+        name:
+          $ref: '#/components/schemas/DivisionName'
+        permissions:
+          type: array
+          items:
+            type: string
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
       minimum: 0
   securitySchemes:
     ld_api_key:

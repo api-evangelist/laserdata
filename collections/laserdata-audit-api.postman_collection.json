@@ -1,0 +1,784 @@
+{
+  "item": [
+    {
+      "id": "7ecd5079-4a2e-485c-b92f-4310f8b6ad02",
+      "name": "Audit",
+      "description": {
+        "content": "Tenant audit log + user activity",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "95e4fd70-3816-4102-8a33-4e72e63e8bfb",
+          "name": "Query tenant audit log",
+          "request": {
+            "name": "Query tenant audit log",
+            "description": {
+              "content": "Returns the immutable, append-only audit log for a tenant. Every Console action and API call recorded against the tenant is captured. Supports pagination plus filtering by event type, date range, division, environment, deployment, user (subject), author (acting user), api_key, and correlation_id. Required permission: `audit:read`.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "audit",
+                "tenants",
+                ":tenant_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "results",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "from",
+                  "value": "<string,null-date-time>",
+                  "description": "Inclusive lower bound (RFC 3339 UTC)."
+                },
+                {
+                  "disabled": false,
+                  "key": "to",
+                  "value": "<string,null-date-time>",
+                  "description": "Exclusive upper bound (RFC 3339 UTC)."
+                },
+                {
+                  "disabled": false,
+                  "key": "division",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "environment",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "deployment",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "user",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "author",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "api_key",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "types",
+                  "value": "<string,null>"
+                },
+                {
+                  "disabled": false,
+                  "key": "correlation_id",
+                  "value": "<string,null>"
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ec4bd1fa-2c99-43fc-a4ae-5902f1368f7f",
+              "name": "Paged tenant audit events. Each entry carries event type, actor (author + api_key when applicable), resource scope (division/environment/deployment), event-specific data payload, correlation ID, and timestamp",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit",
+                    "tenants",
+                    ":tenant_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "results",
+                      "value": "10"
+                    },
+                    {
+                      "key": "from",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "division",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "environment",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "deployment",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "user",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "author",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "api_key",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "types",
+                      "value": "<string,null>"
+                    },
+                    {
+                      "key": "correlation_id",
+                      "value": "<string,null>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"total_pages\": 4,\n  \"total_results\": 137,\n  \"page\": 1,\n  \"items\": [\n    {\n      \"type\": \"string\",\n      \"name\": \"string\",\n      \"timestamp\": \"1957-10-16T19:02:20.914Z\",\n      \"api_key\": null,\n      \"author\": null,\n      \"correlation_id\": \"string\",\n      \"data\": \"\",\n      \"deployment\": null,\n      \"division\": null,\n      \"environment\": null,\n      \"user\": null\n    },\n    {\n      \"type\": \"string\",\n      \"name\": \"string\",\n      \"timestamp\": \"1983-12-18T23:41:18.136Z\",\n      \"api_key\": null,\n      \"author\": null,\n      \"correlation_id\": \"string\",\n      \"data\": \"\",\n      \"deployment\": null,\n      \"division\": null,\n      \"environment\": null,\n      \"user\": null\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "15df09a9-cfcf-4572-9281-3196c6d59764",
+              "name": "Insufficient permissions (requires audit:read)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit",
+                    "tenants",
+                    ":tenant_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "results",
+                      "value": "10"
+                    },
+                    {
+                      "key": "from",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "division",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "environment",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "deployment",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "user",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "author",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "api_key",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "types",
+                      "value": "<string,null>"
+                    },
+                    {
+                      "key": "correlation_id",
+                      "value": "<string,null>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "dd0daa4e-6fe3-4418-b0df-02df8c63cfb6",
+              "name": "Tenant not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit",
+                    "tenants",
+                    ":tenant_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "results",
+                      "value": "10"
+                    },
+                    {
+                      "key": "from",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "division",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "environment",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "deployment",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "user",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "author",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "api_key",
+                      "value": "<integer,null-int64>"
+                    },
+                    {
+                      "key": "types",
+                      "value": "<string,null>"
+                    },
+                    {
+                      "key": "correlation_id",
+                      "value": "<string,null>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b56f84e6-9e92-4bd7-9d25-c9b249b82185",
+          "name": "List audit event types",
+          "request": {
+            "name": "List audit event types",
+            "description": {
+              "content": "Returns the complete catalogue of audit event type identifiers that can appear in `/audit/tenants/{tenant_id}` results. Use to populate event-type filters in UIs or to enumerate the discriminators an agent should branch on when parsing the audit stream. Each entry is `{type: <slug>, name: <human label>}` (e.g. `deployment_created`, `member_invited`, `access_rule_added`).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "audit",
+                "types"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ed659f4c-9765-48f9-91ca-17ada19bf5d1",
+              "name": "All audit event types (snake_case slug + human-readable label)",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit",
+                    "types"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"type\": \"deployment_created\",\n    \"name\": \"Deployment created\"\n  },\n  {\n    \"type\": \"deployment_created\",\n    \"name\": \"Deployment created\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "8f2bdb3f-5fd4-4759-969a-b4ce7ba1e4a3",
+              "name": "No active session",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit",
+                    "types"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "859f4466-b2b3-4c03-bba3-5bb6cdcec490",
+          "name": "List my activity",
+          "request": {
+            "name": "List my activity",
+            "description": {
+              "content": "Returns the calling user's recent activity across all tenants the user is a member of: signed-in actions, API key calls they own, sessions, role changes. Use to populate a personal audit timeline in the Console. Session-only: API keys are tenant-scoped and cannot list user activity.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "audit",
+                "users",
+                "activity"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "results",
+                  "value": "<integer,null-int64>"
+                },
+                {
+                  "disabled": false,
+                  "key": "from",
+                  "value": "<string,null-date-time>",
+                  "description": "Inclusive lower bound (RFC 3339 UTC)."
+                },
+                {
+                  "disabled": false,
+                  "key": "to",
+                  "value": "<string,null-date-time>",
+                  "description": "Exclusive upper bound (RFC 3339 UTC)."
+                },
+                {
+                  "disabled": false,
+                  "key": "types",
+                  "value": "<string,null>"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "session"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}"
+                },
+                {
+                  "key": "in",
+                  "value": "header"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "7fd1bac8-78bb-42fe-a7c2-5bca677f557d",
+              "name": "Paged user activity events with event type, target resource, and timestamp",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit",
+                    "users",
+                    "activity"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "results",
+                      "value": "10"
+                    },
+                    {
+                      "key": "from",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "types",
+                      "value": "<string,null>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "session",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"total_pages\": 4,\n  \"total_results\": 137,\n  \"page\": 1,\n  \"items\": [\n    {\n      \"type\": \"string\",\n      \"name\": \"string\",\n      \"timestamp\": \"1992-09-21T03:23:38.764Z\",\n      \"data\": \"\",\n      \"deployment\": null,\n      \"division\": null,\n      \"environment\": null,\n      \"tenant\": null\n    },\n    {\n      \"type\": \"string\",\n      \"name\": \"string\",\n      \"timestamp\": \"2021-10-20T08:06:59.453Z\",\n      \"data\": \"\",\n      \"deployment\": null,\n      \"division\": null,\n      \"environment\": null,\n      \"tenant\": null\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1087a95c-ffda-4f93-b5a6-cc2007f97293",
+              "name": "No active session",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "audit",
+                    "users",
+                    "activity"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "results",
+                      "value": "10"
+                    },
+                    {
+                      "key": "from",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-05-20T10:00:00Z"
+                    },
+                    {
+                      "key": "types",
+                      "value": "<string,null>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "session",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.laserdata.cloud",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "ld-api-key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "e15e30ca-13bf-4eb4-ab59-d12f898b8511",
+    "name": "LaserData Cloud Account Audit API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Tenant audit log and per-user activity feed.\n\nPublic REST API for the LaserData Cloud audit service.\n\n## Authentication\n\nEvery endpoint accepts either of two auth methods:\n- **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.\n- **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.\n\nAudit endpoints are read-only and replay-safe by definition.\n\n## Pagination\n\nList endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel=\"first\"`, `\"prev\"`, `\"next\"`, `\"last\"` when applicable.\n\n## Errors\n\nError responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.\n\n## Response headers\n\n- `ld-request`: request ID. Include it when reporting issues.\n- `link`: pagination relations.\n- `retry-after`: wait hint on 429 / 503.\n\nContact Support:\n Name: LaserData Support\n Email: support@laserdata.com",
+      "type": "text/plain"
+    }
+  }
+}

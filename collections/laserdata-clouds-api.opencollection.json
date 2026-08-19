@@ -1,0 +1,163 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Clouds API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Clouds",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List available clouds",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/clouds",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns the cloud providers (AWS, GCP) available for deployments in this tenant."
+        },
+        {
+          "info": {
+            "name": "List regions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/clouds/:cloud/regions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "cloud",
+                "value": "",
+                "type": "path",
+                "description": "Cloud provider (aws, gcp)"
+              }
+            ]
+          },
+          "docs": "Returns the regions available for deployment in the selected cloud provider."
+        },
+        {
+          "info": {
+            "name": "List cluster kinds",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/clouds/:cloud/regions/:region/clusters",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "cloud",
+                "value": "",
+                "type": "path",
+                "description": "Cloud provider (aws, gcp)"
+              },
+              {
+                "name": "region",
+                "value": "",
+                "type": "path",
+                "description": "Region code (e.g. us-east-1)"
+              }
+            ]
+          },
+          "docs": "Returns the cluster sizes/kinds (instance types + node counts) available for deployment in the selected cloud + region."
+        },
+        {
+          "info": {
+            "name": "List storage options",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/clouds/:cloud/regions/:region/storages",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "cloud",
+                "value": "",
+                "type": "path",
+                "description": "Cloud provider (aws, gcp)"
+              },
+              {
+                "name": "region",
+                "value": "",
+                "type": "path",
+                "description": "Region code (e.g. us-east-1)"
+              }
+            ]
+          },
+          "docs": "Returns the storage classes (local, EBS, persistent disk) available for deployment in the selected cloud + region."
+        },
+        {
+          "info": {
+            "name": "List deployment tiers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/clouds/:cloud/regions/:region/tiers",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "cloud",
+                "value": "",
+                "type": "path",
+                "description": "Cloud provider (aws, gcp)"
+              },
+              {
+                "name": "region",
+                "value": "",
+                "type": "path",
+                "description": "Region code (e.g. us-east-1)"
+              }
+            ]
+          },
+          "docs": "Returns the deployment tiers (e.g. starter, standard, enterprise) available for the selected cloud + region."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

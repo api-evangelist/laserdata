@@ -1,0 +1,163 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Notifications API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Notifications",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List notification types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/notifications/types"
+          },
+          "docs": "Returns public notification event types that can be subscribed to by tenants, divisions, and users."
+        },
+        {
+          "info": {
+            "name": "List tenant channel notifications",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id/notifications",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "path"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "path"
+              },
+              {
+                "name": "message_type",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Returns notifications already delivered to a tenant-owned channel. Supports pagination and optional filtering by notification message type."
+        },
+        {
+          "info": {
+            "name": "List division channel notifications",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id/notifications",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "path"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "path"
+              },
+              {
+                "name": "message_type",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Returns notifications delivered to a division-owned channel. Supports pagination and optional filtering by notification message type."
+        },
+        {
+          "info": {
+            "name": "List user channel notifications",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/users/:user_id/channels/:channel_id/notifications",
+            "params": [
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "User identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "path"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "path"
+              },
+              {
+                "name": "message_type",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Returns notifications delivered to a user-owned notification channel. Supports pagination and optional filtering by notification message type."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

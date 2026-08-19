@@ -1,0 +1,255 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Roles API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Roles",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List roles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/roles",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns the tenant's roles. System roles (Owner, Admin, Member, Viewer) plus any custom roles. Filter by `kind` to separate system from custom."
+        },
+        {
+          "info": {
+            "name": "Create role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/roles",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a custom role with a permission tree spanning tenant + division + environment scopes. New id returned in `ld-role` header. System roles cannot be created via this API."
+        },
+        {
+          "info": {
+            "name": "Get role",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/roles/:role_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path",
+                "description": "Role identifier"
+              }
+            ]
+          },
+          "docs": "Returns role details including full permission tree (tenant + division + environment scopes)."
+        },
+        {
+          "info": {
+            "name": "Update role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/roles/:role_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path",
+                "description": "Role identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates a custom role's name or permissions tree. System roles cannot be modified."
+        },
+        {
+          "info": {
+            "name": "Delete role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/roles/:role_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path",
+                "description": "Role identifier"
+              }
+            ]
+          },
+          "docs": "Deletes a custom role. Members assigned to it lose its permissions. System roles cannot be deleted."
+        },
+        {
+          "info": {
+            "name": "List role members",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/roles/:role_id/members",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path",
+                "description": "Role identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns the users currently assigned to this role."
+        },
+        {
+          "info": {
+            "name": "Assign members to role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/roles/:role_id/members/assign",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path",
+                "description": "Role identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds existing members to the role. Members keep any other roles they already have."
+        },
+        {
+          "info": {
+            "name": "Revoke members from role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/roles/:role_id/members/revoke",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "role_id",
+                "value": "",
+                "type": "path",
+                "description": "Role identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Removes members from the role. They keep their other role assignments and tenant membership."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

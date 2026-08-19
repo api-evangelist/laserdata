@@ -1,0 +1,187 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Divisions API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Divisions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List divisions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns the tenant's divisions visible to the caller. Permission-filtered: only divisions where the calling role has at least read access are included."
+        },
+        {
+          "info": {
+            "name": "Create division",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a division inside the tenant. `protected` divisions require a resource confirmation code on delete. The new division ID is returned in the `ld-division` response header."
+        },
+        {
+          "info": {
+            "name": "Get division",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              }
+            ]
+          },
+          "docs": "Returns division details including description, billing email, and whether a payment method is attached. Divisions are tenant subunits used for billing isolation and environment grouping."
+        },
+        {
+          "info": {
+            "name": "Update division",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates division attributes. All fields are optional - omitted fields are unchanged. Toggling `protected` from false to true requires the division to be in a known-good state."
+        },
+        {
+          "info": {
+            "name": "Delete division",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "code",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Deletes the division. Protected divisions require a resource code (obtain via PUT /tenants/{tenant_id}/request_code with action `delete_division`). The division must be empty of environments/deployments first."
+        },
+        {
+          "info": {
+            "name": "Division summary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/summary",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              }
+            ]
+          },
+          "docs": "Aggregate counters for the division: environments + deployments totals. Cheap projection for dashboards and agent context priming."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

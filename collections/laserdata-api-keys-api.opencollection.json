@@ -1,0 +1,181 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account API Keys API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "API Keys",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List API keys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/api_keys",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "50",
+                "type": "query"
+              },
+              {
+                "name": "name",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns the tenant's API keys. Metadata only - the `token` secret is never included in list responses."
+        },
+        {
+          "info": {
+            "name": "Create API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/api_keys",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a tenant-scoped API key. Provide `role_id` to reuse an existing role, or `permissions` to mint a dedicated single-purpose role automatically. The returned `token` is shown ONCE - store it immediately, it cannot be retrieved again."
+        },
+        {
+          "info": {
+            "name": "Get caller's key context",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/api_keys/context",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns metadata about the API key making this call: role, permissions, expiry, IP allowlist. Lets an autonomous agent introspect its own authority before attempting actions."
+        },
+        {
+          "info": {
+            "name": "Get API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/api_keys/:api_key_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "api_key_id",
+                "value": "",
+                "type": "path",
+                "description": "API key identifier"
+              }
+            ]
+          },
+          "docs": "Returns full metadata for an API key: role, permission tree, IP allowlist. Token secret is never returned."
+        },
+        {
+          "info": {
+            "name": "Delete API key",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/api_keys/:api_key_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "api_key_id",
+                "value": "",
+                "type": "path",
+                "description": "API key identifier"
+              }
+            ]
+          },
+          "docs": "Immediately revokes the API key. Subsequent requests using its token will return 401. In-flight requests complete normally. Cannot be undone - create a new key if you need to restore access."
+        },
+        {
+          "info": {
+            "name": "Update API key security",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/api_keys/:api_key_id/security",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "api_key_id",
+                "value": "",
+                "type": "path",
+                "description": "API key identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates only the security policy (IP validation + allowed_ips list). Role and permissions cannot be changed - delete and recreate the key instead, which keeps audit trails clean."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

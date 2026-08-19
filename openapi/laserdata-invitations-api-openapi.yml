@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: LaserData Cloud Audit Account Invitations API
   description: 'Tenant audit log and per-user activity feed.
@@ -244,11 +244,6 @@ paths:
           description: Invitation not found
 components:
   schemas:
-    InvitationId:
-      type: integer
-      format: int64
-      example: 611298765432109070
-      minimum: 0
     Paged_InvitationInfo:
       type: object
       required:
@@ -304,25 +299,9 @@ components:
           format: int64
           example: 137
           minimum: 0
-    DivisionId:
-      type: integer
-      format: int64
-      example: 7261844974723780000
-      minimum: 0
-    RoleId:
-      type: integer
-      format: int64
-      example: 7261845001236500000
-      minimum: 0
-    TenantName:
+    Email:
       type: string
-      example: acme-corp
-    InvitationStatus:
-      type: string
-      enum:
-      - pending
-      - accepted
-      - rejected
+      example: alice@laserdata.com
     Paged_TenantInvitationInfo:
       type: object
       required:
@@ -377,10 +356,24 @@ components:
           format: int64
           example: 137
           minimum: 0
-    TenantId:
+    RoleId:
       type: integer
       format: int64
-      example: 7261845022003200001
+      example: 7261845001236500000
+      minimum: 0
+    InvitationStatus:
+      type: string
+      enum:
+      - pending
+      - accepted
+      - rejected
+    TenantName:
+      type: string
+      example: acme-corp
+    InvitationId:
+      type: integer
+      format: int64
+      example: 611298765432109070
       minimum: 0
     InviteMember:
       type: object
@@ -399,9 +392,16 @@ components:
           - 'null'
           items:
             $ref: '#/components/schemas/RoleId'
-    Email:
-      type: string
-      example: alice@laserdata.com
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
   securitySchemes:
     ld_api_key:
       type: apiKey

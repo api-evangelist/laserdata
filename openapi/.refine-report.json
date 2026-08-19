@@ -43,6 +43,26 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
+  "notes": [
+    "laserdata-account-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-api-keys-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-audit-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-billing-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-cloud-accounts-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-clouds-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-connectors-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-deployments-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-divisions-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-environments-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-invitations-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-members-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-notification-channels-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-notification-subscriptions-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-notifications-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-payments-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-roles-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "laserdata-tenants-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
   "skipped": []
 }

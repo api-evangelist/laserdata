@@ -1,0 +1,2816 @@
+{
+  "item": [
+    {
+      "id": "458d0cda-4ac4-4616-9dc8-fe765bc5ae7e",
+      "name": "Deployments",
+      "description": {
+        "content": "Deployment lifecycle",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "3b7e8bdd-720c-4db7-8f04-5b8b1c88ceee",
+          "name": "Deploy starter environment",
+          "request": {
+            "name": "Deploy starter environment",
+            "description": {
+              "content": "Creates or reuses an environment and schedules a starter deployment for the tenant/division.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "deployments",
+                "starter"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"<string>\",\n  \"deployment_name\": \"<null>\",\n  \"environment_id\": \"<null>\",\n  \"environment_name\": \"<null>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "97332eff-2b8b-4388-935d-d57a41288ae0",
+              "name": "Starter deployment scheduled. The ld-environment and ld-deployment headers are set",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "deployments",
+                    "starter"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"us-east-1\",\n  \"deployment_name\": \"<null>\",\n  \"environment_id\": \"<null>\",\n  \"environment_name\": \"<null>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "91470395-1e7e-4045-ae70-a2b8e4ac4822",
+          "name": "List deployments",
+          "request": {
+            "name": "List deployments",
+            "description": {
+              "content": "Returns the environment's deployments visible to the caller. Permission-filtered.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "975bf251-c5dc-425a-a02d-206042e1f373",
+              "name": "Paged deployments",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"total_pages\": 4,\n  \"total_results\": 137,\n  \"page\": 1,\n  \"items\": [\n    {\n      \"id\": 7261845127892140000,\n      \"name\": \"iggy-prod-01\",\n      \"code\": \"string\",\n      \"variant\": \"managed\",\n      \"domain\": \"string\",\n      \"cloud\": \"<string>\",\n      \"area\": \"ca\",\n      \"cluster\": \"cluster\",\n      \"runtimes\": [\n        \"string\",\n        \"string\"\n      ],\n      \"nodes_count\": 5822,\n      \"protected\": true,\n      \"encrypted\": false,\n      \"dedicated\": true,\n      \"shared\": false,\n      \"storage_type\": \"network_optimized\",\n      \"storage_size\": 1655,\n      \"availability_mode\": \"multi_az\",\n      \"retention\": {\n        \"telemetry\": {\n          \"logs_days\": 9026,\n          \"metrics_days\": 6754,\n          \"heartbeats_days\": 7236\n        },\n        \"data_storage_gb\": 8414\n      },\n      \"can_upgrade\": false,\n      \"created_at\": \"2026-05-20T10:00:00Z\",\n      \"updated_at\": \"2026-05-20T10:00:00Z\",\n      \"rate_limit\": null,\n      \"region\": null,\n      \"supervisor_url\": \"https://supervisor-aws-us.laserdata.cloud\",\n      \"target_network_tput\": null,\n      \"tier\": null,\n      \"upgraded_at\": \"2026-05-20T10:00:00Z\"\n    },\n    {\n      \"id\": 7261845127892140000,\n      \"name\": \"iggy-prod-01\",\n      \"code\": \"string\",\n      \"variant\": \"managed\",\n      \"domain\": \"string\",\n      \"cloud\": \"<string>\",\n      \"area\": \"ca\",\n      \"cluster\": \"cluster\",\n      \"runtimes\": [\n        \"string\",\n        \"string\"\n      ],\n      \"nodes_count\": 1962,\n      \"protected\": true,\n      \"encrypted\": false,\n      \"dedicated\": true,\n      \"shared\": true,\n      \"storage_type\": \"network_extreme\",\n      \"storage_size\": 1042,\n      \"availability_mode\": \"single_az\",\n      \"retention\": {\n        \"telemetry\": {\n          \"logs_days\": 6842,\n          \"metrics_days\": 5215,\n          \"heartbeats_days\": 5321\n        },\n        \"data_storage_gb\": null\n      },\n      \"can_upgrade\": false,\n      \"created_at\": \"2026-05-20T10:00:00Z\",\n      \"updated_at\": \"2026-05-20T10:00:00Z\",\n      \"rate_limit\": null,\n      \"region\": null,\n      \"supervisor_url\": \"https://supervisor-aws-us.laserdata.cloud\",\n      \"target_network_tput\": null,\n      \"tier\": null,\n      \"upgraded_at\": \"2026-05-20T10:00:00Z\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "5526bc50-39f4-41db-b208-53d24647f9ad",
+              "name": "Insufficient permissions",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "42861526-5ca4-4db8-8bf4-986d3368c67f",
+          "name": "Deploy to your own cloud",
+          "request": {
+            "name": "Deploy to your own cloud",
+            "description": {
+              "content": "Schedules a BYOC deployment into the caller's AWS or GCP account. Cloud-specific identity and network settings are included in the request body.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                "byoc"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"cloud\": \"<string>\",\n  \"tier\": \"<string>\",\n  \"cluster\": \"<string>\",\n  \"region\": \"<string>\",\n  \"availability_mode\": \"<null>\",\n  \"aws\": \"<null>\",\n  \"encrypted\": \"<boolean,null>\",\n  \"gcp\": \"<null>\",\n  \"protected\": \"<boolean,null>\",\n  \"public_ip_enabled\": \"<boolean,null>\",\n  \"retention\": \"<null>\",\n  \"spend_limit\": \"<string,null>\",\n  \"storage\": \"<null>\",\n  \"subdomain_enabled\": \"<boolean,null>\",\n  \"target_network_tput\": \"<null>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "c7ee56f5-7036-4708-96e5-d35c4d5054e5",
+              "name": "BYOC deployment scheduled. The ld-environment and ld-deployment headers are set",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    "byoc"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"iggy-prod-01\",\n  \"cloud\": \"<string>\",\n  \"tier\": \"<string>\",\n  \"cluster\": \"<string>\",\n  \"region\": \"us-east-1\",\n  \"availability_mode\": \"<null>\",\n  \"aws\": \"<null>\",\n  \"encrypted\": \"<boolean,null>\",\n  \"gcp\": \"<null>\",\n  \"protected\": true,\n  \"public_ip_enabled\": \"<boolean,null>\",\n  \"retention\": \"<null>\",\n  \"spend_limit\": \"<string,null>\",\n  \"storage\": \"<null>\",\n  \"subdomain_enabled\": \"<boolean,null>\",\n  \"target_network_tput\": \"<null>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "6a33916a-72eb-4381-9d9c-a3ba253aa453",
+          "name": "Generate BYOC setup",
+          "request": {
+            "name": "Generate BYOC setup",
+            "description": {
+              "content": "Returns cloud-specific onboarding instructions and values required before creating a BYOC deployment.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                "byoc",
+                "setup"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "6e35edc9-28ce-4062-8fe5-2ed8e14dae1b",
+              "name": "BYOC setup",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    "byoc",
+                    "setup"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"us-east-1\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"supervisor\": \"string\",\n  \"steps\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c38324d5-ce17-4de3-a141-dfb82060e840",
+              "name": "Invalid cloud or region",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    "byoc",
+                    "setup"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"us-east-1\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "59d76406-9dc0-4f69-b7f6-7b86aeb3e2b4",
+              "name": "Insufficient permissions",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    "byoc",
+                    "setup"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"us-east-1\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a973dba3-22e5-4c34-b46d-1591e3cbf563",
+          "name": "Deploy to managed cloud",
+          "request": {
+            "name": "Deploy to managed cloud",
+            "description": {
+              "content": "Creates a LaserData-managed deployment inside an existing environment. Returns accepted immediately. Provisioning continues asynchronously.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                "managed"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"cloud\": \"<string>\",\n  \"tier\": \"<string>\",\n  \"cluster\": \"<string>\",\n  \"region\": \"<string>\",\n  \"availability_mode\": \"<null>\",\n  \"dedicated\": \"<boolean,null>\",\n  \"encrypted\": \"<boolean,null>\",\n  \"protected\": \"<boolean,null>\",\n  \"public_ip_enabled\": \"<boolean,null>\",\n  \"retention\": \"<null>\",\n  \"shared\": \"<boolean,null>\",\n  \"spend_limit\": \"<string,null>\",\n  \"storage\": \"<null>\",\n  \"subdomain_enabled\": \"<boolean,null>\",\n  \"target_network_tput\": \"<null>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "25a79299-e556-4c87-9c41-bc7e83877529",
+              "name": "Deployment scheduled. The ld-environment and ld-deployment headers are set",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    "managed"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"iggy-prod-01\",\n  \"cloud\": \"<string>\",\n  \"tier\": \"<string>\",\n  \"cluster\": \"<string>\",\n  \"region\": \"us-east-1\",\n  \"availability_mode\": \"<null>\",\n  \"dedicated\": \"<boolean,null>\",\n  \"encrypted\": \"<boolean,null>\",\n  \"protected\": true,\n  \"public_ip_enabled\": \"<boolean,null>\",\n  \"retention\": \"<null>\",\n  \"shared\": \"<boolean,null>\",\n  \"spend_limit\": \"<string,null>\",\n  \"storage\": \"<null>\",\n  \"subdomain_enabled\": \"<boolean,null>\",\n  \"target_network_tput\": \"<null>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e03eacb5-f95d-4896-9e30-158f2ed66d8e",
+          "name": "Preview deployment cost",
+          "request": {
+            "name": "Preview deployment cost",
+            "description": {
+              "content": "Returns a rough monthly cost estimate for a hypothetical deployment based on cloud, region, tier, storage, throughput, and topology. The figure is an estimate only - it is computed from public list pricing without tenant-specific discounts or final billing rules, and may differ from what is actually invoiced. Free tier always returns zero. The endpoint never creates a deployment.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                "preview"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"<string>\",\n  \"tier\": \"<string>\",\n  \"availability_mode\": \"<null>\",\n  \"nodes\": \"<integer,null-int32>\",\n  \"storage\": \"<null>\",\n  \"target_network_tput\": \"<null>\",\n  \"telemetry_extra_days\": \"<integer,null-int32>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "0cdd0e4b-f72c-4f36-8a04-38abdb1fc973",
+              "name": "Predicted deployment cost",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    "preview"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"us-east-1\",\n  \"tier\": \"<string>\",\n  \"availability_mode\": \"<null>\",\n  \"nodes\": \"<integer,null-int32>\",\n  \"storage\": \"<null>\",\n  \"target_network_tput\": \"<null>\",\n  \"telemetry_extra_days\": \"<integer,null-int32>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"us-east-1\",\n  \"tier\": \"<string>\",\n  \"nodes\": 5017,\n  \"instance\": \"string\",\n  \"monthly_total_usd\": \"string\",\n  \"breakdown\": {\n    \"compute_usd\": \"string\",\n    \"storage_usd\": \"string\",\n    \"network_usd\": \"string\",\n    \"telemetry_usd\": \"string\",\n    \"data_retention_usd\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "de357480-85a6-40ab-aeb2-db394d83c14b",
+              "name": "Invalid request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    "preview"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"us-east-1\",\n  \"tier\": \"<string>\",\n  \"availability_mode\": \"<null>\",\n  \"nodes\": \"<integer,null-int32>\",\n  \"storage\": \"<null>\",\n  \"target_network_tput\": \"<null>\",\n  \"telemetry_extra_days\": \"<integer,null-int32>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "77664865-7023-4ef3-a1ae-dd5e6b135507",
+              "name": "Insufficient permissions",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    "preview"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"cloud\": \"<string>\",\n  \"region\": \"us-east-1\",\n  \"tier\": \"<string>\",\n  \"availability_mode\": \"<null>\",\n  \"nodes\": \"<integer,null-int32>\",\n  \"storage\": \"<null>\",\n  \"target_network_tput\": \"<null>\",\n  \"telemetry_extra_days\": \"<integer,null-int32>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "0f03830f-f202-4792-bdb7-88b1ab070e47",
+          "name": "Get deployment",
+          "request": {
+            "name": "Get deployment",
+            "description": {
+              "content": "Returns deployment details including cluster size, region, runtime status, and storage configuration. The `supervisor_url` field is the base URL of the supervisor API that owns this deployment's lifecycle (status, configuration, telemetry, restart, upgrade, node operations) - direct subsequent management calls there. Example: `https://supervisor-aws-us.laserdata.cloud`.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                ":deployment_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "deployment_id",
+                  "description": "(Required) Deployment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "4779e98b-9cf2-43c4-9f95-f3868931fcfb",
+              "name": "Deployment details",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"area\": \"eu\",\n  \"availability_mode\": \"multi_az\",\n  \"can_upgrade\": true,\n  \"cloud\": \"<string>\",\n  \"cluster\": \"<string>\",\n  \"code\": \"string\",\n  \"created_at\": \"2026-05-20T10:00:00Z\",\n  \"dedicated\": false,\n  \"domain\": \"string\",\n  \"encrypted\": true,\n  \"id\": 7261845127892140000,\n  \"name\": \"iggy-prod-01\",\n  \"nodes_count\": 9185,\n  \"protected\": true,\n  \"retention\": {\n    \"telemetry\": {\n      \"logs_days\": 8366,\n      \"metrics_days\": 2421,\n      \"heartbeats_days\": 3079\n    },\n    \"data_storage_gb\": 5003\n  },\n  \"runtimes\": [\n    \"string\",\n    \"string\"\n  ],\n  \"shared\": false,\n  \"storage_size\": 30,\n  \"storage_type\": \"network_extreme\",\n  \"updated_at\": \"2026-05-20T10:00:00Z\",\n  \"upgrades\": [\n    {\n      \"upgraded_at\": \"2026-05-20T10:00:00Z\",\n      \"instance_type\": null,\n      \"nodes_after\": null,\n      \"nodes_before\": 2638,\n      \"rate_limit\": null,\n      \"storage_size\": null,\n      \"storage_type\": null,\n      \"target_network_tput\": null,\n      \"tier\": null\n    },\n    {\n      \"upgraded_at\": \"2026-05-20T10:00:00Z\",\n      \"instance_type\": null,\n      \"nodes_after\": null,\n      \"nodes_before\": null,\n      \"rate_limit\": null,\n      \"storage_size\": null,\n      \"storage_type\": null,\n      \"target_network_tput\": null,\n      \"tier\": null\n    }\n  ],\n  \"variant\": \"byoc\",\n  \"rate_limit\": null,\n  \"region\": null,\n  \"supervisor_url\": \"https://supervisor-aws-us.laserdata.cloud\",\n  \"target_network_tput\": null,\n  \"tier\": null,\n  \"upgraded_at\": \"2026-05-20T10:00:00Z\",\n  \"description\": null\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e04aae3b-7b6c-40ff-be1b-ced0b1440349",
+              "name": "Insufficient permissions",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1eaf1974-a602-4888-a4d5-4a0e06293b82",
+              "name": "Deployment not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "08d8c35e-b790-445e-b46b-2c4ab0c8af78",
+          "name": "Update deployment",
+          "request": {
+            "name": "Update deployment",
+            "description": {
+              "content": "Updates mutable deployment metadata such as protection flag and description.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                ":deployment_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "deployment_id",
+                  "description": "(Required) Deployment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"<null>\",\n  \"protected\": \"<boolean,null>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "ac0b47fd-b2ce-4bc5-9662-accbc3ac136a",
+              "name": "Deployment updated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"description\": \"<null>\",\n  \"protected\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "7496c449-2ae3-4124-b62a-36cd03da0f49",
+          "name": "Delete deployment",
+          "request": {
+            "name": "Delete deployment",
+            "description": {
+              "content": "Schedules deletion of the deployment. Protected deployments require a resource code (obtain via PUT /tenants/{tenant_id}/request_code with action `delete_deployment`).",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                ":deployment_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "code",
+                  "value": "<string>",
+                  "description": "Resource confirmation code for protected deployments"
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "deployment_id",
+                  "description": "(Required) Deployment identifier"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "bf3fbf62-0495-4328-9f8b-97282e7e91e4",
+              "name": "Deployment deletion scheduled",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "code",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "cf73b375-2699-45af-980d-044fa3f594c8",
+              "name": "Missing or invalid code on protected deployment",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "code",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "d91ab9f1-7c5e-495a-a96d-f26e6ae1f98a",
+              "name": "Insufficient permissions",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "code",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "82b82ef7-b5b3-4ac4-9f18-ac3f886e8845",
+              "name": "Deployment not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "code",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1fb515c8-ee07-4be0-959b-f613a65460c6",
+          "name": "Extend deployment",
+          "request": {
+            "name": "Extend deployment",
+            "description": {
+              "content": "Schedules horizontal scaling for a deployment by adding nodes.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                ":deployment_id",
+                "extend"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "deployment_id",
+                  "description": "(Required) Deployment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nodes\": [\n    {\n      \"count\": \"<integer>\"\n    },\n    {\n      \"count\": \"<integer>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f876d5d8-ccc3-4e08-aff2-403a75bf2a97",
+              "name": "Deployment extension scheduled",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id",
+                    "extend"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nodes\": [\n    {\n      \"count\": 3\n    },\n    {\n      \"count\": 3\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "74c2e353-09df-4342-aaee-00e63cb476ee",
+          "name": "Update deployment retention",
+          "request": {
+            "name": "Update deployment retention",
+            "description": {
+              "content": "Updates telemetry retention policy for the deployment.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                ":deployment_id",
+                "retention"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "deployment_id",
+                  "description": "(Required) Deployment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"retention\": {\n    \"telemetry_days\": \"<integer>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "d7ba7237-b9ad-4d8d-9bbc-8b1bf96a522a",
+              "name": "Retention updated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id",
+                    "retention"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"retention\": {\n    \"telemetry_days\": 14\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "86ccb6d1-2310-4099-8ce6-9b445e1b7d5c",
+          "name": "Update deployment spend limit",
+          "request": {
+            "name": "Update deployment spend limit",
+            "description": {
+              "content": "Sets or clears the monthly spend cap for the deployment.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                ":deployment_id",
+                "spend_limit"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "deployment_id",
+                  "description": "(Required) Deployment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"spend_limit\": \"<string,null>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "358810c0-6de9-4896-8012-0f784c25124c",
+              "name": "Spend limit updated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id",
+                    "spend_limit"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"spend_limit\": \"<string,null>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "66fbaf80-2bf1-4df3-9484-4306d03c59bd",
+          "name": "Upgrade deployment",
+          "request": {
+            "name": "Upgrade deployment",
+            "description": {
+              "content": "Schedules a deployment upgrade such as tier or storage changes.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "tenants",
+                ":tenant_id",
+                "divisions",
+                ":division_id",
+                "environments",
+                ":environment_id",
+                "deployments",
+                ":deployment_id",
+                "upgrade"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "tenant_id",
+                  "description": "(Required) Tenant identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "division_id",
+                  "description": "(Required) Division identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "environment_id",
+                  "description": "(Required) Environment identifier"
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "deployment_id",
+                  "description": "(Required) Deployment identifier"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storage\": \"<null>\",\n  \"tier\": \"<null>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5ecccd5a-8513-4f39-81d4-5e4b785148f3",
+              "name": "Deployment upgrade scheduled",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "tenants",
+                    ":tenant_id",
+                    "divisions",
+                    ":division_id",
+                    "environments",
+                    ":environment_id",
+                    "deployments",
+                    ":deployment_id",
+                    "upgrade"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "tenant_id",
+                      "description": "(Required) Tenant identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "division_id",
+                      "description": "(Required) Division identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "environment_id",
+                      "description": "(Required) Environment identifier"
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "deployment_id",
+                      "description": "(Required) Deployment identifier"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "ld-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"storage\": \"<null>\",\n  \"tier\": \"<null>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.laserdata.cloud",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "ld-api-key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "aa67da23-ee37-4fa1-abe8-6ee099379cee",
+    "name": "LaserData Cloud Audit Account Deployments API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Tenant audit log and per-user activity feed.\n\nPublic REST API for the LaserData Cloud audit service.\n\n## Authentication\n\nEvery endpoint accepts either of two auth methods:\n- **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.\n- **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.\n\nAudit endpoints are read-only and replay-safe by definition.\n\n## Pagination\n\nList endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel=\"first\"`, `\"prev\"`, `\"next\"`, `\"last\"` when applicable.\n\n## Errors\n\nError responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.\n\n## Response headers\n\n- `ld-request`: request ID. Include it when reporting issues.\n- `link`: pagination relations.\n- `retry-after`: wait hint on 429 / 503.\n\nContact Support:\n Name: LaserData Support\n Email: support@laserdata.com",
+      "type": "text/plain"
+    }
+  }
+}

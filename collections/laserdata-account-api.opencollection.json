@@ -1,0 +1,240 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/account",
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Returns the current user's full account: profile, settings, linked identity providers, and tenant memberships with per-tenant role and permission summary."
+        },
+        {
+          "info": {
+            "name": "OAuth callback",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/account/auth/callback",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "query",
+                "description": "Intent ID from the IdP redirect"
+              },
+              {
+                "name": "token",
+                "value": "",
+                "type": "query",
+                "description": "Intent token from the IdP redirect"
+              },
+              {
+                "name": "user",
+                "value": "",
+                "type": "query",
+                "description": "When present, treated as sign-in flow. Otherwise resolved to sign_up or link_account based on whether the email already belongs to a registered user"
+              }
+            ]
+          },
+          "docs": "Identity-provider callback (Google, GitHub, Microsoft). The IdP redirects the user agent here with ID+token query params. Server resolves the intent and redirects back to the frontend with `intent` (sign_in / sign_up / link_account) appended. Not called directly by API clients."
+        },
+        {
+          "info": {
+            "name": "Create auth intent",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/account/auth/intents",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Step 1 of the OAuth sign-in / sign-up flow. Creates a one-time intent and returns the IdP authorization URL the user agent should be redirected to. Source defaults to `google`."
+        },
+        {
+          "info": {
+            "name": "Export account data (GDPR)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/account/export",
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Returns a single JSON document with all personal data held about the current user: profile, identities, sessions, memberships, invitations, settings. Use this to satisfy GDPR data-portability requests."
+        },
+        {
+          "info": {
+            "name": "Link external account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/account/link",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Links another identity provider (Google / GitHub / Microsoft) to the current user. Requires a fresh IdP intent for the source being linked. After linking the user can sign in via either provider."
+        },
+        {
+          "info": {
+            "name": "List sessions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/account/sessions",
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Lists all active sessions for the current user (one entry per browser/device)."
+        },
+        {
+          "info": {
+            "name": "Refresh session",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/account/sessions",
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Extends the current session's expiry. Returns a new session cookie + csrf_token."
+        },
+        {
+          "info": {
+            "name": "Delete all sessions",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/account/sessions",
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Signs out the current user everywhere by invalidating every active session. Use this after a suspected credential leak."
+        },
+        {
+          "info": {
+            "name": "Update settings",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/account/settings",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Updates the current user's preferences: default tenant + division (for console nav), theme, and IP binding. IP binding pins active sessions to the IP that created them. Useful for tighter security but breaks roaming."
+        },
+        {
+          "info": {
+            "name": "Sign in",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/account/sign_in",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Step 3 of the OAuth flow. Trades the intent ID+token (received from the IdP callback) for an authenticated session. Sets the `session` cookie and returns a `csrf_token` that must be sent on all subsequent state-changing requests via `x-csrf-token` header."
+        },
+        {
+          "info": {
+            "name": "Sign out",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/account/sign_out",
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Terminates the current session, deletes the session cookie, and invalidates the CSRF token. Subsequent requests must obtain a new session via /account/auth/intents → IdP → /account/sign_in."
+        },
+        {
+          "info": {
+            "name": "Sign up",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/account/sign_up",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new user account from a verified IdP intent. Optionally provisions a tenant + division (e.g. for SaaS onboarding) or accepts an invitation token. If the IdP-provided email matches an existing tenant's claimed email domain and join_policy allows, the new user joins automatically and a session is returned. Otherwise the account is created in `awaiting_verification` state."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

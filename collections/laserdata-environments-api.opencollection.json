@@ -1,0 +1,192 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Environments API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Environments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List environments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns the division's environments visible to the caller. Permission-filtered."
+        },
+        {
+          "info": {
+            "name": "Create environment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an environment in the division. Environments are the natural API key scope unit: scope a key to a single environment to bound an agent's blast radius. New id returned in the `ld-environment` response header."
+        },
+        {
+          "info": {
+            "name": "Get environment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              }
+            ]
+          },
+          "docs": "Returns environment details including description and deployment count. Environments group deployments within a division and are the smallest unit for fine-grained API key scoping."
+        },
+        {
+          "info": {
+            "name": "Update environment",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Partial update of environment attributes. Omitted fields are unchanged."
+        },
+        {
+          "info": {
+            "name": "Delete environment",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              },
+              {
+                "name": "code",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Deletes the environment. Must be empty of deployments first. Protected environments require a resource code (obtain via PUT /tenants/{tenant_id}/request_code with action `delete_environment`)."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

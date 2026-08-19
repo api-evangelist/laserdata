@@ -1,0 +1,258 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Tenants API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Tenants",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List tenants",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants"
+          },
+          "docs": "Returns all tenants the calling user is a member of. Used by the console to populate the tenant switcher. With API key auth this is scoped to the key's tenant."
+        },
+        {
+          "info": {
+            "name": "Create tenant",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Creates a new tenant with the caller as owner. Optionally provisions a default division in the same request. The new ids are returned in `ld-tenant` and `ld-division` response headers. Subject to per-user `owned_tenants` limit. Session-only: API keys are tenant-scoped and cannot create new tenants."
+        },
+        {
+          "info": {
+            "name": "Get tenant",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns tenant details: status, subscription plan + features, billing email, custom email domain. The caller must be a member of the tenant."
+        },
+        {
+          "info": {
+            "name": "Update tenant",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Partial update of tenant attributes (name, description, email, protected). Owner-only."
+        },
+        {
+          "info": {
+            "name": "Delete tenant",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "code",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Permanently deletes the tenant and all child resources (divisions, environments, deployments will be torn down). Requires a resource confirmation code (obtain via PUT /tenants/{tenant_id}/request_code with action `delete_tenant`). Owner-only. Outstanding deployments and billing must be settled first. Session-only: API keys are tenant-scoped and cannot delete tenants."
+        },
+        {
+          "info": {
+            "name": "Get tenant config",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/config",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns the tenant's organizational policy: join policy, invitation rules, and email-domain claim status."
+        },
+        {
+          "info": {
+            "name": "Update tenant config",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/config",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates organizational policy: join_policy (open / invite_only / domain_match), whether external invitations are allowed, and whether invitations must come from the claimed email domain."
+        },
+        {
+          "info": {
+            "name": "Leave tenant",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/membership",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Removes the current user's membership from this tenant. The tenant owner cannot leave - they must transfer ownership or delete the tenant first. Session-only: API keys are tenant-scoped and cannot leave tenants."
+        },
+        {
+          "info": {
+            "name": "Request resource action code",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/request_code",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Mints a one-time confirmation code emailed to the caller. Required for irreversible operations on `protected` resources (delete_tenant, delete_division, delete_environment, delete_deployment). The code is included on the subsequent DELETE call as a query parameter."
+        },
+        {
+          "info": {
+            "name": "Get tenant resource tree",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/structure",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns the entire tenant resource hierarchy as a nested tree: divisions -> environments -> deployments. Single call to prime an agent's context about everything in the tenant. Permission-filtered, hidden divisions and environments are omitted. Each deployment's `supervisor_url` points to the supervisor API that owns its lifecycle (status, configuration, telemetry, restart, upgrade, node operations)."
+        },
+        {
+          "info": {
+            "name": "Tenant summary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/summary",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Aggregate counters for the tenant: total divisions, environments, deployments. Cheap projection for dashboards."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

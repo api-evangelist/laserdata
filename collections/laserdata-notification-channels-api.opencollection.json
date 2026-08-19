@@ -1,0 +1,384 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Notification Channels API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Notification Channels",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List tenant notification channels",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              },
+              {
+                "name": "channel",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns paged tenant-owned channels. Supports filtering by channel kind."
+        },
+        {
+          "info": {
+            "name": "Create tenant notification channel",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a tenant-owned notification channel such as Slack, webhook, email, or SMS. Destination validation depends on the chosen channel kind."
+        },
+        {
+          "info": {
+            "name": "Get tenant notification channel",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ]
+          },
+          "docs": "Returns configuration and metadata for one tenant-owned notification channel."
+        },
+        {
+          "info": {
+            "name": "Update tenant notification channel",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Partially updates a tenant-owned notification channel. Omitted fields are left unchanged."
+        },
+        {
+          "info": {
+            "name": "Delete tenant notification channel",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ]
+          },
+          "docs": "Deletes a tenant-owned notification channel and all subscriptions attached to it."
+        },
+        {
+          "info": {
+            "name": "Send test tenant notification",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id/test",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ]
+          },
+          "docs": "Sends a test message through a tenant-owned notification channel. Rate limited to prevent abuse."
+        },
+        {
+          "info": {
+            "name": "List division notification channels",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              },
+              {
+                "name": "channel",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns paged division-owned channels. Supports filtering by channel kind."
+        },
+        {
+          "info": {
+            "name": "Create division notification channel",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a division-owned notification channel using the same payload contract as tenant channels."
+        },
+        {
+          "info": {
+            "name": "Get division notification channel",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ]
+          },
+          "docs": "Returns configuration and metadata for one division-owned notification channel."
+        },
+        {
+          "info": {
+            "name": "Update division notification channel",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Partially updates a division-owned notification channel. Omitted fields are left unchanged."
+        },
+        {
+          "info": {
+            "name": "Delete division notification channel",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ]
+          },
+          "docs": "Deletes a division-owned notification channel and all subscriptions attached to it."
+        },
+        {
+          "info": {
+            "name": "Send test division notification",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id/test",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ]
+          },
+          "docs": "Sends a test message through a division-owned notification channel. Rate limited to prevent abuse."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

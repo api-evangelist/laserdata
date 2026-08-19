@@ -1,0 +1,152 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Members API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Members",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List members",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/members",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "active",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns paginated tenant members with role + permission summary per member. Filter by active status via the `active` query parameter."
+        },
+        {
+          "info": {
+            "name": "List all members",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/members/all",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns every tenant member at once with minimal fields (id, email, name). Use for member picker UIs. For tenants with many members, prefer the paginated GET /tenants/{id}/members."
+        },
+        {
+          "info": {
+            "name": "Get permissions catalog",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/members/permissions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns the full catalog of permissions available in this tenant, grouped by scope (tenant / division / environment). Use to populate role-permission selectors."
+        },
+        {
+          "info": {
+            "name": "Update member",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/members/:member_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "member_id",
+                "value": "",
+                "type": "path",
+                "description": "Member user identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Toggle active status or replace the member's role assignment. Setting `active = false` keeps the membership record but blocks sign-in to the tenant. Setting `roles` replaces the full set atomically."
+        },
+        {
+          "info": {
+            "name": "Remove member",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/members/:member_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "member_id",
+                "value": "",
+                "type": "path",
+                "description": "Member user identifier"
+              }
+            ]
+          },
+          "docs": "Removes the member's tenant membership. Cannot remove the tenant owner or yourself - use DELETE /tenants/{tenant_id}/membership for self-removal."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

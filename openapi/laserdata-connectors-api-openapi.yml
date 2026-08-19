@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: LaserData Cloud Audit Account Connectors API
   description: 'Tenant audit log and per-user activity feed.
@@ -182,11 +182,21 @@ paths:
           description: Deployment not found
 components:
   schemas:
-    DivisionId:
+    EnvironmentId:
       type: integer
       format: int64
-      example: 7261844974723780000
+      example: 7261845066528310000
       minimum: 0
+    DeploymentId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
+    ConnectorType:
+      type: string
+      enum:
+      - sink
+      - source
     Paged_ConnectorInfo:
       type: object
       required:
@@ -241,21 +251,6 @@ components:
           format: int64
           example: 137
           minimum: 0
-    ConnectorType:
-      type: string
-      enum:
-      - sink
-      - source
-    EnvironmentId:
-      type: integer
-      format: int64
-      example: 7261845066528310000
-      minimum: 0
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
     ActivateConnector:
       type: object
       required:
@@ -274,10 +269,15 @@ components:
           type:
           - string
           - 'null'
-    DeploymentId:
+    TenantId:
       type: integer
       format: int64
-      example: 7261845127892140000
+      example: 7261845022003200001
+      minimum: 0
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
       minimum: 0
   securitySchemes:
     ld_api_key:

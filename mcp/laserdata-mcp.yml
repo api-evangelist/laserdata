@@ -635,3 +635,9 @@ tools:
   method: GET
   path: /users/{user_id}/channels/{channel_id}/notifications
   source_operation: openapi/laserdata-notifier-openapi.json#get_user_notifications
+deployment:
+  mode: none
+  verified: derived
+  tools: 124
+  checked: '2026-08-12'
+  source: catalog MCP census

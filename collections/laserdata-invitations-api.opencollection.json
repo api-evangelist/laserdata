@@ -1,0 +1,182 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Invitations API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Invitations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List my invitations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/account/invitations",
+            "params": [
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Returns pending invitations addressed to the current user. Use to populate the console's invitation inbox. Session-only: API keys are tenant-scoped and cannot list user invitations."
+        },
+        {
+          "info": {
+            "name": "Accept invitation",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/account/invitations/:invitation_id/accept",
+            "params": [
+              {
+                "name": "invitation_id",
+                "value": "",
+                "type": "path",
+                "description": "Invitation identifier"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Accepts an invitation and creates the tenant membership. The user immediately has access according to the invitation's role assignment. Session-only: API keys are tenant-scoped and cannot accept user invitations."
+        },
+        {
+          "info": {
+            "name": "Reject invitation",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/account/invitations/:invitation_id/reject",
+            "params": [
+              {
+                "name": "invitation_id",
+                "value": "",
+                "type": "path",
+                "description": "Invitation identifier"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "session",
+              "value": "{{session}}",
+              "placement": "query"
+            }
+          },
+          "docs": "Declines an invitation. No membership is created. The inviter is notified. Session-only: API keys are tenant-scoped and cannot reject user invitations."
+        },
+        {
+          "info": {
+            "name": "List tenant invitations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/invitations",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns outstanding invitations sent from this tenant (pending / accepted / rejected). Filter via the underlying query params."
+        },
+        {
+          "info": {
+            "name": "Invite member",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/invitations",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sends an invitation email. If the email already belongs to a registered user, the invitation appears in their /account/invitations list. Otherwise the invitee receives a sign-up link. Subject to tenant invitation policy (open / domain_only / block_external)."
+        },
+        {
+          "info": {
+            "name": "Delete invitation",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/invitations/:invitation_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "invitation_id",
+                "value": "",
+                "type": "path",
+                "description": "Invitation identifier"
+              }
+            ]
+          },
+          "docs": "Revokes an outstanding invitation. The invitee can no longer accept it. Use this to revoke before expiry if circumstances change."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

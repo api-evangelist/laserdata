@@ -1,0 +1,376 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Notification Subscriptions API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Notification Subscriptions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List tenant notification subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id/subscriptions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              },
+              {
+                "name": "message_type",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns paged subscription entries configured for a tenant-owned channel. Supports pagination and optional message-type filtering."
+        },
+        {
+          "info": {
+            "name": "Create tenant notification subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id/subscriptions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds one subscription entry for a tenant-owned channel. The subscription can be scoped to selected tenants, divisions, environments, or deployments."
+        },
+        {
+          "info": {
+            "name": "Replace tenant notification subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id/subscriptions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Atomically replaces all subscriptions for a tenant-owned channel with the supplied list."
+        },
+        {
+          "info": {
+            "name": "Get tenant notification subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id/subscriptions/:subscription_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              },
+              {
+                "name": "subscription_id",
+                "value": "",
+                "type": "path",
+                "description": "Subscription identifier"
+              }
+            ]
+          },
+          "docs": "Returns one subscription entry configured for a tenant-owned channel."
+        },
+        {
+          "info": {
+            "name": "Delete tenant notification subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/channels/:channel_id/subscriptions/:subscription_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              },
+              {
+                "name": "subscription_id",
+                "value": "",
+                "type": "path",
+                "description": "Subscription identifier"
+              }
+            ]
+          },
+          "docs": "Deletes one subscription entry from a tenant-owned channel."
+        },
+        {
+          "info": {
+            "name": "List division notification subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id/subscriptions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              },
+              {
+                "name": "message_type",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns paged subscription entries configured for a division-owned channel. Supports pagination and optional message-type filtering."
+        },
+        {
+          "info": {
+            "name": "Create division notification subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id/subscriptions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Adds one subscription entry for a division-owned channel. The subscription can be scoped to selected tenants, divisions, environments, or deployments."
+        },
+        {
+          "info": {
+            "name": "Replace division notification subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id/subscriptions",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Atomically replaces all subscriptions for a division-owned channel with the supplied list."
+        },
+        {
+          "info": {
+            "name": "Get division notification subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id/subscriptions/:subscription_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              },
+              {
+                "name": "subscription_id",
+                "value": "",
+                "type": "path",
+                "description": "Subscription identifier"
+              }
+            ]
+          },
+          "docs": "Returns one subscription entry configured for a division-owned channel."
+        },
+        {
+          "info": {
+            "name": "Delete division notification subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/channels/:channel_id/subscriptions/:subscription_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "channel_id",
+                "value": "",
+                "type": "path",
+                "description": "Channel identifier"
+              },
+              {
+                "name": "subscription_id",
+                "value": "",
+                "type": "path",
+                "description": "Subscription identifier"
+              }
+            ]
+          },
+          "docs": "Deletes one subscription entry from a division-owned channel."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

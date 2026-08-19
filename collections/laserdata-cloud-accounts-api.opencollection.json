@@ -1,0 +1,172 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Cloud Accounts API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Cloud Accounts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List cloud accounts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/cloud_accounts",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              },
+              {
+                "name": "results",
+                "value": "10",
+                "type": "query"
+              },
+              {
+                "name": "name",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "cloud",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "region",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns the tenant's registered cloud accounts."
+        },
+        {
+          "info": {
+            "name": "Register cloud account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/cloud_accounts",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Registers an external cloud provider account (AWS or GCP) for BYOC deployments, VPC peering, and PrivateLink. Stores credentials and network metadata under the tenant."
+        },
+        {
+          "info": {
+            "name": "Get cloud account",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/cloud_accounts/:cloud_account_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "cloud_account_id",
+                "value": "",
+                "type": "path",
+                "description": "Cloud account identifier"
+              }
+            ]
+          },
+          "docs": "Returns full details of a registered cloud account, including provider-specific settings."
+        },
+        {
+          "info": {
+            "name": "Update cloud account",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/cloud_accounts/:cloud_account_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "cloud_account_id",
+                "value": "",
+                "type": "path",
+                "description": "Cloud account identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates name, region, settings, or remarks. Omitted fields stay unchanged. Account provider type is immutable."
+        },
+        {
+          "info": {
+            "name": "Delete cloud account",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/cloud_accounts/:cloud_account_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "cloud_account_id",
+                "value": "",
+                "type": "path",
+                "description": "Cloud account identifier"
+              }
+            ]
+          },
+          "docs": "Removes a registered cloud account. Fails if any deployments, VPC peerings, or PrivateLink endpoints still reference it."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

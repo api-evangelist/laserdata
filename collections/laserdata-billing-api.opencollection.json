@@ -1,0 +1,192 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Billing API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Billing",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get public pricing",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/pricing"
+          },
+          "docs": "Returns public plan and pricing information without requiring authentication."
+        },
+        {
+          "info": {
+            "name": "Get billing info",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/billing/info",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns the tenant billing recipient profile used for invoicing."
+        },
+        {
+          "info": {
+            "name": "Update billing info",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/billing/info",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates the tenant billing recipient profile used for invoicing."
+        },
+        {
+          "info": {
+            "name": "List invoices",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/billing/invoices",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns paged customer invoices for the tenant."
+        },
+        {
+          "info": {
+            "name": "Get invoice",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/billing/invoices/:invoice_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "invoice_id",
+                "value": "",
+                "type": "path",
+                "description": "Invoice identifier"
+              }
+            ]
+          },
+          "docs": "Returns full invoice details for one tenant invoice."
+        },
+        {
+          "info": {
+            "name": "Download invoice PDF",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/billing/invoices/:invoice_id/pdf",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "invoice_id",
+                "value": "",
+                "type": "path",
+                "description": "Invoice identifier"
+              }
+            ]
+          },
+          "docs": "Downloads the rendered PDF file for one invoice."
+        },
+        {
+          "info": {
+            "name": "List billing reports",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/billing/reports",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              }
+            ]
+          },
+          "docs": "Returns paged deployment billing reports for a tenant."
+        },
+        {
+          "info": {
+            "name": "Get billing report",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/billing/reports/:report_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "report_id",
+                "value": "",
+                "type": "path",
+                "description": "Deployment report identifier"
+              }
+            ]
+          },
+          "docs": "Returns one deployment billing report with detailed usage and pricing breakdown."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

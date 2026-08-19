@@ -1,0 +1,511 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LaserData Cloud Audit Account Deployments API",
+    "version": "0.0.66"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "ld-api-key",
+      "value": "{{ld-api-key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Deployments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Deploy starter environment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/deployments/starter",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates or reuses an environment and schedules a starter deployment for the tenant/division."
+        },
+        {
+          "info": {
+            "name": "List deployments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              }
+            ]
+          },
+          "docs": "Returns the environment's deployments visible to the caller. Permission-filtered."
+        },
+        {
+          "info": {
+            "name": "Deploy to your own cloud",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/byoc",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Schedules a BYOC deployment into the caller's AWS or GCP account. Cloud-specific identity and network settings are included in the request body."
+        },
+        {
+          "info": {
+            "name": "Generate BYOC setup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/byoc/setup",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns cloud-specific onboarding instructions and values required before creating a BYOC deployment."
+        },
+        {
+          "info": {
+            "name": "Deploy to managed cloud",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/managed",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a LaserData-managed deployment inside an existing environment. Returns accepted immediately. Provisioning continues asynchronously."
+        },
+        {
+          "info": {
+            "name": "Preview deployment cost",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/preview",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns a rough monthly cost estimate for a hypothetical deployment based on cloud, region, tier, storage, throughput, and topology. The figure is an estimate only - it is computed from public list pricing without tenant-specific discounts or final billing rules, and may differ from what is actually invoiced. Free tier always returns zero. The endpoint never creates a deployment."
+        },
+        {
+          "info": {
+            "name": "Get deployment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/:deployment_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              },
+              {
+                "name": "deployment_id",
+                "value": "",
+                "type": "path",
+                "description": "Deployment identifier"
+              }
+            ]
+          },
+          "docs": "Returns deployment details including cluster size, region, runtime status, and storage configuration. The `supervisor_url` field is the base URL of the supervisor API that owns this deployment's lifecycle (status, configuration, telemetry, restart, upgrade, node operations) - direct subsequent management calls there. Example: `https://supervisor-aws-us.laserdata.cloud`."
+        },
+        {
+          "info": {
+            "name": "Update deployment",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/:deployment_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              },
+              {
+                "name": "deployment_id",
+                "value": "",
+                "type": "path",
+                "description": "Deployment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates mutable deployment metadata such as protection flag and description."
+        },
+        {
+          "info": {
+            "name": "Delete deployment",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/:deployment_id",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              },
+              {
+                "name": "deployment_id",
+                "value": "",
+                "type": "path",
+                "description": "Deployment identifier"
+              },
+              {
+                "name": "code",
+                "value": "",
+                "type": "query",
+                "description": "Resource confirmation code for protected deployments"
+              }
+            ]
+          },
+          "docs": "Schedules deletion of the deployment. Protected deployments require a resource code (obtain via PUT /tenants/{tenant_id}/request_code with action `delete_deployment`)."
+        },
+        {
+          "info": {
+            "name": "Extend deployment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/:deployment_id/extend",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              },
+              {
+                "name": "deployment_id",
+                "value": "",
+                "type": "path",
+                "description": "Deployment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Schedules horizontal scaling for a deployment by adding nodes."
+        },
+        {
+          "info": {
+            "name": "Update deployment retention",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/:deployment_id/retention",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              },
+              {
+                "name": "deployment_id",
+                "value": "",
+                "type": "path",
+                "description": "Deployment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates telemetry retention policy for the deployment."
+        },
+        {
+          "info": {
+            "name": "Update deployment spend limit",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/:deployment_id/spend_limit",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              },
+              {
+                "name": "deployment_id",
+                "value": "",
+                "type": "path",
+                "description": "Deployment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sets or clears the monthly spend cap for the deployment."
+        },
+        {
+          "info": {
+            "name": "Upgrade deployment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.laserdata.cloud/tenants/:tenant_id/divisions/:division_id/environments/:environment_id/deployments/:deployment_id/upgrade",
+            "params": [
+              {
+                "name": "tenant_id",
+                "value": "",
+                "type": "path",
+                "description": "Tenant identifier"
+              },
+              {
+                "name": "division_id",
+                "value": "",
+                "type": "path",
+                "description": "Division identifier"
+              },
+              {
+                "name": "environment_id",
+                "value": "",
+                "type": "path",
+                "description": "Environment identifier"
+              },
+              {
+                "name": "deployment_id",
+                "value": "",
+                "type": "path",
+                "description": "Deployment identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Schedules a deployment upgrade such as tier or storage changes."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

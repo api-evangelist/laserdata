@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: LaserData Cloud Audit Account Payments API
   description: 'Tenant audit log and per-user activity feed.
@@ -126,11 +126,6 @@ paths:
           description: Payment method removed
 components:
   schemas:
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
     PaymentProvider:
       type: string
       enum:
@@ -139,6 +134,13 @@ components:
       - pay_pal
       - bank_transfer
       - aws_marketplace
+    SetupIntentResponse:
+      type: object
+      required:
+      - client_secret
+      properties:
+        client_secret:
+          type: string
     PaymentInfo:
       type: object
       required:
@@ -211,13 +213,11 @@ components:
           type:
           - string
           - 'null'
-    SetupIntentResponse:
-      type: object
-      required:
-      - client_secret
-      properties:
-        client_secret:
-          type: string
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
   securitySchemes:
     ld_api_key:
       type: apiKey
