@@ -39,6 +39,18 @@ tags:
 - Message Streaming
 - Event Streaming
 - Data Infrastructure
+- Real-Time
+- Apache Iggy
+- Rust
+- Cloud Infrastructure
+- AI Agents
+- Observability
+- Company
+tags_raw:
+- Streaming
+- Message Streaming
+- Event Streaming
+- Data Infrastructure
 - Real Time
 - Apache Iggy
 - Rust
@@ -69,6 +81,8 @@ apis:
   humanURL: https://docs.laserdata.cloud/api
   baseURL: https://api.laserdata.cloud
   tags:
+  - APIKeys
+  tags_raw:
   - API Keys
   properties:
   - type: OpenAPI
@@ -165,6 +179,8 @@ apis:
   humanURL: https://docs.laserdata.cloud/api
   baseURL: https://api.laserdata.cloud
   tags:
+  - Deployment
+  tags_raw:
   - Deployments
   properties:
   - type: OpenAPI
@@ -245,6 +261,8 @@ apis:
   humanURL: https://docs.laserdata.cloud/api
   baseURL: https://api.laserdata.cloud
   tags:
+  - NotificationChannels
+  tags_raw:
   - Notification Channels
   properties:
   - type: OpenAPI
@@ -277,6 +295,8 @@ apis:
   humanURL: https://docs.laserdata.cloud/api
   baseURL: https://api.laserdata.cloud
   tags:
+  - Notification
+  tags_raw:
   - Notifications
   properties:
   - type: OpenAPI
