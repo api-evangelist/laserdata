@@ -11,6 +11,18 @@ description: 'LaserData is a hyper-efficient data streaming platform built in Ru
   audit log, plus a per-deployment Supervisor API for configs, metrics, logs, diagnostic
   snapshots, and backups. The platform ships a first-party Rust SDK, a single-binary
   CLI with an interactive TUI, and an official Claude Code Agent Skill pack.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: self-serve
