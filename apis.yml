@@ -273,7 +273,7 @@ apis:
   humanURL: https://docs.laserdata.cloud/api
   baseURL: https://api.laserdata.cloud
   tags:
-  - NotificationChannels
+  - Notification Channels
   tags_raw:
   - Notification Channels
   properties:
