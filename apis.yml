@@ -25,15 +25,17 @@ deliveryModel:
   method: derived
 accessModel:
   pricing: unknown
-  onboarding: self-serve
+  onboarding: unknown
   trial: false
   try_now: false
   public: false
-  label: Self-serve signup
-  confidence: medium
+  label: Unknown
+  confidence: low
   source:
   - authentication
-  generated: '2026-07-22'
+  - security
+  - sandbox
+  generated: '2026-09-03'
   method: derived
 image: https://assets.laserdata.com/laserdata_dark.png
 url: https://raw.githubusercontent.com/api-evangelist/laserdata/refs/heads/main/apis.yml
@@ -424,8 +426,9 @@ common:
   url: asyncapi/laserdata-notifications-webhooks.yml
 - type: WellKnown
   url: well-known/laserdata-well-known.yml
-- type: MCPServer
+- type: X-MCPServerCandidate
   url: mcp/laserdata-mcp.yml
+  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type surfaces with a server that does not exist.'
 - type: Security
   url: https://github.com/laserdata/laser-sdk/blob/main/SECURITY.md
 - type: VulnerabilityDisclosure
