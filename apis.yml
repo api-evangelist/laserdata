@@ -227,6 +227,8 @@ apis:
   humanURL: https://docs.laserdata.cloud/api
   baseURL: https://api.laserdata.cloud
   tags:
+  - Environment
+  tags_raw:
   - Environments
   properties:
   - type: OpenAPI
