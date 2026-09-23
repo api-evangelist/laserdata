@@ -1,45 +1,7 @@
 openapi: 3.2.0
 info:
-  title: LaserData Cloud Audit Account Notification Subscriptions API
-  description: 'Tenant audit log and per-user activity feed.
-
-
-    Public REST API for the LaserData Cloud audit service.
-
-
-    ## Authentication
-
-
-    Every endpoint accepts either of two auth methods:
-
-    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
-
-    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
-
-
-    Audit endpoints are read-only and replay-safe by definition.
-
-
-    ## Pagination
-
-
-    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
-
-
-    ## Errors
-
-
-    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
-
-
-    ## Response headers
-
-
-    - `ld-request`: request ID. Include it when reporting issues.
-
-    - `link`: pagination relations.
-
-    - `retry-after`: wait hint on 429 / 503.'
+  title: LaserData Cloud Notifier Notification Subscriptions API
+  description: Notification channels, subscriptions, and delivery.
   termsOfService: https://laserdata.com/terms
   contact:
     name: LaserData Support
@@ -492,219 +454,19 @@ paths:
           description: Subscription not found
 components:
   schemas:
-    NotificationSubscriptionId:
-      type: integer
-      format: int64
-      example: 7261845612345671000
-      minimum: 0
     NotificationChannelId:
       type: integer
       format: int64
       example: 7261845612345670000
       minimum: 0
-    NotificationSubscriptionInfo:
-      type: object
-      required:
-      - id
-      - channel_id
-      - message_types
-      - created_at
-      - updated_at
-      properties:
-        channel_id:
-          $ref: '#/components/schemas/NotificationChannelId'
-        created_at:
-          type: string
-          format: date-time
-        id:
-          $ref: '#/components/schemas/NotificationSubscriptionId'
-        message_types:
-          type: array
-          items:
-            $ref: '#/components/schemas/NotificationMessageType'
-        scope_deployments:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScopeEntry_DeploymentId'
-        scope_divisions:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScopeEntry_DivisionId'
-        scope_environments:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScopeEntry_EnvironmentId'
-        scope_tenants:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScopeEntry_TenantId'
-        updated_at:
-          type: string
-          format: date-time
-      example:
-        id: 7261845404510330000
-        channel_id: 7261845330120500000
-        message_types:
-        - deployment_created
-        - deployment_initialized
-        scope_tenants:
-        - id: 7261845022003200001
-          name: Acme
-        scope_environments:
-        - id: 7261845066528310000
-          name: production
-        created_at: '2026-05-20T10:00:00Z'
-        updated_at: '2026-05-20T10:00:00Z'
-    ScopeEntry_TenantId:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 7261845022003200001
-          minimum: 0
-        name:
-          type: string
-          example: production
-    ScopeEntry_DeploymentId:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 7261845127892140000
-          minimum: 0
-        name:
-          type: string
-          example: production
-    ScopeEntry_DivisionId:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 7261844974723780000
-          minimum: 0
-        name:
-          type: string
-          example: production
-    SubscriptionEntry:
-      type: object
-      required:
-      - message_types
-      properties:
-        message_types:
-          type: array
-          items:
-            $ref: '#/components/schemas/NotificationMessageType'
-        scope_deployment_ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: integer
-            format: int64
-            minimum: 0
-        scope_division_ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: integer
-            format: int64
-            minimum: 0
-        scope_environment_ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: integer
-            format: int64
-            minimum: 0
-        scope_tenant_ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: integer
-            format: int64
-            minimum: 0
-    CreateSubscription:
-      type: object
-      required:
-      - message_types
-      properties:
-        message_types:
-          type: array
-          items:
-            $ref: '#/components/schemas/NotificationMessageType'
-        scope_deployment_ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: integer
-            format: int64
-            minimum: 0
-        scope_division_ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: integer
-            format: int64
-            minimum: 0
-        scope_environment_ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: integer
-            format: int64
-            minimum: 0
-        scope_tenant_ids:
-          type:
-          - array
-          - 'null'
-          items:
-            type: integer
-            format: int64
-            minimum: 0
-    SetSubscriptions:
-      type: object
-      required:
-      - subscriptions
-      properties:
-        subscriptions:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubscriptionEntry'
     NotificationSubscriptionDetails:
       allOf:
       - $ref: '#/components/schemas/NotificationSubscriptionInfo'
-    ScopeEntry_EnvironmentId:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 7261845066528310000
-          minimum: 0
-        name:
-          type: string
-          example: production
+    NotificationSubscriptionId:
+      type: integer
+      format: int64
+      example: 7261845612345671000
+      minimum: 0
     Paged_NotificationSubscriptionInfo:
       type: object
       required:
@@ -783,6 +545,103 @@ components:
           format: int64
           example: 137
           minimum: 0
+    SetSubscriptions:
+      type: object
+      required:
+      - subscriptions
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionEntry'
+    SubscriptionEntry:
+      type: object
+      required:
+      - message_types
+      properties:
+        message_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationMessageType'
+        scope_deployment_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int64
+            minimum: 0
+        scope_division_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int64
+            minimum: 0
+        scope_environment_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int64
+            minimum: 0
+        scope_tenant_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int64
+            minimum: 0
+    ScopeEntry_EnvironmentId:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 7261845066528310000
+          minimum: 0
+        name:
+          type: string
+          example: production
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    ScopeEntry_DivisionId:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 7261844974723780000
+          minimum: 0
+        name:
+          type: string
+          example: production
+    ScopeEntry_DeploymentId:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 7261845127892140000
+          minimum: 0
+        name:
+          type: string
+          example: production
     NotificationMessageType:
       type: string
       enum:
@@ -827,27 +686,130 @@ components:
       - tenant_join_requested
       - member_joined
       - shared_host_drained
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
+    NotificationSubscriptionInfo:
+      type: object
+      required:
+      - id
+      - channel_id
+      - message_types
+      - created_at
+      - updated_at
+      properties:
+        channel_id:
+          $ref: '#/components/schemas/NotificationChannelId'
+        created_at:
+          type: string
+          format: date-time
+        id:
+          $ref: '#/components/schemas/NotificationSubscriptionId'
+        message_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationMessageType'
+        scope_deployments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScopeEntry_DeploymentId'
+        scope_divisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScopeEntry_DivisionId'
+        scope_environments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScopeEntry_EnvironmentId'
+        scope_tenants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScopeEntry_TenantId'
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 7261845404510330000
+        channel_id: 7261845330120500000
+        message_types:
+        - deployment_created
+        - deployment_initialized
+        scope_tenants:
+        - id: 7261845022003200001
+          name: Acme
+        scope_environments:
+        - id: 7261845066528310000
+          name: production
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
     DivisionId:
       type: integer
       format: int64
       example: 7261844974723780000
       minimum: 0
+    CreateSubscription:
+      type: object
+      required:
+      - message_types
+      properties:
+        message_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationMessageType'
+        scope_deployment_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int64
+            minimum: 0
+        scope_division_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int64
+            minimum: 0
+        scope_environment_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int64
+            minimum: 0
+        scope_tenant_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+            format: int64
+            minimum: 0
+    ScopeEntry_TenantId:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 7261845022003200001
+          minimum: 0
+        name:
+          type: string
+          example: production
   securitySchemes:
     ld_api_key:
       type: apiKey
       in: header
       name: ld-api-key
-      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+      description: Tenant API key sent in the ld-api-key request header. Tenant-scoped only.
     session_cookie:
       type: apiKey
       in: cookie
       name: session
-      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+      description: Browser session cookie issued by POST /account/sign_in on core.
 externalDocs:
   url: https://docs.laserdata.com
   description: LaserData Cloud documentation

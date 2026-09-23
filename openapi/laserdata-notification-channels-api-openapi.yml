@@ -1,45 +1,7 @@
 openapi: 3.2.0
 info:
-  title: LaserData Cloud Audit Account Notification Channels API
-  description: 'Tenant audit log and per-user activity feed.
-
-
-    Public REST API for the LaserData Cloud audit service.
-
-
-    ## Authentication
-
-
-    Every endpoint accepts either of two auth methods:
-
-    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
-
-    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
-
-
-    Audit endpoints are read-only and replay-safe by definition.
-
-
-    ## Pagination
-
-
-    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
-
-
-    ## Errors
-
-
-    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
-
-
-    ## Response headers
-
-
-    - `ld-request`: request ID. Include it when reporting issues.
-
-    - `link`: pagination relations.
-
-    - `retry-after`: wait hint on 429 / 503.'
+  title: LaserData Cloud Notifier Notification Channels API
+  description: Notification channels, subscriptions, and delivery.
   termsOfService: https://laserdata.com/terms
   contact:
     name: LaserData Support
@@ -504,9 +466,6 @@ paths:
           description: Test channel rate limited
 components:
   schemas:
-    NotificationChannelDestination:
-      type: string
-      example: https://hooks.slack.com/services/REDACTED
     NotificationChannelId:
       type: integer
       format: int64
@@ -552,41 +511,6 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/ChannelSettings'
-    OwnerKind:
-      type: string
-      enum:
-      - user
-      - tenant
-      - division
-      - system
-    NotificationChannelName:
-      type: string
-      example: ops-webhook
-    UpdateChannel:
-      type: object
-      properties:
-        destination:
-          type:
-          - string
-          - 'null'
-          example: https://hooks.example.com/laserdata/ops-v2
-        enabled:
-          type:
-          - boolean
-          - 'null'
-        name:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/NotificationChannelName'
-        remarks:
-          type:
-          - string
-          - 'null'
-          example: Migrated to rotated webhook URL
-        settings:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/ChannelSettings'
     WebhookSettings:
       type: object
       properties:
@@ -607,13 +531,6 @@ components:
         headers:
           Authorization: Bearer secret-token
         method: POST
-    NotificationChannelKind:
-      type: string
-      enum:
-      - slack
-      - webhook
-      - sms
-      - email
     NotificationChannelInfo:
       type: object
       required:
@@ -656,21 +573,26 @@ components:
         enabled: true
         created_at: '2026-05-20T10:00:00Z'
         updated_at: '2026-05-20T10:00:00Z'
-    ChannelSettings:
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    OwnerKind:
+      type: string
+      enum:
+      - user
+      - tenant
+      - division
+      - system
+    SmsSettings:
       type: object
       properties:
-        slack:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/SlackSettings'
-        sms:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/SmsSettings'
-        webhook:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/WebhookSettings'
+        sender_id:
+          type:
+          - string
+          - 'null'
+          example: LaserData
     SlackSettings:
       type: object
       properties:
@@ -689,14 +611,34 @@ components:
           - string
           - 'null'
           example: LaserData Cloud
-    SmsSettings:
+    UpdateChannel:
       type: object
       properties:
-        sender_id:
+        destination:
           type:
           - string
           - 'null'
-          example: LaserData
+          example: https://hooks.example.com/laserdata/ops-v2
+        enabled:
+          type:
+          - boolean
+          - 'null'
+        name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NotificationChannelName'
+        remarks:
+          type:
+          - string
+          - 'null'
+          example: Migrated to rotated webhook URL
+        settings:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ChannelSettings'
+    NotificationChannelDestination:
+      type: string
+      example: https://hooks.slack.com/services/REDACTED
     Paged_NotificationChannelInfo:
       type: object
       required:
@@ -764,27 +706,47 @@ components:
           format: int64
           example: 137
           minimum: 0
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
+    NotificationChannelKind:
+      type: string
+      enum:
+      - slack
+      - webhook
+      - sms
+      - email
+    ChannelSettings:
+      type: object
+      properties:
+        slack:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/SlackSettings'
+        sms:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/SmsSettings'
+        webhook:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/WebhookSettings'
     DivisionId:
       type: integer
       format: int64
       example: 7261844974723780000
       minimum: 0
+    NotificationChannelName:
+      type: string
+      example: ops-webhook
   securitySchemes:
     ld_api_key:
       type: apiKey
       in: header
       name: ld-api-key
-      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+      description: Tenant API key sent in the ld-api-key request header. Tenant-scoped only.
     session_cookie:
       type: apiKey
       in: cookie
       name: session
-      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+      description: Browser session cookie issued by POST /account/sign_in on core.
 externalDocs:
   url: https://docs.laserdata.com
   description: LaserData Cloud documentation

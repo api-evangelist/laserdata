@@ -1,45 +1,7 @@
 openapi: 3.2.0
 info:
-  title: LaserData Cloud Audit Account API
-  description: 'Tenant audit log and per-user activity feed.
-
-
-    Public REST API for the LaserData Cloud audit service.
-
-
-    ## Authentication
-
-
-    Every endpoint accepts either of two auth methods:
-
-    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
-
-    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
-
-
-    Audit endpoints are read-only and replay-safe by definition.
-
-
-    ## Pagination
-
-
-    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
-
-
-    ## Errors
-
-
-    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
-
-
-    ## Response headers
-
-
-    - `ld-request`: request ID. Include it when reporting issues.
-
-    - `link`: pagination relations.
-
-    - `retry-after`: wait hint on 429 / 503.'
+  title: LaserData Cloud Core Account API
+  description: 'Control plane: tenants, divisions, environments, deployments, billing, members.'
   termsOfService: https://laserdata.com/terms
   contact:
     name: LaserData Support
@@ -327,70 +289,16 @@ paths:
       security: []
 components:
   schemas:
-    UserTenantBasicInfo:
+    SessionId:
+      type: integer
+      format: int64
+      example: 611298765432109071
+      minimum: 0
+    ExportedSettings:
       type: object
       required:
-      - id
-      - name
-      properties:
-        id:
-          $ref: '#/components/schemas/TenantId'
-        name:
-          $ref: '#/components/schemas/TenantName'
-    UserPermissionsInfo:
-      type: object
-      required:
-      - tenant
-      - division
-      - divisions
-      properties:
-        division:
-          type: array
-          items:
-            type: string
-        divisions:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserDivisionPermissionsInfo'
-        tenant:
-          type: array
-          items:
-            type: string
-    Email:
-      type: string
-      example: alice@laserdata.com
-    ExportedUser:
-      type: object
-      required:
-      - id
-      - email
-      - name
-      - created_at
-      properties:
-        created_at:
-          type: string
-          format: date-time
-          description: Resource creation timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        email:
-          $ref: '#/components/schemas/Email'
-        id:
-          $ref: '#/components/schemas/UserId'
-        name:
-          $ref: '#/components/schemas/FullName'
-    UserRole:
-      type: string
-      enum:
-      - user
-      - admin
-      - root
-    CreateIntent:
-      type: object
-      properties:
-        source:
-          $ref: '#/components/schemas/IdentityProvider'
-    UpdateSettings:
-      type: object
+      - theme
+      - ip_binding
       properties:
         default_division_id:
           oneOf:
@@ -401,34 +309,16 @@ components:
           - type: 'null'
           - $ref: '#/components/schemas/TenantId'
         ip_binding:
-          type:
-          - boolean
-          - 'null'
+          type: boolean
         theme:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/Theme'
-    UserDivisionPermissionsInfo:
-      allOf:
-      - $ref: '#/components/schemas/UserDivisionBasicInfo'
-      - type: object
-        required:
-        - permissions
-        - environment
-        - environments
-        properties:
-          environment:
-            type: array
-            items:
-              type: string
-          environments:
-            type: array
-            items:
-              $ref: '#/components/schemas/UserEnvironmentPermissionsInfo'
-          permissions:
-            type: array
-            items:
-              type: string
+          $ref: '#/components/schemas/Theme'
+    Status:
+      type: string
+      enum:
+      - inactive
+      - active
+      - locked
+      - deleted
     UserEnvironmentBasicInfo:
       type: object
       required:
@@ -457,43 +347,175 @@ components:
           type: boolean
         theme:
           $ref: '#/components/schemas/Theme'
-    UserDetails:
+    UserInfo:
       allOf:
-      - $ref: '#/components/schemas/UserInfo'
+      - $ref: '#/components/schemas/UserBasicInfo'
       - type: object
         required:
-        - settings
+        - about
+        - limits
+        - identities
+        - tenants
         properties:
-          settings:
-            $ref: '#/components/schemas/UserSettingsInfo'
-    Status:
-      type: string
-      enum:
-      - inactive
-      - active
-      - locked
-      - deleted
-    EnvironmentId:
+          about:
+            $ref: '#/components/schemas/Description'
+          identities:
+            type: array
+            items:
+              $ref: '#/components/schemas/UserIdentity'
+          limits:
+            $ref: '#/components/schemas/UserLimits'
+          permissions:
+            type:
+            - array
+            - 'null'
+            items:
+              type: string
+          tenants:
+            type: array
+            items:
+              $ref: '#/components/schemas/UserTenantInfo'
+    UserDivisionPermissionsInfo:
+      allOf:
+      - $ref: '#/components/schemas/UserDivisionBasicInfo'
+      - type: object
+        required:
+        - permissions
+        - environment
+        - environments
+        properties:
+          environment:
+            type: array
+            items:
+              type: string
+          environments:
+            type: array
+            items:
+              $ref: '#/components/schemas/UserEnvironmentPermissionsInfo'
+          permissions:
+            type: array
+            items:
+              type: string
+    SignUp:
+      type: object
+      required:
+      - source
+      - id
+      - token
+      - name
+      - title
+      properties:
+        feedback:
+          type:
+          - string
+          - 'null'
+        id:
+          type: string
+        invitation:
+          type:
+          - string
+          - 'null'
+        name:
+          $ref: '#/components/schemas/FullName'
+        source:
+          $ref: '#/components/schemas/IdentityProvider'
+        tenant:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/TenantName'
+        title:
+          $ref: '#/components/schemas/Title'
+        token:
+          type: string
+    ExportedMembership:
+      type: object
+      required:
+      - tenant_id
+      - tenant_name
+      - roles
+      - permissions
+      - joined_at
+      properties:
+        joined_at:
+          type: string
+          format: date-time
+        permissions:
+          type: array
+          items:
+            type: string
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleName'
+        tenant_id:
+          $ref: '#/components/schemas/TenantId'
+        tenant_name:
+          $ref: '#/components/schemas/TenantName'
+    UserId:
       type: integer
       format: int64
-      example: 7261845066528310000
+      example: 7261844898910240000
       minimum: 0
-    Title:
+    InvitationStatus:
       type: string
-      example: Backend Engineer
-    UserDivisionBasicInfo:
+      enum:
+      - pending
+      - accepted
+      - rejected
+    IdentityProvider:
+      type: string
+      enum:
+      - google
+      - github
+      - microsoft
+    UserLimits:
+      type: object
+      required:
+      - sessions
+      - tenants
+      - memberships
+      properties:
+        memberships:
+          type: integer
+          format: int32
+          minimum: 0
+        sessions:
+          type: integer
+          format: int32
+          minimum: 0
+        tenants:
+          type: integer
+          format: int32
+          minimum: 0
+    UserTenantBasicInfo:
       type: object
       required:
       - id
       - name
       properties:
         id:
-          $ref: '#/components/schemas/DivisionId'
+          $ref: '#/components/schemas/TenantId'
         name:
-          $ref: '#/components/schemas/DivisionName'
-    FullName:
-      type: string
-      example: Alice Doe
+          $ref: '#/components/schemas/TenantName'
+    ExportedSession:
+      type: object
+      required:
+      - id
+      - created_at
+      - expiry_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        expiry_at:
+          type: string
+          format: date-time
+          description: Expiration timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        id:
+          $ref: '#/components/schemas/SessionId'
     UserSessionInfo:
       allOf:
       - $ref: '#/components/schemas/SessionMetadata'
@@ -503,52 +525,29 @@ components:
         properties:
           id:
             $ref: '#/components/schemas/SessionId'
-    ExportedSettings:
-      type: object
-      required:
-      - theme
-      - ip_binding
-      properties:
-        default_division_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DivisionId'
-        default_tenant_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/TenantId'
-        ip_binding:
-          type: boolean
-        theme:
-          $ref: '#/components/schemas/Theme'
-    InvitationStatus:
+    FullName:
       type: string
-      enum:
-      - pending
-      - accepted
-      - rejected
-    UserIdentity:
+      example: Alice Doe
+    DivisionName:
+      type: string
+      example: production
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    IntentRedirect:
       type: object
       required:
-      - source
-      - external_id
-      - enabled
-      - created_at
+      - url
       properties:
-        created_at:
+        url:
           type: string
-          format: date-time
-          description: Resource creation timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        enabled:
-          type: boolean
-        external_id:
-          type: string
+    CreateIntent:
+      type: object
+      properties:
         source:
           $ref: '#/components/schemas/IdentityProvider'
-    RoleName:
-      type: string
-      example: tenant-admin
     UserDataExport:
       type: object
       required:
@@ -600,49 +599,66 @@ components:
             type: array
             items:
               type: string
-    DivisionId:
+    EnvironmentName:
+      type: string
+      example: staging
+    UserDetails:
+      allOf:
+      - $ref: '#/components/schemas/UserInfo'
+      - type: object
+        required:
+        - settings
+        properties:
+          settings:
+            $ref: '#/components/schemas/UserSettingsInfo'
+    UserEnvironmentPermissionsInfo:
+      allOf:
+      - $ref: '#/components/schemas/UserEnvironmentBasicInfo'
+      - type: object
+        required:
+        - permissions
+        properties:
+          permissions:
+            type: array
+            items:
+              type: string
+    SessionInfo:
+      type: object
+      required:
+      - email
+      - expiry
+      - csrf_token
+      properties:
+        csrf_token:
+          type: string
+        email:
+          $ref: '#/components/schemas/Email'
+        expiry:
+          type: string
+          format: date-time
+    TenantId:
       type: integer
       format: int64
-      example: 7261844974723780000
+      example: 7261845022003200001
       minimum: 0
-    ExportedSession:
+    LinkAccount:
       type: object
       required:
       - id
-      - created_at
-      - expiry_at
+      - token
       properties:
-        created_at:
-          type: string
-          format: date-time
-          description: Resource creation timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        expiry_at:
-          type: string
-          format: date-time
-          description: Expiration timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
         id:
-          $ref: '#/components/schemas/SessionId'
-    UserLimits:
-      type: object
-      required:
-      - sessions
-      - tenants
-      - memberships
-      properties:
-        memberships:
-          type: integer
-          format: int32
-          minimum: 0
-        sessions:
-          type: integer
-          format: int32
-          minimum: 0
-        tenants:
-          type: integer
-          format: int32
-          minimum: 0
+          type: string
+        source:
+          $ref: '#/components/schemas/IdentityProvider'
+        token:
+          type: string
+    Theme:
+      type: string
+      enum:
+      - system
+      - light
+      - dark
     ExportedIdentity:
       type: object
       required:
@@ -659,84 +675,6 @@ components:
           type: string
         source:
           $ref: '#/components/schemas/IdentityProvider'
-    EnvironmentName:
-      type: string
-      example: staging
-    ExportedMembership:
-      type: object
-      required:
-      - tenant_id
-      - tenant_name
-      - roles
-      - permissions
-      - joined_at
-      properties:
-        joined_at:
-          type: string
-          format: date-time
-        permissions:
-          type: array
-          items:
-            type: string
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/RoleName'
-        tenant_id:
-          $ref: '#/components/schemas/TenantId'
-        tenant_name:
-          $ref: '#/components/schemas/TenantName'
-    IntentRedirect:
-      type: object
-      required:
-      - url
-      properties:
-        url:
-          type: string
-    DivisionName:
-      type: string
-      example: production
-    UserBasicInfo:
-      type: object
-      required:
-      - id
-      - email
-      - name
-      - title
-      - status
-      - role
-      - verified
-      properties:
-        email:
-          $ref: '#/components/schemas/Email'
-        id:
-          $ref: '#/components/schemas/UserId'
-        name:
-          $ref: '#/components/schemas/FullName'
-        remarks:
-          type:
-          - string
-          - 'null'
-        role:
-          $ref: '#/components/schemas/UserRole'
-        status:
-          $ref: '#/components/schemas/Status'
-        title:
-          $ref: '#/components/schemas/Title'
-        verified:
-          type: boolean
-    SignIn:
-      type: object
-      required:
-      - id
-      - token
-      properties:
-        id:
-          type: string
-        source:
-          $ref: '#/components/schemas/IdentityProvider'
-        token:
-          type: string
     NewAccount:
       type: object
       required:
@@ -774,63 +712,124 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/WorkspaceState'
+    Title:
+      type: string
+      example: Backend Engineer
+    RoleName:
+      type: string
+      example: tenant-admin
+    UserPermissionsInfo:
+      type: object
+      required:
+      - tenant
+      - division
+      - divisions
+      properties:
+        division:
+          type: array
+          items:
+            type: string
+        divisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDivisionPermissionsInfo'
+        tenant:
+          type: array
+          items:
+            type: string
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
+    Description:
+      type: string
+      example: Production deployment for high-throughput streaming.
+    UpdateSettings:
+      type: object
+      properties:
+        default_division_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionId'
+        default_tenant_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/TenantId'
+        ip_binding:
+          type:
+          - boolean
+          - 'null'
+        theme:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Theme'
+    UserBasicInfo:
+      type: object
+      required:
+      - id
+      - email
+      - name
+      - title
+      - status
+      - role
+      - verified
+      properties:
+        email:
+          $ref: '#/components/schemas/Email'
+        id:
+          $ref: '#/components/schemas/UserId'
+        name:
+          $ref: '#/components/schemas/FullName'
+        remarks:
+          type:
+          - string
+          - 'null'
+        role:
+          $ref: '#/components/schemas/UserRole'
+        status:
+          $ref: '#/components/schemas/Status'
+        title:
+          $ref: '#/components/schemas/Title'
+        verified:
+          type: boolean
+    UserRole:
+      type: string
+      enum:
+      - user
+      - admin
+      - root
     TenantName:
       type: string
       example: acme-corp
-    Theme:
+    WorkspaceState:
       type: string
       enum:
-      - system
-      - light
-      - dark
-    UserEnvironmentPermissionsInfo:
-      allOf:
-      - $ref: '#/components/schemas/UserEnvironmentBasicInfo'
-      - type: object
-        required:
-        - permissions
-        properties:
-          permissions:
-            type: array
-            items:
-              type: string
-    SignUp:
+      - joined
+      - join_requested
+      - awaiting_invitation
+    UserIdentity:
       type: object
       required:
       - source
-      - id
-      - token
-      - name
-      - title
+      - external_id
+      - enabled
+      - created_at
       properties:
-        feedback:
-          type:
-          - string
-          - 'null'
-        id:
+        created_at:
           type: string
-        invitation:
-          type:
-          - string
-          - 'null'
-        name:
-          $ref: '#/components/schemas/FullName'
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        enabled:
+          type: boolean
+        external_id:
+          type: string
         source:
           $ref: '#/components/schemas/IdentityProvider'
-        tenant:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/TenantName'
-        title:
-          $ref: '#/components/schemas/Title'
-        token:
-          type: string
-    IdentityProvider:
+    Email:
       type: string
-      enum:
-      - google
-      - github
-      - microsoft
+      example: alice@laserdata.com
     ExportedInvitation:
       type: object
       required:
@@ -847,32 +846,16 @@ components:
           $ref: '#/components/schemas/InvitationStatus'
         tenant_id:
           $ref: '#/components/schemas/TenantId'
-    LinkAccount:
+    UserDivisionBasicInfo:
       type: object
       required:
       - id
-      - token
+      - name
       properties:
         id:
-          type: string
-        source:
-          $ref: '#/components/schemas/IdentityProvider'
-        token:
-          type: string
-    SessionInfo:
-      type: object
-      required:
-      - email
-      - expiry
-      - csrf_token
-      properties:
-        csrf_token:
-          type: string
-        email:
-          $ref: '#/components/schemas/Email'
-        expiry:
-          type: string
-          format: date-time
+          $ref: '#/components/schemas/DivisionId'
+        name:
+          $ref: '#/components/schemas/DivisionName'
     SessionMetadata:
       type: object
       required:
@@ -896,69 +879,48 @@ components:
           type:
           - string
           - 'null'
-    UserInfo:
-      allOf:
-      - $ref: '#/components/schemas/UserBasicInfo'
-      - type: object
-        required:
-        - about
-        - limits
-        - identities
-        - tenants
-        properties:
-          about:
-            $ref: '#/components/schemas/Description'
-          identities:
-            type: array
-            items:
-              $ref: '#/components/schemas/UserIdentity'
-          limits:
-            $ref: '#/components/schemas/UserLimits'
-          permissions:
-            type:
-            - array
-            - 'null'
-            items:
-              type: string
-          tenants:
-            type: array
-            items:
-              $ref: '#/components/schemas/UserTenantInfo'
-    UserId:
-      type: integer
-      format: int64
-      example: 7261844898910240000
-      minimum: 0
-    WorkspaceState:
-      type: string
-      enum:
-      - joined
-      - join_requested
-      - awaiting_invitation
-    SessionId:
-      type: integer
-      format: int64
-      example: 611298765432109071
-      minimum: 0
-    Description:
-      type: string
-      example: Production deployment for high-throughput streaming.
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
+    ExportedUser:
+      type: object
+      required:
+      - id
+      - email
+      - name
+      - created_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        email:
+          $ref: '#/components/schemas/Email'
+        id:
+          $ref: '#/components/schemas/UserId'
+        name:
+          $ref: '#/components/schemas/FullName'
+    SignIn:
+      type: object
+      required:
+      - id
+      - token
+      properties:
+        id:
+          type: string
+        source:
+          $ref: '#/components/schemas/IdentityProvider'
+        token:
+          type: string
   securitySchemes:
     ld_api_key:
       type: apiKey
       in: header
       name: ld-api-key
-      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+      description: Tenant API key issued via POST /tenants/{tenant_id}/api_keys. Sent in the ld-api-key request header. Scoped to tenant-level operations only. Cannot be used on user-scope endpoints (`/account/*`) or for tenant creation.
     session_cookie:
       type: apiKey
       in: cookie
       name: session
-      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+      description: Browser session cookie issued by POST /account/sign_in. Required for user-scope endpoints and tenant creation. Mutating endpoints additionally require the X-CSRF-Token header echoed from the sign-in response.
 externalDocs:
   url: https://docs.laserdata.com
   description: LaserData Cloud documentation

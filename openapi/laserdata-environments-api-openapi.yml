@@ -1,45 +1,7 @@
 openapi: 3.2.0
 info:
-  title: LaserData Cloud Audit Account Environments API
-  description: 'Tenant audit log and per-user activity feed.
-
-
-    Public REST API for the LaserData Cloud audit service.
-
-
-    ## Authentication
-
-
-    Every endpoint accepts either of two auth methods:
-
-    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
-
-    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
-
-
-    Audit endpoints are read-only and replay-safe by definition.
-
-
-    ## Pagination
-
-
-    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
-
-
-    ## Errors
-
-
-    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
-
-
-    ## Response headers
-
-
-    - `ld-request`: request ID. Include it when reporting issues.
-
-    - `link`: pagination relations.
-
-    - `retry-after`: wait hint on 429 / 503.'
+  title: LaserData Cloud Core Environments API
+  description: 'Control plane: tenants, divisions, environments, deployments, billing, members.'
   termsOfService: https://laserdata.com/terms
   contact:
     name: LaserData Support
@@ -267,82 +229,40 @@ paths:
           description: Environment not found
 components:
   schemas:
-    EnvironmentInfo:
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
+    Description:
+      type: string
+      example: Production deployment for high-throughput streaming.
+    EnvironmentName:
+      type: string
+      example: staging
+    UpdateEnvironment:
       type: object
-      required:
-      - id
-      - name
-      - deployments_count
-      - protected
-      - created_at
-      - updated_at
-      properties:
-        created_at:
-          type: string
-          format: date-time
-          description: Resource creation timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        deployments_count:
-          type: integer
-          format: int32
-          minimum: 0
-        id:
-          $ref: '#/components/schemas/EnvironmentId'
-        name:
-          $ref: '#/components/schemas/EnvironmentName'
-        protected:
-          type: boolean
-          description: 'When `true`, deletion is hardened: the DELETE request must include a one-time
-
-            confirmation code emailed to the tenant address. Obtain the code via
-
-            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_environment"` and
-
-            pass it as the `code` query parameter on the DELETE call.'
-          example: true
-        updated_at:
-          type: string
-          format: date-time
-          description: Resource last-update timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-      example:
-        id: 7261845066528310000
-        name: production
-        deployments_count: 3
-        protected: true
-        created_at: '2026-05-20T10:00:00Z'
-        updated_at: '2026-05-20T10:00:00Z'
-    CreateEnvironment:
-      type: object
-      required:
-      - name
       properties:
         description:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/Description'
         name:
-          $ref: '#/components/schemas/EnvironmentName'
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/EnvironmentName'
         protected:
           type:
           - boolean
           - 'null'
-          description: 'Optional. When `true`, deletion is hardened: deleting this environment will require
+          description: 'Optional. Toggle deletion hardening for this environment. When `true`, future DELETE
 
-            a one-time confirmation code emailed to the tenant address (request via
+            calls must include a one-time confirmation code emailed to the tenant address
 
-            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_environment"`).
+            (request via `PUT /tenants/{tenant_id}/request_code` with
 
-            Defaults to `false` when omitted.'
+            `action = "delete_environment"`). Leave unset to keep the current value.'
           example: true
-    EnvironmentName:
-      type: string
-      example: staging
-    EnvironmentId:
-      type: integer
-      format: int64
-      example: 7261845066528310000
-      minimum: 0
     Paged_EnvironmentInfo:
       type: object
       required:
@@ -413,29 +333,79 @@ components:
           format: int64
           example: 137
           minimum: 0
-    UpdateEnvironment:
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    CreateEnvironment:
       type: object
+      required:
+      - name
       properties:
         description:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/Description'
         name:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/EnvironmentName'
+          $ref: '#/components/schemas/EnvironmentName'
         protected:
           type:
           - boolean
           - 'null'
-          description: 'Optional. Toggle deletion hardening for this environment. When `true`, future DELETE
+          description: 'Optional. When `true`, deletion is hardened: deleting this environment will require
 
-            calls must include a one-time confirmation code emailed to the tenant address
+            a one-time confirmation code emailed to the tenant address (request via
 
-            (request via `PUT /tenants/{tenant_id}/request_code` with
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_environment"`).
 
-            `action = "delete_environment"`). Leave unset to keep the current value.'
+            Defaults to `false` when omitted.'
           example: true
+    EnvironmentInfo:
+      type: object
+      required:
+      - id
+      - name
+      - deployments_count
+      - protected
+      - created_at
+      - updated_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        deployments_count:
+          type: integer
+          format: int32
+          minimum: 0
+        id:
+          $ref: '#/components/schemas/EnvironmentId'
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        protected:
+          type: boolean
+          description: 'When `true`, deletion is hardened: the DELETE request must include a one-time
+
+            confirmation code emailed to the tenant address. Obtain the code via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_environment"` and
+
+            pass it as the `code` query parameter on the DELETE call.'
+          example: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Resource last-update timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+      example:
+        id: 7261845066528310000
+        name: production
+        deployments_count: 3
+        protected: true
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
     EnvironmentDetails:
       allOf:
       - $ref: '#/components/schemas/EnvironmentInfo'
@@ -445,14 +415,6 @@ components:
         properties:
           description:
             $ref: '#/components/schemas/Description'
-    Description:
-      type: string
-      example: Production deployment for high-throughput streaming.
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
     DivisionId:
       type: integer
       format: int64
@@ -463,12 +425,12 @@ components:
       type: apiKey
       in: header
       name: ld-api-key
-      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+      description: Tenant API key issued via POST /tenants/{tenant_id}/api_keys. Sent in the ld-api-key request header. Scoped to tenant-level operations only. Cannot be used on user-scope endpoints (`/account/*`) or for tenant creation.
     session_cookie:
       type: apiKey
       in: cookie
       name: session
-      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+      description: Browser session cookie issued by POST /account/sign_in. Required for user-scope endpoints and tenant creation. Mutating endpoints additionally require the X-CSRF-Token header echoed from the sign-in response.
 externalDocs:
   url: https://docs.laserdata.com
   description: LaserData Cloud documentation

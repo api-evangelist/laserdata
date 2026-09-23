@@ -1,45 +1,7 @@
 openapi: 3.2.0
 info:
-  title: LaserData Cloud Audit Account Roles API
-  description: 'Tenant audit log and per-user activity feed.
-
-
-    Public REST API for the LaserData Cloud audit service.
-
-
-    ## Authentication
-
-
-    Every endpoint accepts either of two auth methods:
-
-    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
-
-    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
-
-
-    Audit endpoints are read-only and replay-safe by definition.
-
-
-    ## Pagination
-
-
-    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
-
-
-    ## Errors
-
-
-    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
-
-
-    ## Response headers
-
-
-    - `ld-request`: request ID. Include it when reporting issues.
-
-    - `link`: pagination relations.
-
-    - `retry-after`: wait hint on 429 / 503.'
+  title: LaserData Cloud Core Roles API
+  description: 'Control plane: tenants, divisions, environments, deployments, billing, members.'
   termsOfService: https://laserdata.com/terms
   contact:
     name: LaserData Support
@@ -354,16 +316,54 @@ paths:
           description: Insufficient permissions
 components:
   schemas:
-    AddRole:
+    TenantRoleKind:
+      type: string
+      enum:
+      - system
+      - custom
+      - api_key
+    UpdateRole:
       type: object
-      required:
-      - name
-      - permissions
       properties:
         name:
-          $ref: '#/components/schemas/RoleName'
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RoleName'
         permissions:
-          $ref: '#/components/schemas/RolePermissions'
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RolePermissions'
+    RolePermissionsInfo:
+      type: object
+      required:
+      - tenant
+      - division
+      - environment
+      - divisions
+      properties:
+        division:
+          type: array
+          items:
+            type: string
+        divisions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DivisionPermissionsInfo'
+          propertyNames:
+            type: string
+        environment:
+          type: array
+          items:
+            type: string
+        tenant:
+          type: array
+          items:
+            type: string
+    UserId:
+      type: integer
+      format: int64
+      example: 7261844898910240000
+      minimum: 0
     Paged_RoleMemberInfo:
       type: object
       required:
@@ -410,86 +410,11 @@ components:
           format: int64
           example: 137
           minimum: 0
-    Email:
-      type: string
-      example: alice@laserdata.com
     RoleId:
       type: integer
       format: int64
       example: 7261845001236500000
       minimum: 0
-    RolePermissions:
-      type: object
-      properties:
-        division:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        divisions:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            $ref: '#/components/schemas/DivisionPermissions'
-          propertyNames:
-            type: string
-        environment:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        tenant:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-    DivisionPermissions:
-      type: object
-      properties:
-        environment:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        environments:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: array
-            items:
-              type: string
-          propertyNames:
-            type: string
-        permissions:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-    RoleDetails:
-      allOf:
-      - $ref: '#/components/schemas/RoleBasicInfo'
-      - type: object
-        required:
-        - permissions
-        properties:
-          permissions:
-            $ref: '#/components/schemas/RolePermissionsInfo'
-    FullName:
-      type: string
-      example: Alice Doe
-    RoleName:
-      type: string
-      example: tenant-admin
-    EnvironmentName:
-      type: string
-      example: staging
     Paged_RoleBasicInfo:
       type: object
       required:
@@ -532,50 +457,6 @@ components:
           format: int64
           example: 137
           minimum: 0
-    DivisionName:
-      type: string
-      example: production
-    TenantRoleKind:
-      type: string
-      enum:
-      - system
-      - custom
-      - api_key
-    RolePermissionsInfo:
-      type: object
-      required:
-      - tenant
-      - division
-      - environment
-      - divisions
-      properties:
-        division:
-          type: array
-          items:
-            type: string
-        divisions:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/DivisionPermissionsInfo'
-          propertyNames:
-            type: string
-        environment:
-          type: array
-          items:
-            type: string
-        tenant:
-          type: array
-          items:
-            type: string
-    AssignRoleMembers:
-      type: object
-      required:
-      - members
-      properties:
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserId'
     RoleBasicInfo:
       type: object
       required:
@@ -593,43 +474,93 @@ components:
         id: 611298765432109010
         name: developer
         kind: system
-    UserId:
-      type: integer
-      format: int64
-      example: 7261844898910240000
-      minimum: 0
-    EnvironmentPermissionsInfo:
+    AddRole:
       type: object
       required:
       - name
       - permissions
       properties:
         name:
-          $ref: '#/components/schemas/EnvironmentName'
+          $ref: '#/components/schemas/RoleName'
         permissions:
-          type: array
+          $ref: '#/components/schemas/RolePermissions'
+    DivisionPermissions:
+      type: object
+      properties:
+        environment:
+          type:
+          - array
+          - 'null'
           items:
             type: string
-    UpdateRole:
-      type: object
-      properties:
-        name:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RoleName'
+        environments:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          propertyNames:
+            type: string
         permissions:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RolePermissions'
-    RevokeRoleMembers:
-      type: object
-      required:
-      - members
-      properties:
-        members:
-          type: array
+          type:
+          - array
+          - 'null'
           items:
-            $ref: '#/components/schemas/UserId'
+            type: string
+    RolePermissions:
+      type: object
+      properties:
+        division:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        divisions:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/DivisionPermissions'
+          propertyNames:
+            type: string
+        environment:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        tenant:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    FullName:
+      type: string
+      example: Alice Doe
+    DivisionName:
+      type: string
+      example: production
+    EnvironmentName:
+      type: string
+      example: staging
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    RoleDetails:
+      allOf:
+      - $ref: '#/components/schemas/RoleBasicInfo'
+      - type: object
+        required:
+        - permissions
+        properties:
+          permissions:
+            $ref: '#/components/schemas/RolePermissionsInfo'
     DivisionPermissionsInfo:
       type: object
       required:
@@ -654,22 +585,53 @@ components:
           type: array
           items:
             type: string
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
+    RoleName:
+      type: string
+      example: tenant-admin
+    EnvironmentPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      properties:
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        permissions:
+          type: array
+          items:
+            type: string
+    Email:
+      type: string
+      example: alice@laserdata.com
+    RevokeRoleMembers:
+      type: object
+      required:
+      - members
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserId'
+    AssignRoleMembers:
+      type: object
+      required:
+      - members
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserId'
   securitySchemes:
     ld_api_key:
       type: apiKey
       in: header
       name: ld-api-key
-      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+      description: Tenant API key issued via POST /tenants/{tenant_id}/api_keys. Sent in the ld-api-key request header. Scoped to tenant-level operations only. Cannot be used on user-scope endpoints (`/account/*`) or for tenant creation.
     session_cookie:
       type: apiKey
       in: cookie
       name: session
-      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+      description: Browser session cookie issued by POST /account/sign_in. Required for user-scope endpoints and tenant creation. Mutating endpoints additionally require the X-CSRF-Token header echoed from the sign-in response.
 externalDocs:
   url: https://docs.laserdata.com
   description: LaserData Cloud documentation

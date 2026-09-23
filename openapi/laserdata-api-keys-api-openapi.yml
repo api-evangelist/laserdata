@@ -1,45 +1,7 @@
 openapi: 3.2.0
 info:
-  title: LaserData Cloud Audit Account API Keys API
-  description: 'Tenant audit log and per-user activity feed.
-
-
-    Public REST API for the LaserData Cloud audit service.
-
-
-    ## Authentication
-
-
-    Every endpoint accepts either of two auth methods:
-
-    - **API key** (machine / CI / SDK): send in the `ld-api-key` header. Cannot be used on `GET /audit/users/activity` which is session-only.
-
-    - **Session cookie** (browser / console): obtained from `POST /account/sign_in` on the control plane.
-
-
-    Audit endpoints are read-only and replay-safe by definition.
-
-
-    ## Pagination
-
-
-    List endpoints return a `Paged<T>` body (`page`, `total_pages`, `total_results`, `items`) and a `link` header (RFC 8288) with `rel="first"`, `"prev"`, `"next"`, `"last"` when applicable.
-
-
-    ## Errors
-
-
-    Error responses follow RFC 7807 `application/problem+json` with `type`, `title`, `code`, `reason`, `instance`, `status`, `retryable`, and optional `field` / `field_issues`. `retryable` is `true` for 408, 425, 429, 500, 502, 503, 504.
-
-
-    ## Response headers
-
-
-    - `ld-request`: request ID. Include it when reporting issues.
-
-    - `link`: pagination relations.
-
-    - `retry-after`: wait hint on 429 / 503.'
+  title: LaserData Cloud Core API Keys API
+  description: 'Control plane: tenants, divisions, environments, deployments, billing, members.'
   termsOfService: https://laserdata.com/terms
   contact:
     name: LaserData Support
@@ -263,81 +225,6 @@ paths:
           description: API key not found
 components:
   schemas:
-    ApiKeyId:
-      type: integer
-      format: int64
-      example: 7261845127892140000
-      minimum: 0
-    RoleId:
-      type: integer
-      format: int64
-      example: 7261845001236500000
-      minimum: 0
-    RolePermissions:
-      type: object
-      properties:
-        division:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        divisions:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            $ref: '#/components/schemas/DivisionPermissions'
-          propertyNames:
-            type: string
-        environment:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        tenant:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-    ApiKeyToken:
-      type: object
-      required:
-      - id
-      - token
-      properties:
-        id:
-          $ref: '#/components/schemas/ApiKeyId'
-        token:
-          type: string
-          example: ld_pk_AbCdEf0123456789AbCdEf0123456789
-    DivisionPermissions:
-      type: object
-      properties:
-        environment:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        environments:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: array
-            items:
-              type: string
-          propertyNames:
-            type: string
-        permissions:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
     Paged_ApiKeyInfo:
       type: object
       required:
@@ -424,11 +311,173 @@ components:
           format: int64
           example: 137
           minimum: 0
+    RolePermissionsInfo:
+      type: object
+      required:
+      - tenant
+      - division
+      - environment
+      - divisions
+      properties:
+        division:
+          type: array
+          items:
+            type: string
+        divisions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DivisionPermissionsInfo'
+          propertyNames:
+            type: string
+        environment:
+          type: array
+          items:
+            type: string
+        tenant:
+          type: array
+          items:
+            type: string
+    UserId:
+      type: integer
+      format: int64
+      example: 7261844898910240000
+      minimum: 0
+    RoleId:
+      type: integer
+      format: int64
+      example: 7261845001236500000
+      minimum: 0
+    DivisionPermissions:
+      type: object
+      properties:
+        environment:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        environments:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          propertyNames:
+            type: string
+        permissions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    ApiKeyId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
+    RolePermissions:
+      type: object
+      properties:
+        division:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        divisions:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/DivisionPermissions'
+          propertyNames:
+            type: string
+        environment:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        tenant:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    DivisionName:
+      type: string
+      example: production
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    ApiKeyToken:
+      type: object
+      required:
+      - id
+      - token
+      properties:
+        id:
+          $ref: '#/components/schemas/ApiKeyId'
+        token:
+          type: string
+          example: ld_pk_AbCdEf0123456789AbCdEf0123456789
+    EnvironmentName:
+      type: string
+      example: staging
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    ApiKeyDetails:
+      allOf:
+      - $ref: '#/components/schemas/ApiKeyInfo'
+      - type: object
+        required:
+        - permissions
+        properties:
+          permissions:
+            $ref: '#/components/schemas/RolePermissionsInfo'
+    DivisionPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      - environment
+      - environments
+      properties:
+        environment:
+          type: array
+          items:
+            type: string
+        environments:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EnvironmentPermissionsInfo'
+          propertyNames:
+            type: string
+        name:
+          $ref: '#/components/schemas/DivisionName'
+        permissions:
+          type: array
+          items:
+            type: string
+    RoleName:
+      type: string
+      example: tenant-admin
     ApiKeyName:
       type: string
       example: ci-deployer
-    UpdateApiKeySecurity:
+    CreateApiKey:
       type: object
+      required:
+      - name
+      - expiry_at
+      - validate_ip
       properties:
         allowed_ips:
           type:
@@ -436,24 +485,39 @@ components:
           - 'null'
           items:
             type: string
+        division_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionId'
+        expiry_at:
+          type: string
+          format: date-time
+          description: Expiration timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        name:
+          $ref: '#/components/schemas/ApiKeyName'
+        permissions:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RolePermissions'
+        role_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RoleId'
         validate_ip:
-          type:
-          - boolean
-          - 'null'
-    RoleName:
-      type: string
-      example: tenant-admin
-    DivisionId:
-      type: integer
-      format: int64
-      example: 7261844974723780000
-      minimum: 0
-    EnvironmentName:
-      type: string
-      example: staging
-    DivisionName:
-      type: string
-      example: production
+          type: boolean
+    EnvironmentPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      properties:
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        permissions:
+          type: array
+          items:
+            type: string
     ApiKeyInfo:
       type: object
       required:
@@ -515,64 +579,8 @@ components:
         - 203.0.113.11
         expiry_at: '2027-01-15T12:00:00Z'
         created_at: '2026-05-20T10:00:00Z'
-    RolePermissionsInfo:
+    UpdateApiKeySecurity:
       type: object
-      required:
-      - tenant
-      - division
-      - environment
-      - divisions
-      properties:
-        division:
-          type: array
-          items:
-            type: string
-        divisions:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/DivisionPermissionsInfo'
-          propertyNames:
-            type: string
-        environment:
-          type: array
-          items:
-            type: string
-        tenant:
-          type: array
-          items:
-            type: string
-    ApiKeyDetails:
-      allOf:
-      - $ref: '#/components/schemas/ApiKeyInfo'
-      - type: object
-        required:
-        - permissions
-        properties:
-          permissions:
-            $ref: '#/components/schemas/RolePermissionsInfo'
-    UserId:
-      type: integer
-      format: int64
-      example: 7261844898910240000
-      minimum: 0
-    EnvironmentPermissionsInfo:
-      type: object
-      required:
-      - name
-      - permissions
-      properties:
-        name:
-          $ref: '#/components/schemas/EnvironmentName'
-        permissions:
-          type: array
-          items:
-            type: string
-    CreateApiKey:
-      type: object
-      required:
-      - name
-      - expiry_at
-      - validate_ip
       properties:
         allowed_ips:
           type:
@@ -580,67 +588,21 @@ components:
           - 'null'
           items:
             type: string
-        division_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DivisionId'
-        expiry_at:
-          type: string
-          format: date-time
-          description: Expiration timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        name:
-          $ref: '#/components/schemas/ApiKeyName'
-        permissions:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RolePermissions'
-        role_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RoleId'
         validate_ip:
-          type: boolean
-    DivisionPermissionsInfo:
-      type: object
-      required:
-      - name
-      - permissions
-      - environment
-      - environments
-      properties:
-        environment:
-          type: array
-          items:
-            type: string
-        environments:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/EnvironmentPermissionsInfo'
-          propertyNames:
-            type: string
-        name:
-          $ref: '#/components/schemas/DivisionName'
-        permissions:
-          type: array
-          items:
-            type: string
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
+          type:
+          - boolean
+          - 'null'
   securitySchemes:
     ld_api_key:
       type: apiKey
       in: header
       name: ld-api-key
-      description: Tenant API key sent in the ld-api-key request header. Scoped to tenant-level audit reads. Cannot be used on user-scope endpoints (`/audit/users/activity`).
+      description: Tenant API key issued via POST /tenants/{tenant_id}/api_keys. Sent in the ld-api-key request header. Scoped to tenant-level operations only. Cannot be used on user-scope endpoints (`/account/*`) or for tenant creation.
     session_cookie:
       type: apiKey
       in: cookie
       name: session
-      description: Browser session cookie issued by POST /account/sign_in on core. Required for user-scope endpoints.
+      description: Browser session cookie issued by POST /account/sign_in. Required for user-scope endpoints and tenant creation. Mutating endpoints additionally require the X-CSRF-Token header echoed from the sign-in response.
 externalDocs:
   url: https://docs.laserdata.com
   description: LaserData Cloud documentation
