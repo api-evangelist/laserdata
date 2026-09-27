@@ -230,17 +230,14 @@ paths:
           description: Division not found
 components:
   schemas:
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
     Description:
       type: string
       example: Production deployment for high-throughput streaming.
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
-    DivisionName:
-      type: string
-      example: production
     DivisionInfo:
       type: object
       required:
@@ -280,38 +277,6 @@ components:
         protected: true
         created_at: '2026-05-20T10:00:00Z'
         updated_at: '2026-05-20T10:00:00Z'
-    Email:
-      type: string
-      example: alice@laserdata.com
-    DivisionDetails:
-      allOf:
-      - $ref: '#/components/schemas/DivisionInfo'
-      - type: object
-        required:
-        - description
-        - email
-        - has_payment_method
-        properties:
-          description:
-            $ref: '#/components/schemas/Description'
-          email:
-            $ref: '#/components/schemas/Email'
-          has_payment_method:
-            type: boolean
-    DivisionSummaryInfo:
-      type: object
-      required:
-      - total_environments
-      - total_deployments
-      properties:
-        total_deployments:
-          type: integer
-          format: int32
-          minimum: 0
-        total_environments:
-          type: integer
-          format: int32
-          minimum: 0
     UpdateDivision:
       type: object
       properties:
@@ -339,10 +304,54 @@ components:
 
             `action = "delete_division"`). Leave unset to keep the current value.'
           example: true
-    DivisionId:
+    DivisionSummaryInfo:
+      type: object
+      required:
+      - total_environments
+      - total_deployments
+      properties:
+        total_deployments:
+          type: integer
+          format: int32
+          minimum: 0
+        total_environments:
+          type: integer
+          format: int32
+          minimum: 0
+    DivisionName:
+      type: string
+      example: production
+    CreateDivision:
+      type: object
+      required:
+      - name
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Description'
+        email:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Email'
+        name:
+          $ref: '#/components/schemas/DivisionName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. When `true`, deletion is hardened: deleting this division will require a
+
+            one-time confirmation code emailed to the tenant address (request via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_division"`).
+
+            Defaults to `false` when omitted.'
+          example: true
+    TenantId:
       type: integer
       format: int64
-      example: 7261844974723780000
+      example: 7261845022003200001
       minimum: 0
     Paged_DivisionInfo:
       type: object
@@ -408,33 +417,24 @@ components:
           format: int64
           example: 137
           minimum: 0
-    CreateDivision:
-      type: object
-      required:
-      - name
-      properties:
-        description:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/Description'
-        email:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/Email'
-        name:
-          $ref: '#/components/schemas/DivisionName'
-        protected:
-          type:
-          - boolean
-          - 'null'
-          description: 'Optional. When `true`, deletion is hardened: deleting this division will require a
-
-            one-time confirmation code emailed to the tenant address (request via
-
-            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_division"`).
-
-            Defaults to `false` when omitted.'
-          example: true
+    Email:
+      type: string
+      example: alice@laserdata.com
+    DivisionDetails:
+      allOf:
+      - $ref: '#/components/schemas/DivisionInfo'
+      - type: object
+        required:
+        - description
+        - email
+        - has_payment_method
+        properties:
+          description:
+            $ref: '#/components/schemas/Description'
+          email:
+            $ref: '#/components/schemas/Email'
+          has_payment_method:
+            type: boolean
   securitySchemes:
     ld_api_key:
       type: apiKey

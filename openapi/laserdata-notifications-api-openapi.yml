@@ -222,20 +222,47 @@ paths:
           description: User or channel not found
 components:
   schemas:
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
+    NotificationTypeInfo:
+      type: object
+      required:
+      - type
+      - name
+      properties:
+        name:
+          type: string
+          example: Deployment created
+        type:
+          type: string
+          example: deployment_created
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    NotificationId:
+      type: integer
+      format: int64
+      example: 7261845612345672000
+      minimum: 0
+    UserId:
+      type: integer
+      format: int64
+      example: 7261844898910240000
+      minimum: 0
     NotificationChannelId:
       type: integer
       format: int64
       example: 7261845612345670000
       minimum: 0
-    DeploymentId:
+    TenantId:
       type: integer
       format: int64
-      example: 7261845127892140000
-      minimum: 0
-    EnvironmentId:
-      type: integer
-      format: int64
-      example: 7261845066528310000
+      example: 7261845022003200001
       minimum: 0
     Paged_NotificationInfo:
       type: object
@@ -307,15 +334,10 @@ components:
           format: int64
           example: 137
           minimum: 0
-    NotificationId:
+    DeploymentId:
       type: integer
       format: int64
-      example: 7261845612345672000
-      minimum: 0
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
+      example: 7261845127892140000
       minimum: 0
     NotificationMessageType:
       type: string
@@ -361,28 +383,6 @@ components:
       - tenant_join_requested
       - member_joined
       - shared_host_drained
-    UserId:
-      type: integer
-      format: int64
-      example: 7261844898910240000
-      minimum: 0
-    NotificationTypeInfo:
-      type: object
-      required:
-      - type
-      - name
-      properties:
-        name:
-          type: string
-          example: Deployment created
-        type:
-          type: string
-          example: deployment_created
-    DivisionId:
-      type: integer
-      format: int64
-      example: 7261844974723780000
-      minimum: 0
   securitySchemes:
     ld_api_key:
       type: apiKey

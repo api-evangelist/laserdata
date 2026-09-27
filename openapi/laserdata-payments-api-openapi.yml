@@ -88,26 +88,6 @@ paths:
           description: Payment method removed
 components:
   schemas:
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
-    PaymentProvider:
-      type: string
-      enum:
-      - manual
-      - stripe
-      - pay_pal
-      - bank_transfer
-      - aws_marketplace
-    SetupIntentResponse:
-      type: object
-      required:
-      - client_secret
-      properties:
-        client_secret:
-          type: string
     PaymentInfo:
       type: object
       required:
@@ -180,6 +160,26 @@ components:
           type:
           - string
           - 'null'
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    SetupIntentResponse:
+      type: object
+      required:
+      - client_secret
+      properties:
+        client_secret:
+          type: string
+    PaymentProvider:
+      type: string
+      enum:
+      - manual
+      - stripe
+      - pay_pal
+      - bank_transfer
+      - aws_marketplace
   securitySchemes:
     ld_api_key:
       type: apiKey

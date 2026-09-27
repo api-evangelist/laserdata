@@ -208,415 +208,33 @@ paths:
                 $ref: '#/components/schemas/BillingReportDetails'
 components:
   schemas:
-    Currency:
-      type: string
-      enum:
-      - USD
-    DeploymentVariant:
-      type: string
-      enum:
-      - managed
-      - byoc
-      - on_premise
-    TransferPricing:
-      type: object
-      required:
-      - same_region_per_gb
-      - cross_region_same_cloud_per_gb
-      - cross_region_per_gb
-      - cross_az_per_gb
-      properties:
-        cross_az_per_gb:
-          type: string
-        cross_region_per_gb:
-          type: string
-        cross_region_same_cloud_per_gb:
-          type: string
-        same_region_per_gb:
-          type: string
-    NvmeTier:
-      type: object
-      required:
-      - storage_gb
-      - label
-      - min_throughput_mbps
-      properties:
-        label:
-          type: string
-        min_throughput_mbps:
-          type: string
-        storage_gb:
-          type: integer
-          format: int32
-          minimum: 0
-    BillingReportInfo:
-      type: object
-      required:
-      - id
-      - deployment_id
-      - name
-      - cloud
-      - variant
-      - from
-      - to
-      - total_cost
-      - currency
-      properties:
-        cloud:
-          $ref: '#/components/schemas/Cloud'
-        currency:
-          $ref: '#/components/schemas/Currency'
-        deployment_id:
-          $ref: '#/components/schemas/DeploymentId'
-        from:
-          type: string
-          format: date-time
-        id:
-          $ref: '#/components/schemas/DeploymentReportId'
-        name:
-          type: string
-        region:
-          type:
-          - string
-          - 'null'
-        tier:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DeploymentTier'
-        to:
-          type: string
-          format: date-time
-        total_cost:
-          type: string
-        variant:
-          $ref: '#/components/schemas/DeploymentVariant'
-      example:
-        id: 7261845701661510000
-        deployment_id: 7261845127892140000
-        name: iggy-prod-01
-        cloud: aws
-        variant: managed
-        tier: small
-        region: us-east-1
-        from: '2026-04-01T00:00:00Z'
-        to: '2026-05-01T00:00:00Z'
-        total_cost: '182.45'
-        currency: USD
-    StorageProfile:
+    DataRetentionPricing:
       type: object
       required:
       - rate_per_gb_month
-      - min_storage_gb
-      - max_storage_gb
-      - min_throughput_mbps
+      - available
       properties:
-        max_storage_gb:
-          type: integer
-          format: int32
-          minimum: 0
-        min_storage_gb:
-          type: integer
-          format: int32
-          minimum: 0
-        min_throughput_mbps:
-          type: string
+        available:
+          type: boolean
         rate_per_gb_month:
           type: string
-    StoragePricing:
-      type: object
-      required:
-      - network_disk
-      - nvme_ssd
-      properties:
-        data_retention:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DataRetentionPricing'
-        network_disk:
-          $ref: '#/components/schemas/StorageProfile'
-        nvme_ssd:
-          $ref: '#/components/schemas/NvmeStorageProfile'
-    DeploymentReportId:
-      type: integer
-      format: int64
-      example: 611298765432109067
-      minimum: 0
-    ClusterConfig:
-      type: object
-      required:
-      - nodes
-      - max_throughput_mbps_per_node
-      properties:
-        max_throughput_mbps_per_node:
-          type: integer
-          format: int32
-          minimum: 0
-        nodes:
-          type: integer
-          format: int32
-          minimum: 0
-    CloudPricing:
-      type: object
-      required:
-      - network
-      - storage
-      - compute
-      - disk
-      - transfer
-      - overhead
-      - telemetry
-      properties:
-        compute:
-          $ref: '#/components/schemas/ComputePricing'
-        disk:
-          $ref: '#/components/schemas/DiskPricing'
-        network:
-          $ref: '#/components/schemas/NetworkPricing'
-        overhead:
-          $ref: '#/components/schemas/OverheadPricing'
-        storage:
-          $ref: '#/components/schemas/StoragePricing'
-        telemetry:
-          $ref: '#/components/schemas/TelemetryPricing'
-        transfer:
-          $ref: '#/components/schemas/TransferPricing'
-    DeploymentTier:
-      type: string
-      enum:
-      - free
-      - small
-      - medium
-      - large
-      - xlarge
-      - 2xlarge
-      - 4xlarge
-      - 8xlarge
-      - 16xlarge
-    PricingResponse:
-      type: object
-      description: 'Top-level response: product config + per-cloud pricing.'
-      required:
-      - cluster
-      properties:
-        aws:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/CloudPricing'
-        cluster:
-          $ref: '#/components/schemas/ClusterConfig'
-        gcp:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/CloudPricing'
-    NvmeStorageProfile:
-      type: object
-      required:
-      - rate_per_gb_month
-      - tiers
-      properties:
-        rate_per_gb_month:
-          type: string
-        tiers:
-          type: array
-          items:
-            $ref: '#/components/schemas/NvmeTier'
-    NetworkTier:
-      type: object
-      required:
-      - rate_per_gb
-      properties:
-        max_gb_per_node:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          minimum: 0
-        rate_per_gb:
-          type: string
-        up_to_mbps:
-          type:
-          - integer
-          - 'null'
-          format: int32
-          minimum: 0
     DivisionId:
       type: integer
       format: int64
       example: 7261844974723780000
       minimum: 0
-    InvoiceStatus:
-      type: string
-      enum:
-      - draft
-      - pending
-      - approved
-      - paid
-      - failed
-      - cancelled
-      - refunded
-      - partially_refunded
-    TopologySurcharge:
+    TelemetryPricing:
       type: object
       required:
-      - single_az
-      - multi_az
+      - included_days
+      - per_day
       properties:
-        multi_az:
-          type: string
-        single_az:
-          type: string
-    ComputeTier:
-      type: object
-      required:
-      - tier
-      - max_mbps
-      - instance
-      - monthly_cost
-      properties:
-        instance:
-          type: string
-        max_mbps:
+        included_days:
           type: integer
           format: int32
           minimum: 0
-        monthly_cost:
+        per_day:
           type: string
-        tier:
-          type: string
-    CustomerInvoiceInfo:
-      type: object
-      required:
-      - id
-      - tenant_id
-      - number
-      - period_start
-      - period_end
-      - status
-      - currency
-      - total
-      - created_at
-      properties:
-        created_at:
-          type: string
-          format: date-time
-        currency:
-          $ref: '#/components/schemas/Currency'
-        division_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DivisionId'
-        id:
-          $ref: '#/components/schemas/InvoiceId'
-        number:
-          type: string
-        period_end:
-          type: string
-          format: date-time
-        period_start:
-          type: string
-          format: date-time
-        status:
-          $ref: '#/components/schemas/InvoiceStatus'
-        tenant_id:
-          $ref: '#/components/schemas/TenantId'
-        total:
-          type: string
-      example:
-        id: 7261845776048540000
-        tenant_id: 7261845022003200001
-        division_id: 7261844974723780000
-        number: INV-2026-000182
-        period_start: '2026-04-01T00:00:00Z'
-        period_end: '2026-05-01T00:00:00Z'
-        status: approved
-        currency: USD
-        total: '182.45'
-        created_at: '2026-05-02T10:00:00Z'
-    BillingInfo:
-      type: object
-      properties:
-        address:
-          type:
-          - string
-          - 'null'
-        city:
-          type:
-          - string
-          - 'null'
-        company:
-          type:
-          - string
-          - 'null'
-        country:
-          type:
-          - string
-          - 'null'
-        email:
-          type:
-          - string
-          - 'null'
-        name:
-          type:
-          - string
-          - 'null'
-        phone:
-          type:
-          - string
-          - 'null'
-        postal_code:
-          type:
-          - string
-          - 'null'
-        state:
-          type:
-          - string
-          - 'null'
-        tax_id:
-          type:
-          - string
-          - 'null'
-    OverheadPricing:
-      type: object
-      required:
-      - base_monthly
-      - per_mbps
-      properties:
-        base_monthly:
-          type: string
-        per_mbps:
-          type: string
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
-    CustomerInvoiceDetails:
-      allOf:
-      - $ref: '#/components/schemas/CustomerInvoiceInfo'
-      - type: object
-        required:
-        - subtotal
-        - line_items
-        properties:
-          billing_info: {}
-          line_items:
-            type: array
-            items: {}
-          notes:
-            type:
-            - string
-            - 'null'
-          paid_at:
-            type:
-            - string
-            - 'null'
-            format: date-time
-          subtotal:
-            type: string
-          tax:
-            type:
-            - string
-            - 'null'
     Paged_BillingReportInfo:
       type: object
       required:
@@ -695,6 +313,116 @@ components:
           format: int64
           example: 137
           minimum: 0
+    BillingReportInfo:
+      type: object
+      required:
+      - id
+      - deployment_id
+      - name
+      - cloud
+      - variant
+      - from
+      - to
+      - total_cost
+      - currency
+      properties:
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        deployment_id:
+          $ref: '#/components/schemas/DeploymentId'
+        from:
+          type: string
+          format: date-time
+        id:
+          $ref: '#/components/schemas/DeploymentReportId'
+        name:
+          type: string
+        region:
+          type:
+          - string
+          - 'null'
+        tier:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentTier'
+        to:
+          type: string
+          format: date-time
+        total_cost:
+          type: string
+        variant:
+          $ref: '#/components/schemas/DeploymentVariant'
+      example:
+        id: 7261845701661510000
+        deployment_id: 7261845127892140000
+        name: iggy-prod-01
+        cloud: aws
+        variant: managed
+        tier: small
+        region: us-east-1
+        from: '2026-04-01T00:00:00Z'
+        to: '2026-05-01T00:00:00Z'
+        total_cost: '182.45'
+        currency: USD
+    DeploymentVariant:
+      type: string
+      enum:
+      - managed
+      - byoc
+      - on_premise
+    Cloud:
+      type: string
+      description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
+      enum:
+      - aws
+      - gcp
+      examples:
+      - aws
+    BillingInfo:
+      type: object
+      properties:
+        address:
+          type:
+          - string
+          - 'null'
+        city:
+          type:
+          - string
+          - 'null'
+        company:
+          type:
+          - string
+          - 'null'
+        country:
+          type:
+          - string
+          - 'null'
+        email:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        phone:
+          type:
+          - string
+          - 'null'
+        postal_code:
+          type:
+          - string
+          - 'null'
+        state:
+          type:
+          - string
+          - 'null'
+        tax_id:
+          type:
+          - string
+          - 'null'
     DiskPricing:
       type: object
       required:
@@ -723,6 +451,58 @@ components:
           minimum: 0
         raw_cost_per_gb:
           type: string
+    PricingResponse:
+      type: object
+      description: 'Top-level response: product config + per-cloud pricing.'
+      required:
+      - cluster
+      properties:
+        aws:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudPricing'
+        cluster:
+          $ref: '#/components/schemas/ClusterConfig'
+        gcp:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudPricing'
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    InvoiceStatus:
+      type: string
+      enum:
+      - draft
+      - pending
+      - approved
+      - paid
+      - failed
+      - cancelled
+      - refunded
+      - partially_refunded
+    StorageProfile:
+      type: object
+      required:
+      - rate_per_gb_month
+      - min_storage_gb
+      - max_storage_gb
+      - min_throughput_mbps
+      properties:
+        max_storage_gb:
+          type: integer
+          format: int32
+          minimum: 0
+        min_storage_gb:
+          type: integer
+          format: int32
+          minimum: 0
+        min_throughput_mbps:
+          type: string
+        rate_per_gb_month:
+          type: string
     ComputePricing:
       type: object
       required:
@@ -737,36 +517,329 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ComputeTier'
-    Cloud:
-      type: string
-      description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
-      enum:
-      - aws
-      - gcp
-      examples:
-      - aws
-    TelemetryPricing:
+    CustomerInvoiceDetails:
+      allOf:
+      - $ref: '#/components/schemas/CustomerInvoiceInfo'
+      - type: object
+        required:
+        - subtotal
+        - line_items
+        properties:
+          billing_info: {}
+          line_items:
+            type: array
+            items: {}
+          notes:
+            type:
+            - string
+            - 'null'
+          paid_at:
+            type:
+            - string
+            - 'null'
+            format: date-time
+          subtotal:
+            type: string
+          tax:
+            type:
+            - string
+            - 'null'
+    OverheadPricing:
       type: object
       required:
-      - included_days
-      - per_day
+      - base_monthly
+      - per_mbps
       properties:
-        included_days:
+        base_monthly:
+          type: string
+        per_mbps:
+          type: string
+    StoragePricing:
+      type: object
+      required:
+      - network_disk
+      - nvme_ssd
+      properties:
+        data_retention:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DataRetentionPricing'
+        network_disk:
+          $ref: '#/components/schemas/StorageProfile'
+        nvme_ssd:
+          $ref: '#/components/schemas/NvmeStorageProfile'
+    ComputeTier:
+      type: object
+      required:
+      - tier
+      - max_mbps
+      - instance
+      - monthly_cost
+      properties:
+        instance:
+          type: string
+        max_mbps:
           type: integer
           format: int32
           minimum: 0
-        per_day:
+        monthly_cost:
           type: string
+        tier:
+          type: string
+    CustomerInvoiceInfo:
+      type: object
+      required:
+      - id
+      - tenant_id
+      - number
+      - period_start
+      - period_end
+      - status
+      - currency
+      - total
+      - created_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+        currency:
+          $ref: '#/components/schemas/Currency'
+        division_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionId'
+        id:
+          $ref: '#/components/schemas/InvoiceId'
+        number:
+          type: string
+        period_end:
+          type: string
+          format: date-time
+        period_start:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/InvoiceStatus'
+        tenant_id:
+          $ref: '#/components/schemas/TenantId'
+        total:
+          type: string
+      example:
+        id: 7261845776048540000
+        tenant_id: 7261845022003200001
+        division_id: 7261844974723780000
+        number: INV-2026-000182
+        period_start: '2026-04-01T00:00:00Z'
+        period_end: '2026-05-01T00:00:00Z'
+        status: approved
+        currency: USD
+        total: '182.45'
+        created_at: '2026-05-02T10:00:00Z'
+    DeploymentReportId:
+      type: integer
+      format: int64
+      example: 611298765432109067
+      minimum: 0
+    NetworkTier:
+      type: object
+      required:
+      - rate_per_gb
+      properties:
+        max_gb_per_node:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          minimum: 0
+        rate_per_gb:
+          type: string
+        up_to_mbps:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+    DeploymentTier:
+      type: string
+      enum:
+      - free
+      - small
+      - medium
+      - large
+      - xlarge
+      - 2xlarge
+      - 4xlarge
+      - 8xlarge
+      - 16xlarge
+    CloudPricing:
+      type: object
+      required:
+      - network
+      - storage
+      - compute
+      - disk
+      - transfer
+      - overhead
+      - telemetry
+      properties:
+        compute:
+          $ref: '#/components/schemas/ComputePricing'
+        disk:
+          $ref: '#/components/schemas/DiskPricing'
+        network:
+          $ref: '#/components/schemas/NetworkPricing'
+        overhead:
+          $ref: '#/components/schemas/OverheadPricing'
+        storage:
+          $ref: '#/components/schemas/StoragePricing'
+        telemetry:
+          $ref: '#/components/schemas/TelemetryPricing'
+        transfer:
+          $ref: '#/components/schemas/TransferPricing'
+    NetworkPricing:
+      type: object
+      required:
+      - same_region
+      - cross_region_same_cloud
+      - cross_region
+      - topology_surcharge_per_gb
+      - throughput_to_gb_factor
+      properties:
+        cross_region:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkTier'
+        cross_region_same_cloud:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkTier'
+        same_region:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkTier'
+        throughput_to_gb_factor:
+          type: string
+        topology_surcharge_per_gb:
+          $ref: '#/components/schemas/TopologySurcharge'
     DeploymentId:
       type: integer
       format: int64
       example: 7261845127892140000
       minimum: 0
+    ClusterConfig:
+      type: object
+      required:
+      - nodes
+      - max_throughput_mbps_per_node
+      properties:
+        max_throughput_mbps_per_node:
+          type: integer
+          format: int32
+          minimum: 0
+        nodes:
+          type: integer
+          format: int32
+          minimum: 0
+    NvmeTier:
+      type: object
+      required:
+      - storage_gb
+      - label
+      - min_throughput_mbps
+      properties:
+        label:
+          type: string
+        min_throughput_mbps:
+          type: string
+        storage_gb:
+          type: integer
+          format: int32
+          minimum: 0
+    TopologySurcharge:
+      type: object
+      required:
+      - single_az
+      - multi_az
+      properties:
+        multi_az:
+          type: string
+        single_az:
+          type: string
+    BillingReportDetails:
+      allOf:
+      - $ref: '#/components/schemas/BillingReportInfo'
+      - type: object
+        required:
+        - compute_cost
+        - storage_cost
+        - network_cost
+        - other_cost
+        - telemetry_cost
+        - data_retention_cost
+        - platform_cost
+        - total_network_in
+        - total_network_out
+        properties:
+          compute_cost:
+            type: string
+          data_retention_cost:
+            type: string
+          network_cost:
+            type: string
+          other_cost:
+            type: string
+          platform_cost:
+            type: string
+          storage_cost:
+            type: string
+          telemetry_cost:
+            type: string
+          total_network_in:
+            type: number
+            format: double
+          total_network_out:
+            type: number
+            format: double
+    Currency:
+      type: string
+      enum:
+      - USD
+    TransferPricing:
+      type: object
+      required:
+      - same_region_per_gb
+      - cross_region_same_cloud_per_gb
+      - cross_region_per_gb
+      - cross_az_per_gb
+      properties:
+        cross_az_per_gb:
+          type: string
+        cross_region_per_gb:
+          type: string
+        cross_region_same_cloud_per_gb:
+          type: string
+        same_region_per_gb:
+          type: string
+    NvmeStorageProfile:
+      type: object
+      required:
+      - rate_per_gb_month
+      - tiers
+      properties:
+        rate_per_gb_month:
+          type: string
+        tiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/NvmeTier'
     InvoiceId:
       type: integer
       format: int64
       example: 611298765432109068
       minimum: 0
+    UpdateBillingInfo:
+      allOf:
+      - $ref: '#/components/schemas/BillingInfo'
     Paged_CustomerInvoiceInfo:
       type: object
       required:
@@ -841,79 +914,6 @@ components:
           format: int64
           example: 137
           minimum: 0
-    UpdateBillingInfo:
-      allOf:
-      - $ref: '#/components/schemas/BillingInfo'
-    BillingReportDetails:
-      allOf:
-      - $ref: '#/components/schemas/BillingReportInfo'
-      - type: object
-        required:
-        - compute_cost
-        - storage_cost
-        - network_cost
-        - other_cost
-        - telemetry_cost
-        - data_retention_cost
-        - platform_cost
-        - total_network_in
-        - total_network_out
-        properties:
-          compute_cost:
-            type: string
-          data_retention_cost:
-            type: string
-          network_cost:
-            type: string
-          other_cost:
-            type: string
-          platform_cost:
-            type: string
-          storage_cost:
-            type: string
-          telemetry_cost:
-            type: string
-          total_network_in:
-            type: number
-            format: double
-          total_network_out:
-            type: number
-            format: double
-    DataRetentionPricing:
-      type: object
-      required:
-      - rate_per_gb_month
-      - available
-      properties:
-        available:
-          type: boolean
-        rate_per_gb_month:
-          type: string
-    NetworkPricing:
-      type: object
-      required:
-      - same_region
-      - cross_region_same_cloud
-      - cross_region
-      - topology_surcharge_per_gb
-      - throughput_to_gb_factor
-      properties:
-        cross_region:
-          type: array
-          items:
-            $ref: '#/components/schemas/NetworkTier'
-        cross_region_same_cloud:
-          type: array
-          items:
-            $ref: '#/components/schemas/NetworkTier'
-        same_region:
-          type: array
-          items:
-            $ref: '#/components/schemas/NetworkTier'
-        throughput_to_gb_factor:
-          type: string
-        topology_surcharge_per_gb:
-          $ref: '#/components/schemas/TopologySurcharge'
   securitySchemes:
     ld_api_key:
       type: apiKey

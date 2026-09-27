@@ -216,21 +216,32 @@ components:
           type: string
         name:
           type: string
+    StorageInfo:
+      type: object
+      required:
+      - key
+      - name
+      - description
+      - available
+      - clusters
+      properties:
+        available:
+          type: boolean
+        clusters:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
     TenantId:
       type: integer
       format: int64
       example: 7261845022003200001
       minimum: 0
-    CloudInfo:
-      type: object
-      required:
-      - key
-      - name
-      properties:
-        key:
-          type: string
-        name:
-          type: string
     TierInfo:
       type: object
       required:
@@ -301,23 +312,12 @@ components:
           type: array
           items:
             type: string
-    StorageInfo:
+    CloudInfo:
       type: object
       required:
       - key
       - name
-      - description
-      - available
-      - clusters
       properties:
-        available:
-          type: boolean
-        clusters:
-          type: array
-          items:
-            type: string
-        description:
-          type: string
         key:
           type: string
         name:

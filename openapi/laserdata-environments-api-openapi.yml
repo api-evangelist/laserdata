@@ -237,9 +237,11 @@ components:
     Description:
       type: string
       example: Production deployment for high-throughput streaming.
-    EnvironmentName:
-      type: string
-      example: staging
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
     UpdateEnvironment:
       type: object
       properties:
@@ -263,6 +265,68 @@ components:
 
             `action = "delete_environment"`). Leave unset to keep the current value.'
           example: true
+    EnvironmentName:
+      type: string
+      example: staging
+    EnvironmentInfo:
+      type: object
+      required:
+      - id
+      - name
+      - deployments_count
+      - protected
+      - created_at
+      - updated_at
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        deployments_count:
+          type: integer
+          format: int32
+          minimum: 0
+        id:
+          $ref: '#/components/schemas/EnvironmentId'
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        protected:
+          type: boolean
+          description: 'When `true`, deletion is hardened: the DELETE request must include a one-time
+
+            confirmation code emailed to the tenant address. Obtain the code via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_environment"` and
+
+            pass it as the `code` query parameter on the DELETE call.'
+          example: true
+        updated_at:
+          type: string
+          format: date-time
+          description: Resource last-update timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+      example:
+        id: 7261845066528310000
+        name: production
+        deployments_count: 3
+        protected: true
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
+    EnvironmentDetails:
+      allOf:
+      - $ref: '#/components/schemas/EnvironmentInfo'
+      - type: object
+        required:
+        - description
+        properties:
+          description:
+            $ref: '#/components/schemas/Description'
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
     Paged_EnvironmentInfo:
       type: object
       required:
@@ -333,11 +397,6 @@ components:
           format: int64
           example: 137
           minimum: 0
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
     CreateEnvironment:
       type: object
       required:
@@ -361,65 +420,6 @@ components:
 
             Defaults to `false` when omitted.'
           example: true
-    EnvironmentInfo:
-      type: object
-      required:
-      - id
-      - name
-      - deployments_count
-      - protected
-      - created_at
-      - updated_at
-      properties:
-        created_at:
-          type: string
-          format: date-time
-          description: Resource creation timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        deployments_count:
-          type: integer
-          format: int32
-          minimum: 0
-        id:
-          $ref: '#/components/schemas/EnvironmentId'
-        name:
-          $ref: '#/components/schemas/EnvironmentName'
-        protected:
-          type: boolean
-          description: 'When `true`, deletion is hardened: the DELETE request must include a one-time
-
-            confirmation code emailed to the tenant address. Obtain the code via
-
-            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_environment"` and
-
-            pass it as the `code` query parameter on the DELETE call.'
-          example: true
-        updated_at:
-          type: string
-          format: date-time
-          description: Resource last-update timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-      example:
-        id: 7261845066528310000
-        name: production
-        deployments_count: 3
-        protected: true
-        created_at: '2026-05-20T10:00:00Z'
-        updated_at: '2026-05-20T10:00:00Z'
-    EnvironmentDetails:
-      allOf:
-      - $ref: '#/components/schemas/EnvironmentInfo'
-      - type: object
-        required:
-        - description
-        properties:
-          description:
-            $ref: '#/components/schemas/Description'
-    DivisionId:
-      type: integer
-      format: int64
-      example: 7261844974723780000
-      minimum: 0
   securitySchemes:
     ld_api_key:
       type: apiKey

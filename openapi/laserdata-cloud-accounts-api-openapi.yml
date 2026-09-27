@@ -213,45 +213,6 @@ paths:
           description: Cloud account not found
 components:
   schemas:
-    CloudAccountDetails:
-      allOf:
-      - $ref: '#/components/schemas/CloudAccountInfo'
-      - type: object
-        properties:
-          remarks:
-            type:
-            - string
-            - 'null'
-          settings:
-            oneOf:
-            - type: 'null'
-            - $ref: '#/components/schemas/CloudAccountSettings'
-    AwsCloudAccountSettings:
-      type: object
-      properties:
-        external_id:
-          type:
-          - string
-          - 'null'
-        identity_arn:
-          type:
-          - string
-          - 'null'
-        vpc_cidr:
-          type:
-          - string
-          - 'null'
-        vpc_id:
-          type:
-          - string
-          - 'null'
-    Status:
-      type: string
-      enum:
-      - inactive
-      - active
-      - locked
-      - deleted
     CreateCloudAccount:
       type: object
       required:
@@ -277,82 +238,6 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/CloudAccountSettings'
-    CloudAccountSettings:
-      type: object
-      properties:
-        aws:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/AwsCloudAccountSettings'
-        gcp:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/GcpCloudAccountSettings'
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
-    Region:
-      type: string
-      example: us-east-1
-    CloudAccountInfo:
-      type: object
-      required:
-      - id
-      - cloud
-      - name
-      - account_id
-      - status
-      - created_at
-      - updated_at
-      properties:
-        account_id:
-          type: string
-        cloud:
-          $ref: '#/components/schemas/Cloud'
-        created_at:
-          type: string
-          format: date-time
-          description: Resource creation timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        id:
-          $ref: '#/components/schemas/CloudAccountId'
-        name:
-          $ref: '#/components/schemas/CloudAccountName'
-        region:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/Region'
-        status:
-          $ref: '#/components/schemas/Status'
-        updated_at:
-          type: string
-          format: date-time
-          description: Resource last-update timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        validated_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Validation timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-      example:
-        id: 7261845211446120000
-        cloud: aws
-        name: acme-prod-aws
-        account_id: '123456789012'
-        region: us-east-1
-        validated_at: '2026-05-20T10:00:00Z'
-        status: active
-        created_at: '2026-05-20T10:00:00Z'
-        updated_at: '2026-05-20T10:00:00Z'
-    CloudAccountId:
-      type: integer
-      format: int64
-      example: 611298765432109069
-      minimum: 0
     Paged_CloudAccountInfo:
       type: object
       required:
@@ -457,17 +342,6 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/Status'
-    CloudAccountName:
-      type: string
-      example: aws-prod
-    Cloud:
-      type: string
-      description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
-      enum:
-      - aws
-      - gcp
-      examples:
-      - aws
     GcpCloudAccountSettings:
       type: object
       properties:
@@ -479,6 +353,132 @@ components:
           type:
           - string
           - 'null'
+    CloudAccountSettings:
+      type: object
+      properties:
+        aws:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AwsCloudAccountSettings'
+        gcp:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GcpCloudAccountSettings'
+    Region:
+      type: string
+      example: us-east-1
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    CloudAccountId:
+      type: integer
+      format: int64
+      example: 611298765432109069
+      minimum: 0
+    Status:
+      type: string
+      enum:
+      - inactive
+      - active
+      - locked
+      - deleted
+    CloudAccountName:
+      type: string
+      example: aws-prod
+    CloudAccountInfo:
+      type: object
+      required:
+      - id
+      - cloud
+      - name
+      - account_id
+      - status
+      - created_at
+      - updated_at
+      properties:
+        account_id:
+          type: string
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        id:
+          $ref: '#/components/schemas/CloudAccountId'
+        name:
+          $ref: '#/components/schemas/CloudAccountName'
+        region:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Region'
+        status:
+          $ref: '#/components/schemas/Status'
+        updated_at:
+          type: string
+          format: date-time
+          description: Resource last-update timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        validated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Validation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+      example:
+        id: 7261845211446120000
+        cloud: aws
+        name: acme-prod-aws
+        account_id: '123456789012'
+        region: us-east-1
+        validated_at: '2026-05-20T10:00:00Z'
+        status: active
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
+    AwsCloudAccountSettings:
+      type: object
+      properties:
+        external_id:
+          type:
+          - string
+          - 'null'
+        identity_arn:
+          type:
+          - string
+          - 'null'
+        vpc_cidr:
+          type:
+          - string
+          - 'null'
+        vpc_id:
+          type:
+          - string
+          - 'null'
+    CloudAccountDetails:
+      allOf:
+      - $ref: '#/components/schemas/CloudAccountInfo'
+      - type: object
+        properties:
+          remarks:
+            type:
+            - string
+            - 'null'
+          settings:
+            oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/CloudAccountSettings'
+    Cloud:
+      type: string
+      description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
+      enum:
+      - aws
+      - gcp
+      examples:
+      - aws
   securitySchemes:
     ld_api_key:
       type: apiKey

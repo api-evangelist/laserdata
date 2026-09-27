@@ -144,16 +144,6 @@ paths:
           description: Deployment not found
 components:
   schemas:
-    DeploymentId:
-      type: integer
-      format: int64
-      example: 7261845127892140000
-      minimum: 0
-    EnvironmentId:
-      type: integer
-      format: int64
-      example: 7261845066528310000
-      minimum: 0
     Paged_ConnectorInfo:
       type: object
       required:
@@ -208,16 +198,11 @@ components:
           format: int64
           example: 137
           minimum: 0
-    TenantId:
+    EnvironmentId:
       type: integer
       format: int64
-      example: 7261845022003200001
+      example: 7261845066528310000
       minimum: 0
-    ConnectorType:
-      type: string
-      enum:
-      - sink
-      - source
     DivisionId:
       type: integer
       format: int64
@@ -241,6 +226,21 @@ components:
           type:
           - string
           - 'null'
+    ConnectorType:
+      type: string
+      enum:
+      - sink
+      - source
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    DeploymentId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
   securitySchemes:
     ld_api_key:
       type: apiKey
