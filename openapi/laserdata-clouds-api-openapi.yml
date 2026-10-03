@@ -206,7 +206,7 @@ components:
       description: Rate limit formatted as `<value> <unit>` (e.g. `1 MB/s`, `500 KB/s`, `2 GB/s`).
       examples:
       - 1 MB/s
-    RegionInfo:
+    CloudInfo:
       type: object
       required:
       - key
@@ -237,11 +237,27 @@ components:
           type: string
         name:
           type: string
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
+    ClusterInfo:
+      type: object
+      required:
+      - key
+      - name
+      - description
+      - available
+      - tiers
+      properties:
+        available:
+          type: boolean
+        description:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        tiers:
+          type: array
+          items:
+            type: string
     TierInfo:
       type: object
       required:
@@ -291,28 +307,12 @@ components:
           type: integer
           format: int32
           minimum: 0
-    ClusterInfo:
-      type: object
-      required:
-      - key
-      - name
-      - description
-      - available
-      - tiers
-      properties:
-        available:
-          type: boolean
-        description:
-          type: string
-        key:
-          type: string
-        name:
-          type: string
-        tiers:
-          type: array
-          items:
-            type: string
-    CloudInfo:
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    RegionInfo:
       type: object
       required:
       - key

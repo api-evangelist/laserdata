@@ -144,6 +144,24 @@ paths:
           description: Deployment not found
 components:
   schemas:
+    ActivateConnector:
+      type: object
+      required:
+      - connector_key
+      - connector_type
+      properties:
+        connector_key:
+          type: string
+        connector_type:
+          type: string
+        instance_key:
+          type:
+          - string
+          - 'null'
+        instance_name:
+          type:
+          - string
+          - 'null'
     Paged_ConnectorInfo:
       type: object
       required:
@@ -198,48 +216,30 @@ components:
           format: int64
           example: 137
           minimum: 0
-    EnvironmentId:
+    DeploymentId:
       type: integer
       format: int64
-      example: 7261845066528310000
+      example: 7261845127892140000
       minimum: 0
-    DivisionId:
-      type: integer
-      format: int64
-      example: 7261844974723780000
-      minimum: 0
-    ActivateConnector:
-      type: object
-      required:
-      - connector_key
-      - connector_type
-      properties:
-        connector_key:
-          type: string
-        connector_type:
-          type: string
-        instance_key:
-          type:
-          - string
-          - 'null'
-        instance_name:
-          type:
-          - string
-          - 'null'
     ConnectorType:
       type: string
       enum:
       - sink
       - source
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
     TenantId:
       type: integer
       format: int64
       example: 7261845022003200001
-      minimum: 0
-    DeploymentId:
-      type: integer
-      format: int64
-      example: 7261845127892140000
       minimum: 0
   securitySchemes:
     ld_api_key:

@@ -225,89 +225,12 @@ paths:
           description: API key not found
 components:
   schemas:
-    ApiKeyDetails:
-      allOf:
-      - $ref: '#/components/schemas/ApiKeyInfo'
-      - type: object
-        required:
-        - permissions
-        properties:
-          permissions:
-            $ref: '#/components/schemas/RolePermissionsInfo'
-    DivisionId:
-      type: integer
-      format: int64
-      example: 7261844974723780000
-      minimum: 0
-    EnvironmentName:
+    RoleName:
       type: string
-      example: staging
-    ApiKeyInfo:
-      type: object
-      required:
-      - id
-      - user_id
-      - role_id
-      - role_name
-      - name
-      - validate_ip
-      - allowed_ips
-      - expiry_at
-      - created_at
-      properties:
-        allowed_ips:
-          type: array
-          items:
-            type: string
-        created_at:
-          type: string
-          format: date-time
-          description: Resource creation timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        division_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DivisionId'
-        division_name:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DivisionName'
-        expiry_at:
-          type: string
-          format: date-time
-          description: Expiration timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        id:
-          $ref: '#/components/schemas/ApiKeyId'
-        name:
-          $ref: '#/components/schemas/ApiKeyName'
-        role_id:
-          $ref: '#/components/schemas/RoleId'
-        role_name:
-          $ref: '#/components/schemas/RoleName'
-        user_id:
-          $ref: '#/components/schemas/UserId'
-        validate_ip:
-          type: boolean
-      example:
-        id: 7261845198004700001
-        division_id: 7261844974723780000
-        division_name: Engineering
-        user_id: 611298765432109069
-        role_id: 611298765432109010
-        role_name: ci-deployer
-        name: ci-pipeline
-        validate_ip: true
-        allowed_ips:
-        - 203.0.113.10
-        - 203.0.113.11
-        expiry_at: '2027-01-15T12:00:00Z'
-        created_at: '2026-05-20T10:00:00Z'
-    RoleId:
-      type: integer
-      format: int64
-      example: 7261845001236500000
-      minimum: 0
+      example: tenant-admin
+    DivisionName:
+      type: string
+      example: production
     RolePermissionsInfo:
       type: object
       required:
@@ -334,94 +257,6 @@ components:
           type: array
           items:
             type: string
-    CreateApiKey:
-      type: object
-      required:
-      - name
-      - expiry_at
-      - validate_ip
-      properties:
-        allowed_ips:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        division_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DivisionId'
-        expiry_at:
-          type: string
-          format: date-time
-          description: Expiration timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-        name:
-          $ref: '#/components/schemas/ApiKeyName'
-        permissions:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RolePermissions'
-        role_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RoleId'
-        validate_ip:
-          type: boolean
-    DivisionPermissions:
-      type: object
-      properties:
-        environment:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        environments:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: array
-            items:
-              type: string
-          propertyNames:
-            type: string
-        permissions:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-    DivisionPermissionsInfo:
-      type: object
-      required:
-      - name
-      - permissions
-      - environment
-      - environments
-      properties:
-        environment:
-          type: array
-          items:
-            type: string
-        environments:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/EnvironmentPermissionsInfo'
-          propertyNames:
-            type: string
-        name:
-          $ref: '#/components/schemas/DivisionName'
-        permissions:
-          type: array
-          items:
-            type: string
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
     Paged_ApiKeyInfo:
       type: object
       required:
@@ -508,6 +343,28 @@ components:
           format: int64
           example: 137
           minimum: 0
+    EnvironmentName:
+      type: string
+      example: staging
+    ApiKeyId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
+    ApiKeyDetails:
+      allOf:
+      - $ref: '#/components/schemas/ApiKeyInfo'
+      - type: object
+        required:
+        - permissions
+        properties:
+          permissions:
+            $ref: '#/components/schemas/RolePermissionsInfo'
+    UserId:
+      type: integer
+      format: int64
+      example: 7261844898910240000
+      minimum: 0
     ApiKeyToken:
       type: object
       required:
@@ -519,18 +376,6 @@ components:
         token:
           type: string
           example: ld_pk_AbCdEf0123456789AbCdEf0123456789
-    EnvironmentPermissionsInfo:
-      type: object
-      required:
-      - name
-      - permissions
-      properties:
-        name:
-          $ref: '#/components/schemas/EnvironmentName'
-        permissions:
-          type: array
-          items:
-            type: string
     RolePermissions:
       type: object
       properties:
@@ -560,9 +405,143 @@ components:
           - 'null'
           items:
             type: string
-    RoleName:
-      type: string
-      example: tenant-admin
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    DivisionPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      - environment
+      - environments
+      properties:
+        environment:
+          type: array
+          items:
+            type: string
+        environments:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/EnvironmentPermissionsInfo'
+          propertyNames:
+            type: string
+        name:
+          $ref: '#/components/schemas/DivisionName'
+        permissions:
+          type: array
+          items:
+            type: string
+    ApiKeyInfo:
+      type: object
+      required:
+      - id
+      - user_id
+      - role_id
+      - role_name
+      - name
+      - validate_ip
+      - allowed_ips
+      - expiry_at
+      - created_at
+      properties:
+        allowed_ips:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        division_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionId'
+        division_name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionName'
+        expiry_at:
+          type: string
+          format: date-time
+          description: Expiration timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        id:
+          $ref: '#/components/schemas/ApiKeyId'
+        name:
+          $ref: '#/components/schemas/ApiKeyName'
+        role_id:
+          $ref: '#/components/schemas/RoleId'
+        role_name:
+          $ref: '#/components/schemas/RoleName'
+        user_id:
+          $ref: '#/components/schemas/UserId'
+        validate_ip:
+          type: boolean
+      example:
+        id: 7261845198004700001
+        division_id: 7261844974723780000
+        division_name: Engineering
+        user_id: 611298765432109069
+        role_id: 611298765432109010
+        role_name: ci-deployer
+        name: ci-pipeline
+        validate_ip: true
+        allowed_ips:
+        - 203.0.113.10
+        - 203.0.113.11
+        expiry_at: '2027-01-15T12:00:00Z'
+        created_at: '2026-05-20T10:00:00Z'
+    EnvironmentPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      properties:
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        permissions:
+          type: array
+          items:
+            type: string
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    DivisionPermissions:
+      type: object
+      properties:
+        environment:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        environments:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          propertyNames:
+            type: string
+        permissions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    RoleId:
+      type: integer
+      format: int64
+      example: 7261845001236500000
+      minimum: 0
     UpdateApiKeySecurity:
       type: object
       properties:
@@ -576,19 +555,40 @@ components:
           type:
           - boolean
           - 'null'
-    ApiKeyId:
-      type: integer
-      format: int64
-      example: 7261845127892140000
-      minimum: 0
-    UserId:
-      type: integer
-      format: int64
-      example: 7261844898910240000
-      minimum: 0
-    DivisionName:
-      type: string
-      example: production
+    CreateApiKey:
+      type: object
+      required:
+      - name
+      - expiry_at
+      - validate_ip
+      properties:
+        allowed_ips:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        division_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionId'
+        expiry_at:
+          type: string
+          format: date-time
+          description: Expiration timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+        name:
+          $ref: '#/components/schemas/ApiKeyName'
+        permissions:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RolePermissions'
+        role_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RoleId'
+        validate_ip:
+          type: boolean
     ApiKeyName:
       type: string
       example: ci-deployer

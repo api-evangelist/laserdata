@@ -213,6 +213,86 @@ paths:
           description: Cloud account not found
 components:
   schemas:
+    Region:
+      type: string
+      example: us-east-1
+    GcpCloudAccountSettings:
+      type: object
+      properties:
+        vpc_cidr:
+          type:
+          - string
+          - 'null'
+        vpc_network:
+          type:
+          - string
+          - 'null'
+    UpdateCloudAccount:
+      type: object
+      properties:
+        account_id:
+          type:
+          - string
+          - 'null'
+        name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudAccountName'
+        region:
+          type:
+          - string
+          - 'null'
+        remarks:
+          type:
+          - string
+          - 'null'
+        settings:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudAccountSettings'
+        status:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Status'
+    AwsCloudAccountSettings:
+      type: object
+      properties:
+        external_id:
+          type:
+          - string
+          - 'null'
+        identity_arn:
+          type:
+          - string
+          - 'null'
+        vpc_cidr:
+          type:
+          - string
+          - 'null'
+        vpc_id:
+          type:
+          - string
+          - 'null'
+    CloudAccountDetails:
+      allOf:
+      - $ref: '#/components/schemas/CloudAccountInfo'
+      - type: object
+        properties:
+          remarks:
+            type:
+            - string
+            - 'null'
+          settings:
+            oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/CloudAccountSettings'
+    Status:
+      type: string
+      enum:
+      - inactive
+      - active
+      - locked
+      - deleted
     CreateCloudAccount:
       type: object
       required:
@@ -315,78 +395,6 @@ components:
           format: int64
           example: 137
           minimum: 0
-    UpdateCloudAccount:
-      type: object
-      properties:
-        account_id:
-          type:
-          - string
-          - 'null'
-        name:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/CloudAccountName'
-        region:
-          type:
-          - string
-          - 'null'
-        remarks:
-          type:
-          - string
-          - 'null'
-        settings:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/CloudAccountSettings'
-        status:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/Status'
-    GcpCloudAccountSettings:
-      type: object
-      properties:
-        vpc_cidr:
-          type:
-          - string
-          - 'null'
-        vpc_network:
-          type:
-          - string
-          - 'null'
-    CloudAccountSettings:
-      type: object
-      properties:
-        aws:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/AwsCloudAccountSettings'
-        gcp:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/GcpCloudAccountSettings'
-    Region:
-      type: string
-      example: us-east-1
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
-    CloudAccountId:
-      type: integer
-      format: int64
-      example: 611298765432109069
-      minimum: 0
-    Status:
-      type: string
-      enum:
-      - inactive
-      - active
-      - locked
-      - deleted
-    CloudAccountName:
-      type: string
-      example: aws-prod
     CloudAccountInfo:
       type: object
       required:
@@ -439,38 +447,19 @@ components:
         status: active
         created_at: '2026-05-20T10:00:00Z'
         updated_at: '2026-05-20T10:00:00Z'
-    AwsCloudAccountSettings:
-      type: object
-      properties:
-        external_id:
-          type:
-          - string
-          - 'null'
-        identity_arn:
-          type:
-          - string
-          - 'null'
-        vpc_cidr:
-          type:
-          - string
-          - 'null'
-        vpc_id:
-          type:
-          - string
-          - 'null'
-    CloudAccountDetails:
-      allOf:
-      - $ref: '#/components/schemas/CloudAccountInfo'
-      - type: object
-        properties:
-          remarks:
-            type:
-            - string
-            - 'null'
-          settings:
-            oneOf:
-            - type: 'null'
-            - $ref: '#/components/schemas/CloudAccountSettings'
+    CloudAccountId:
+      type: integer
+      format: int64
+      example: 611298765432109069
+      minimum: 0
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    CloudAccountName:
+      type: string
+      example: aws-prod
     Cloud:
       type: string
       description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
@@ -479,6 +468,17 @@ components:
       - gcp
       examples:
       - aws
+    CloudAccountSettings:
+      type: object
+      properties:
+        aws:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AwsCloudAccountSettings'
+        gcp:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GcpCloudAccountSettings'
   securitySchemes:
     ld_api_key:
       type: apiKey

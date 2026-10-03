@@ -316,14 +316,134 @@ paths:
           description: Insufficient permissions
 components:
   schemas:
+    RoleName:
+      type: string
+      example: tenant-admin
+    DivisionName:
+      type: string
+      example: production
+    RolePermissionsInfo:
+      type: object
+      required:
+      - tenant
+      - division
+      - environment
+      - divisions
+      properties:
+        division:
+          type: array
+          items:
+            type: string
+        divisions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DivisionPermissionsInfo'
+          propertyNames:
+            type: string
+        environment:
+          type: array
+          items:
+            type: string
+        tenant:
+          type: array
+          items:
+            type: string
+    RoleBasicInfo:
+      type: object
+      required:
+      - id
+      - name
+      - kind
+      properties:
+        id:
+          $ref: '#/components/schemas/RoleId'
+        kind:
+          $ref: '#/components/schemas/TenantRoleKind'
+        name:
+          $ref: '#/components/schemas/RoleName'
+      example:
+        id: 611298765432109010
+        name: developer
+        kind: system
     EnvironmentName:
       type: string
       example: staging
-    RoleId:
+    AddRole:
+      type: object
+      required:
+      - name
+      - permissions
+      properties:
+        name:
+          $ref: '#/components/schemas/RoleName'
+        permissions:
+          $ref: '#/components/schemas/RolePermissions'
+    Email:
+      type: string
+      example: alice@laserdata.com
+    AssignRoleMembers:
+      type: object
+      required:
+      - members
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserId'
+    UserId:
       type: integer
       format: int64
-      example: 7261845001236500000
+      example: 7261844898910240000
       minimum: 0
+    UpdateRole:
+      type: object
+      properties:
+        name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RoleName'
+        permissions:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RolePermissions'
+    RolePermissions:
+      type: object
+      properties:
+        division:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        divisions:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            $ref: '#/components/schemas/DivisionPermissions'
+          propertyNames:
+            type: string
+        environment:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        tenant:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    RevokeRoleMembers:
+      type: object
+      required:
+      - members
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserId'
     Paged_RoleMemberInfo:
       type: object
       required:
@@ -370,57 +490,29 @@ components:
           format: int64
           example: 137
           minimum: 0
-    RolePermissionsInfo:
-      type: object
-      required:
-      - tenant
-      - division
-      - environment
-      - divisions
-      properties:
-        division:
-          type: array
-          items:
-            type: string
-        divisions:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/DivisionPermissionsInfo'
-          propertyNames:
-            type: string
-        environment:
-          type: array
-          items:
-            type: string
-        tenant:
-          type: array
-          items:
-            type: string
-    DivisionPermissions:
-      type: object
-      properties:
-        environment:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        environments:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: array
-            items:
-              type: string
-          propertyNames:
-            type: string
-        permissions:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    RoleDetails:
+      allOf:
+      - $ref: '#/components/schemas/RoleBasicInfo'
+      - type: object
+        required:
+        - permissions
+        properties:
+          permissions:
+            $ref: '#/components/schemas/RolePermissionsInfo'
+    FullName:
+      type: string
+      example: Alice Doe
+    TenantRoleKind:
+      type: string
+      enum:
+      - system
+      - custom
+      - api_key
     DivisionPermissionsInfo:
       type: object
       required:
@@ -445,137 +537,6 @@ components:
           type: array
           items:
             type: string
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
-    RevokeRoleMembers:
-      type: object
-      required:
-      - members
-      properties:
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserId'
-    RoleBasicInfo:
-      type: object
-      required:
-      - id
-      - name
-      - kind
-      properties:
-        id:
-          $ref: '#/components/schemas/RoleId'
-        kind:
-          $ref: '#/components/schemas/TenantRoleKind'
-        name:
-          $ref: '#/components/schemas/RoleName'
-      example:
-        id: 611298765432109010
-        name: developer
-        kind: system
-    TenantRoleKind:
-      type: string
-      enum:
-      - system
-      - custom
-      - api_key
-    RoleDetails:
-      allOf:
-      - $ref: '#/components/schemas/RoleBasicInfo'
-      - type: object
-        required:
-        - permissions
-        properties:
-          permissions:
-            $ref: '#/components/schemas/RolePermissionsInfo'
-    EnvironmentPermissionsInfo:
-      type: object
-      required:
-      - name
-      - permissions
-      properties:
-        name:
-          $ref: '#/components/schemas/EnvironmentName'
-        permissions:
-          type: array
-          items:
-            type: string
-    UpdateRole:
-      type: object
-      properties:
-        name:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RoleName'
-        permissions:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RolePermissions'
-    AssignRoleMembers:
-      type: object
-      required:
-      - members
-      properties:
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserId'
-    FullName:
-      type: string
-      example: Alice Doe
-    RolePermissions:
-      type: object
-      properties:
-        division:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        divisions:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            $ref: '#/components/schemas/DivisionPermissions'
-          propertyNames:
-            type: string
-        environment:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-        tenant:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-    RoleName:
-      type: string
-      example: tenant-admin
-    AddRole:
-      type: object
-      required:
-      - name
-      - permissions
-      properties:
-        name:
-          $ref: '#/components/schemas/RoleName'
-        permissions:
-          $ref: '#/components/schemas/RolePermissions'
-    UserId:
-      type: integer
-      format: int64
-      example: 7261844898910240000
-      minimum: 0
-    DivisionName:
-      type: string
-      example: production
     Paged_RoleBasicInfo:
       type: object
       required:
@@ -618,9 +579,48 @@ components:
           format: int64
           example: 137
           minimum: 0
-    Email:
-      type: string
-      example: alice@laserdata.com
+    EnvironmentPermissionsInfo:
+      type: object
+      required:
+      - name
+      - permissions
+      properties:
+        name:
+          $ref: '#/components/schemas/EnvironmentName'
+        permissions:
+          type: array
+          items:
+            type: string
+    DivisionPermissions:
+      type: object
+      properties:
+        environment:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+        environments:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          propertyNames:
+            type: string
+        permissions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+    RoleId:
+      type: integer
+      format: int64
+      example: 7261845001236500000
+      minimum: 0
   securitySchemes:
     ld_api_key:
       type: apiKey

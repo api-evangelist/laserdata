@@ -549,25 +549,99 @@ paths:
           description: Deployment upgrade scheduled
 components:
   schemas:
-    GcpServiceAccountEmail:
+    GcpProjectId:
       type: string
-      description: "A validated GCP service account email address.\n\nGCP service account emails follow the format:\n  `{name}@{project}.iam.gserviceaccount.com`\n\nValidation rules:\n- Must contain exactly one `@`\n- Must end with `.iam.gserviceaccount.com`\n- Must not contain path-traversal or control characters (`/`, `\\`, `:`)\n- The local part (before `@`) must be non-empty\n\nThis newtype prevents URL injection when the email is interpolated into\nthe IAM Credentials API impersonation endpoint."
-      example: laserdata-byoc@acme-prod-123456.iam.gserviceaccount.com
-    DivisionId:
+      description: 'A validated GCP project ID.
+
+
+        GCP project IDs must follow these rules:
+
+        - 6–30 characters
+
+        - Lowercase letters, digits, and hyphens only
+
+        - Starts with a lowercase letter
+
+        - Does not end with a hyphen'
+      example: acme-prod-123456
+    StorageSize:
       type: integer
-      format: int64
-      example: 7261844974723780000
+      format: int32
+      description: Storage size in GB
       minimum: 0
-    AwsAccountId:
+    AvailabilityMode:
       type: string
-      description: AWS Account ID - exactly 12 digits.
-      example: '123456789012'
-    CidrBlock:
+      enum:
+      - single_az
+      - multi_az
+    DeployStarter:
+      type: object
+      required:
+      - cloud
+      - region
+      properties:
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        deployment_name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentName'
+        environment_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/EnvironmentId'
+        environment_name:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/EnvironmentName'
+        region:
+          $ref: '#/components/schemas/Region'
+    DeploymentDetails:
+      allOf:
+      - $ref: '#/components/schemas/DeploymentInfo'
+      - type: object
+        required:
+        - upgrades
+        properties:
+          description:
+            oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Description'
+          upgrades:
+            type: array
+            items:
+              $ref: '#/components/schemas/DeploymentUpgrade'
+    TelemetryRetention:
+      type: object
+      required:
+      - logs_days
+      - metrics_days
+      - heartbeats_days
+      properties:
+        heartbeats_days:
+          type: integer
+          format: int32
+          minimum: 0
+        logs_days:
+          type: integer
+          format: int32
+          minimum: 0
+        metrics_days:
+          type: integer
+          format: int32
+          minimum: 0
+    DeploymentTier:
       type: string
-      example: 10.0.0.0/16
-    EnvironmentName:
-      type: string
-      example: staging
+      enum:
+      - free
+      - small
+      - medium
+      - large
+      - xlarge
+      - 2xlarge
+      - 4xlarge
+      - 8xlarge
+      - 16xlarge
     RetentionSettings:
       type: object
       required:
@@ -578,6 +652,144 @@ components:
           format: int32
           example: 14
           minimum: 0
+    DeployToYourOwnCloud:
+      type: object
+      required:
+      - name
+      - cloud
+      - tier
+      - cluster
+      - region
+      properties:
+        availability_mode:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AvailabilityMode'
+        aws:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AwsByocDeployment'
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        cluster:
+          $ref: '#/components/schemas/ClusterKind'
+        encrypted:
+          type:
+          - boolean
+          - 'null'
+        gcp:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/GcpByocDeployment'
+        name:
+          $ref: '#/components/schemas/DeploymentName'
+        protected:
+          type:
+          - boolean
+          - 'null'
+          description: 'Optional. When `true`, deletion is hardened: deleting this BYOC deployment will
+
+            require a one-time confirmation code emailed to the tenant address (request via
+
+            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_deployment"`).
+
+            Defaults to `false` when omitted.'
+          example: true
+        public_ip_enabled:
+          type:
+          - boolean
+          - 'null'
+        region:
+          $ref: '#/components/schemas/Region'
+        retention:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RetentionSettings'
+        spend_limit:
+          type:
+          - string
+          - 'null'
+        storage:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudStorageSettings'
+        subdomain_enabled:
+          type:
+          - boolean
+          - 'null'
+        target_network_tput:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NetworkTput'
+        tier:
+          $ref: '#/components/schemas/DeploymentTier'
+    DeploymentPreview:
+      type: object
+      required:
+      - cloud
+      - region
+      - tier
+      - nodes
+      - instance
+      - monthly_total_usd
+      - breakdown
+      properties:
+        breakdown:
+          $ref: '#/components/schemas/DeploymentPreviewBreakdown'
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        instance:
+          type: string
+        monthly_total_usd:
+          type: string
+        nodes:
+          type: integer
+          format: int32
+          minimum: 0
+        region:
+          $ref: '#/components/schemas/Region'
+        tier:
+          $ref: '#/components/schemas/DeploymentTier'
+    EnvironmentName:
+      type: string
+      example: staging
+    DeploymentVariant:
+      type: string
+      enum:
+      - managed
+      - byoc
+      - on_premise
+    AwsAccountId:
+      type: string
+      description: AWS Account ID - exactly 12 digits.
+      example: '123456789012'
+    Region:
+      type: string
+      example: us-east-1
+    UpdateRetention:
+      type: object
+      required:
+      - retention
+      properties:
+        retention:
+          $ref: '#/components/schemas/RetentionSettings'
+    ClusterKind:
+      type: string
+      enum:
+      - standalone
+      - cluster
+    NetworkTput:
+      type: integer
+      format: int32
+      description: Network throughput in decimal KB/s (1000 KB = 1 MB)
+      example: 1024
+      minimum: 0
+    AwsVpcId:
+      type: string
+      description: 'AWS VPC ID, e.g. `vpc-1234567890abcdef0`.
+
+        Must start with `vpc-` followed by 1-17 hex characters.'
+      example: vpc-0abc1234def567890
     DeployToManagedCloud:
       type: object
       required:
@@ -642,154 +854,6 @@ components:
           - $ref: '#/components/schemas/NetworkTput'
         tier:
           $ref: '#/components/schemas/DeploymentTier'
-    Area:
-      type: string
-      enum:
-      - us
-      - eu
-      - ap
-      - ca
-      - sa
-    ExtendDeployment:
-      type: object
-      required:
-      - nodes
-      properties:
-        nodes:
-          type: array
-          items:
-            $ref: '#/components/schemas/NodeToExtend'
-    DeploymentVariant:
-      type: string
-      enum:
-      - managed
-      - byoc
-      - on_premise
-    DeploymentUpgrade:
-      type: object
-      required:
-      - upgraded_at
-      properties:
-        instance_type:
-          type:
-          - string
-          - 'null'
-        nodes_after:
-          type:
-          - integer
-          - 'null'
-          format: int32
-          minimum: 0
-        nodes_before:
-          type:
-          - integer
-          - 'null'
-          format: int32
-          minimum: 0
-        rate_limit:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DeploymentNetworkRateLimit'
-        storage_size:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/StorageSize'
-        storage_type:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/StorageType'
-        target_network_tput:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/NetworkTput'
-        tier:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DeploymentTier'
-        upgraded_at:
-          type: string
-          format: date-time
-          description: Last upgrade timestamp (RFC 3339 UTC).
-          example: '2026-05-20T10:00:00Z'
-    Cloud:
-      type: string
-      description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
-      enum:
-      - aws
-      - gcp
-      examples:
-      - aws
-    DeployStarter:
-      type: object
-      required:
-      - cloud
-      - region
-      properties:
-        cloud:
-          $ref: '#/components/schemas/Cloud'
-        deployment_name:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DeploymentName'
-        environment_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/EnvironmentId'
-        environment_name:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/EnvironmentName'
-        region:
-          $ref: '#/components/schemas/Region'
-    DeploymentNetworkRateLimit:
-      type: string
-      description: Rate limit formatted as `<value> <unit>` (e.g. `1 MB/s`, `500 KB/s`, `2 GB/s`).
-      examples:
-      - 1 MB/s
-    RuntimeType:
-      type: string
-      description: 'Runtime identifier: `warden`, `iggy`, `connectors`, `connector:{id}`, `plane`, or `mcp`.'
-      examples:
-      - iggy
-    DeploymentPreview:
-      type: object
-      required:
-      - cloud
-      - region
-      - tier
-      - nodes
-      - instance
-      - monthly_total_usd
-      - breakdown
-      properties:
-        breakdown:
-          $ref: '#/components/schemas/DeploymentPreviewBreakdown'
-        cloud:
-          $ref: '#/components/schemas/Cloud'
-        instance:
-          type: string
-        monthly_total_usd:
-          type: string
-        nodes:
-          type: integer
-          format: int32
-          minimum: 0
-        region:
-          $ref: '#/components/schemas/Region'
-        tier:
-          $ref: '#/components/schemas/DeploymentTier'
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
-    UpdateSpendLimit:
-      type: object
-      properties:
-        spend_limit:
-          type:
-          - string
-          - 'null'
     NodeToExtend:
       type: object
       required:
@@ -800,11 +864,45 @@ components:
           format: int32
           example: 3
           minimum: 0
-    StorageSize:
+    Area:
+      type: string
+      enum:
+      - us
+      - eu
+      - ap
+      - ca
+      - sa
+    TenantId:
       type: integer
-      format: int32
-      description: Storage size in GB
+      format: int64
+      example: 7261845022003200001
       minimum: 0
+    GenerateByocSetup:
+      type: object
+      required:
+      - cloud
+      - region
+      properties:
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        region:
+          $ref: '#/components/schemas/Region'
+    CidrBlock:
+      type: string
+      example: 10.0.0.0/16
+    StorageType:
+      type: string
+      description: 'Storage type for deployments
+
+
+        Frontend should use these exact values: "ssd" or "network" (lowercase)
+
+        These are the only two supported storage types currently.'
+      enum:
+      - local_ssd
+      - network_balanced
+      - network_optimized
+      - network_extreme
     Paged_DeploymentInfo:
       type: object
       required:
@@ -965,306 +1063,56 @@ components:
           format: int64
           example: 137
           minimum: 0
-    EnvironmentId:
-      type: integer
-      format: int64
-      example: 7261845066528310000
-      minimum: 0
-    CloudStorageSettings:
-      type: object
-      description: 'Simplified storage configuration for API requests.
-
-        Contains only storage type and optional size. IOPS and throughput are
-
-        automatically calculated based on tier and storage type when converted to CloudStorage.'
-      required:
-      - type
-      properties:
-        size:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/StorageSize'
-            description: Size in GB. Required for network storage types.
-        type:
-          $ref: '#/components/schemas/StorageType'
-    ByocSetup:
-      allOf:
-      - {}
-      - {}
-      - type: object
-        required:
-        - supervisor
-        - steps
-        properties:
-          steps:
-            type: array
-            items:
-              type: string
-          supervisor:
-            type: string
-    DeploymentName:
-      type: string
-      example: iggy-prod-01
-    DeploymentRetention:
+    DeploymentUpgrade:
       type: object
       required:
-      - telemetry
+      - upgraded_at
       properties:
-        data_storage_gb:
-          type:
-          - integer
-          - 'null'
-          format: int64
-          description: Optional S3 data retention storage in GB.
-          minimum: 0
-        telemetry:
-          $ref: '#/components/schemas/TelemetryRetention'
-    DeploymentPreviewBreakdown:
-      type: object
-      required:
-      - compute_usd
-      - storage_usd
-      - network_usd
-      - telemetry_usd
-      - data_retention_usd
-      properties:
-        compute_usd:
-          type: string
-        data_retention_usd:
-          type: string
-        network_usd:
-          type: string
-        storage_usd:
-          type: string
-        telemetry_usd:
-          type: string
-    AwsVpcId:
-      type: string
-      description: 'AWS VPC ID, e.g. `vpc-1234567890abcdef0`.
-
-        Must start with `vpc-` followed by 1-17 hex characters.'
-      example: vpc-0abc1234def567890
-    DeploymentDetails:
-      allOf:
-      - $ref: '#/components/schemas/DeploymentInfo'
-      - type: object
-        required:
-        - upgrades
-        properties:
-          description:
-            oneOf:
-            - type: 'null'
-            - $ref: '#/components/schemas/Description'
-          upgrades:
-            type: array
-            items:
-              $ref: '#/components/schemas/DeploymentUpgrade'
-    NetworkTput:
-      type: integer
-      format: int32
-      description: Network throughput in decimal KB/s (1000 KB = 1 MB)
-      example: 1024
-      minimum: 0
-    DeployToYourOwnCloud:
-      type: object
-      required:
-      - name
-      - cloud
-      - tier
-      - cluster
-      - region
-      properties:
-        availability_mode:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/AvailabilityMode'
-        aws:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/AwsByocDeployment'
-        cloud:
-          $ref: '#/components/schemas/Cloud'
-        cluster:
-          $ref: '#/components/schemas/ClusterKind'
-        encrypted:
-          type:
-          - boolean
-          - 'null'
-        gcp:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/GcpByocDeployment'
-        name:
-          $ref: '#/components/schemas/DeploymentName'
-        protected:
-          type:
-          - boolean
-          - 'null'
-          description: 'Optional. When `true`, deletion is hardened: deleting this BYOC deployment will
-
-            require a one-time confirmation code emailed to the tenant address (request via
-
-            `PUT /tenants/{tenant_id}/request_code` with `action = "delete_deployment"`).
-
-            Defaults to `false` when omitted.'
-          example: true
-        public_ip_enabled:
-          type:
-          - boolean
-          - 'null'
-        region:
-          $ref: '#/components/schemas/Region'
-        retention:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RetentionSettings'
-        spend_limit:
+        instance_type:
           type:
           - string
           - 'null'
-        storage:
+        nodes_after:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+        nodes_before:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          minimum: 0
+        rate_limit:
           oneOf:
           - type: 'null'
-          - $ref: '#/components/schemas/CloudStorageSettings'
-        subdomain_enabled:
-          type:
-          - boolean
-          - 'null'
+          - $ref: '#/components/schemas/DeploymentNetworkRateLimit'
+        storage_size:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/StorageSize'
+        storage_type:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/StorageType'
         target_network_tput:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/NetworkTput'
-        tier:
-          $ref: '#/components/schemas/DeploymentTier'
-    DeploymentTier:
-      type: string
-      enum:
-      - free
-      - small
-      - medium
-      - large
-      - xlarge
-      - 2xlarge
-      - 4xlarge
-      - 8xlarge
-      - 16xlarge
-    AvailabilityMode:
-      type: string
-      enum:
-      - single_az
-      - multi_az
-    UpgradeDeployment:
-      type: object
-      properties:
-        storage:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/CloudStorageSettings'
         tier:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/DeploymentTier'
-    DeploymentId:
-      type: integer
-      format: int64
-      example: 7261845127892140000
-      minimum: 0
-    PreviewDeployment:
-      type: object
-      required:
-      - cloud
-      - region
-      - tier
-      properties:
-        availability_mode:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/AvailabilityMode'
-        cloud:
-          $ref: '#/components/schemas/Cloud'
-        nodes:
-          type:
-          - integer
-          - 'null'
-          format: int32
-          description: Number of nodes in the cluster. Defaults to 3 if unset.
-          minimum: 0
-        region:
-          $ref: '#/components/schemas/Region'
-        storage:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/CloudStorageSettings'
-        target_network_tput:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/NetworkTput'
-        telemetry_extra_days:
-          type:
-          - integer
-          - 'null'
-          format: int32
-          description: Extra telemetry retention days on top of the included window. Defaults to 0.
-          minimum: 0
-        tier:
-          $ref: '#/components/schemas/DeploymentTier'
-    UpdateRetention:
-      type: object
-      required:
-      - retention
-      properties:
-        retention:
-          $ref: '#/components/schemas/RetentionSettings'
-    StorageType:
+        upgraded_at:
+          type: string
+          format: date-time
+          description: Last upgrade timestamp (RFC 3339 UTC).
+          example: '2026-05-20T10:00:00Z'
+    GcpServiceAccountEmail:
       type: string
-      description: 'Storage type for deployments
-
-
-        Frontend should use these exact values: "ssd" or "network" (lowercase)
-
-        These are the only two supported storage types currently.'
-      enum:
-      - local_ssd
-      - network_balanced
-      - network_optimized
-      - network_extreme
-    GcpProjectId:
-      type: string
-      description: 'A validated GCP project ID.
-
-
-        GCP project IDs must follow these rules:
-
-        - 6–30 characters
-
-        - Lowercase letters, digits, and hyphens only
-
-        - Starts with a lowercase letter
-
-        - Does not end with a hyphen'
-      example: acme-prod-123456
-    Description:
-      type: string
-      example: Production deployment for high-throughput streaming.
-    TelemetryRetention:
-      type: object
-      required:
-      - logs_days
-      - metrics_days
-      - heartbeats_days
-      properties:
-        heartbeats_days:
-          type: integer
-          format: int32
-          minimum: 0
-        logs_days:
-          type: integer
-          format: int32
-          minimum: 0
-        metrics_days:
-          type: integer
-          format: int32
-          minimum: 0
+      description: "A validated GCP service account email address.\n\nGCP service account emails follow the format:\n  `{name}@{project}.iam.gserviceaccount.com`\n\nValidation rules:\n- Must contain exactly one `@`\n- Must end with `.iam.gserviceaccount.com`\n- Must not contain path-traversal or control characters (`/`, `\\`, `:`)\n- The local part (before `@`) must be non-empty\n\nThis newtype prevents URL injection when the email is interpolated into\nthe IAM Credentials API impersonation endpoint."
+      example: laserdata-byoc@acme-prod-123456.iam.gserviceaccount.com
     AwsByocDeployment:
       type: object
       required:
@@ -1284,22 +1132,9 @@ components:
           $ref: '#/components/schemas/CidrBlock'
         vpc_id:
           $ref: '#/components/schemas/AwsVpcId'
-    GcpByocDeployment:
-      type: object
-      required:
-      - project_id
-      - service_account_email
-      - vpc_name
-      properties:
-        project_id:
-          $ref: '#/components/schemas/GcpProjectId'
-        service_account_email:
-          $ref: '#/components/schemas/GcpServiceAccountEmail'
-        vpc_name:
-          $ref: '#/components/schemas/HyphenName'
-    Region:
+    HyphenName:
       type: string
-      example: us-east-1
+      example: iggy-prod-vpc
     DeploymentInfo:
       type: object
       required:
@@ -1435,24 +1270,99 @@ components:
         can_upgrade: true
         created_at: '2026-05-20T10:00:00Z'
         updated_at: '2026-05-20T10:00:00Z'
-    ClusterKind:
+    UpdateSpendLimit:
+      type: object
+      properties:
+        spend_limit:
+          type:
+          - string
+          - 'null'
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    UpgradeDeployment:
+      type: object
+      properties:
+        storage:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudStorageSettings'
+        tier:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DeploymentTier'
+    Description:
       type: string
-      enum:
-      - standalone
-      - cluster
-    GenerateByocSetup:
+      example: Production deployment for high-throughput streaming.
+    DeploymentRetention:
       type: object
       required:
-      - cloud
-      - region
+      - telemetry
       properties:
-        cloud:
-          $ref: '#/components/schemas/Cloud'
-        region:
-          $ref: '#/components/schemas/Region'
-    HyphenName:
+        data_storage_gb:
+          type:
+          - integer
+          - 'null'
+          format: int64
+          description: Optional S3 data retention storage in GB.
+          minimum: 0
+        telemetry:
+          $ref: '#/components/schemas/TelemetryRetention'
+    Cloud:
       type: string
-      example: iggy-prod-vpc
+      description: Supported managed cloud provider. Only `aws` and `gcp` are accepted on the public API.
+      enum:
+      - aws
+      - gcp
+      examples:
+      - aws
+    GcpByocDeployment:
+      type: object
+      required:
+      - project_id
+      - service_account_email
+      - vpc_name
+      properties:
+        project_id:
+          $ref: '#/components/schemas/GcpProjectId'
+        service_account_email:
+          $ref: '#/components/schemas/GcpServiceAccountEmail'
+        vpc_name:
+          $ref: '#/components/schemas/HyphenName'
+    CloudStorageSettings:
+      type: object
+      description: 'Simplified storage configuration for API requests.
+
+        Contains only storage type and optional size. IOPS and throughput are
+
+        automatically calculated based on tier and storage type when converted to CloudStorage.'
+      required:
+      - type
+      properties:
+        size:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/StorageSize'
+            description: Size in GB. Required for network storage types.
+        type:
+          $ref: '#/components/schemas/StorageType'
+    ByocSetup:
+      allOf:
+      - {}
+      - {}
+      - type: object
+        required:
+        - supervisor
+        - steps
+        properties:
+          steps:
+            type: array
+            items:
+              type: string
+          supervisor:
+            type: string
     UpdateDeployment:
       type: object
       properties:
@@ -1472,6 +1382,96 @@ components:
 
             `action = "delete_deployment"`). Leave unset to keep the current value.'
           example: true
+    DeploymentNetworkRateLimit:
+      type: string
+      description: Rate limit formatted as `<value> <unit>` (e.g. `1 MB/s`, `500 KB/s`, `2 GB/s`).
+      examples:
+      - 1 MB/s
+    DeploymentId:
+      type: integer
+      format: int64
+      example: 7261845127892140000
+      minimum: 0
+    PreviewDeployment:
+      type: object
+      required:
+      - cloud
+      - region
+      - tier
+      properties:
+        availability_mode:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AvailabilityMode'
+        cloud:
+          $ref: '#/components/schemas/Cloud'
+        nodes:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Number of nodes in the cluster. Defaults to 3 if unset.
+          minimum: 0
+        region:
+          $ref: '#/components/schemas/Region'
+        storage:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CloudStorageSettings'
+        target_network_tput:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/NetworkTput'
+        telemetry_extra_days:
+          type:
+          - integer
+          - 'null'
+          format: int32
+          description: Extra telemetry retention days on top of the included window. Defaults to 0.
+          minimum: 0
+        tier:
+          $ref: '#/components/schemas/DeploymentTier'
+    EnvironmentId:
+      type: integer
+      format: int64
+      example: 7261845066528310000
+      minimum: 0
+    DeploymentName:
+      type: string
+      example: iggy-prod-01
+    ExtendDeployment:
+      type: object
+      required:
+      - nodes
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeToExtend'
+    DeploymentPreviewBreakdown:
+      type: object
+      required:
+      - compute_usd
+      - storage_usd
+      - network_usd
+      - telemetry_usd
+      - data_retention_usd
+      properties:
+        compute_usd:
+          type: string
+        data_retention_usd:
+          type: string
+        network_usd:
+          type: string
+        storage_usd:
+          type: string
+        telemetry_usd:
+          type: string
+    RuntimeType:
+      type: string
+      description: 'Runtime identifier: `warden`, `iggy`, `connectors`, `connector:{id}`, `plane`, or `mcp`.'
+      examples:
+      - iggy
   securitySchemes:
     ld_api_key:
       type: apiKey

@@ -188,59 +188,29 @@ paths:
           description: Member not found
 components:
   schemas:
-    TenantPermissions:
-      type: object
-      required:
-      - tenant
-      - division
-      - environment
-      properties:
-        division:
-          type: array
-          items:
-            $ref: '#/components/schemas/PermissionInfo'
-        environment:
-          type: array
-          items:
-            $ref: '#/components/schemas/PermissionInfo'
-        tenant:
-          type: array
-          items:
-            $ref: '#/components/schemas/PermissionInfo'
-    PermissionInfo:
-      type: object
-      required:
-      - key
-      - name
-      - resource
-      - description
-      properties:
-        description:
-          type: string
-        key:
-          type: string
-        name:
-          type: string
-        resource:
-          type: string
     UserId:
       type: integer
       format: int64
       example: 7261844898910240000
       minimum: 0
-    FullName:
-      type: string
-      example: Alice Doe
     RoleId:
       type: integer
       format: int64
       example: 7261845001236500000
       minimum: 0
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
+    UpdateMember:
+      type: object
+      properties:
+        active:
+          type:
+          - boolean
+          - 'null'
+        roles:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RoleId'
     Paged_MemberDetails:
       type: object
       required:
@@ -305,19 +275,36 @@ components:
           format: int64
           example: 137
           minimum: 0
-    UpdateMember:
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    TenantPermissions:
       type: object
+      required:
+      - tenant
+      - division
+      - environment
       properties:
-        active:
-          type:
-          - boolean
-          - 'null'
-        roles:
-          type:
-          - array
-          - 'null'
+        division:
+          type: array
           items:
-            $ref: '#/components/schemas/RoleId'
+            $ref: '#/components/schemas/PermissionInfo'
+        environment:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionInfo'
+        tenant:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionInfo'
+    Email:
+      type: string
+      example: alice@laserdata.com
+    FullName:
+      type: string
+      example: Alice Doe
     MemberInfo:
       type: object
       required:
@@ -331,9 +318,22 @@ components:
           $ref: '#/components/schemas/UserId'
         name:
           $ref: '#/components/schemas/FullName'
-    Email:
-      type: string
-      example: alice@laserdata.com
+    PermissionInfo:
+      type: object
+      required:
+      - key
+      - name
+      - resource
+      - description
+      properties:
+        description:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        resource:
+          type: string
   securitySchemes:
     ld_api_key:
       type: apiKey

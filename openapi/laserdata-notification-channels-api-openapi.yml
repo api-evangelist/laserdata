@@ -466,44 +466,6 @@ paths:
           description: Test channel rate limited
 components:
   schemas:
-    ChannelSettings:
-      type: object
-      properties:
-        slack:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/SlackSettings'
-        sms:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/SmsSettings'
-        webhook:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/WebhookSettings'
-    DivisionId:
-      type: integer
-      format: int64
-      example: 7261844974723780000
-      minimum: 0
-    NotificationChannelDestination:
-      type: string
-      example: https://hooks.slack.com/services/REDACTED
-    OwnerKind:
-      type: string
-      enum:
-      - user
-      - tenant
-      - division
-      - system
-    SmsSettings:
-      type: object
-      properties:
-        sender_id:
-          type:
-          - string
-          - 'null'
-          example: LaserData
     NotificationChannelName:
       type: string
       example: ops-webhook
@@ -512,24 +474,51 @@ components:
       format: int64
       example: 7261845612345670000
       minimum: 0
-    SlackSettings:
+    SmsSettings:
       type: object
       properties:
-        channel:
+        sender_id:
           type:
           - string
           - 'null'
-          example: laser-alerts
-        icon_emoji:
+          example: LaserData
+    WebhookSettings:
+      type: object
+      properties:
+        headers:
+          type:
+          - object
+          - 'null'
+          additionalProperties:
+            type: string
+          propertyNames:
+            type: string
+        method:
           type:
           - string
           - 'null'
-          example: ':rotating_light:'
-        username:
-          type:
-          - string
-          - 'null'
-          example: LaserData Cloud
+          example: POST
+      example:
+        headers:
+          Authorization: Bearer secret-token
+        method: POST
+    NotificationChannelDetails:
+      allOf:
+      - $ref: '#/components/schemas/NotificationChannelInfo'
+      - type: object
+        required:
+        - destination
+        properties:
+          destination:
+            $ref: '#/components/schemas/NotificationChannelDestination'
+          remarks:
+            type:
+            - string
+            - 'null'
+          settings:
+            oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/ChannelSettings'
     UpdateChannel:
       type: object
       properties:
@@ -555,100 +544,9 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/ChannelSettings'
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
-    NotificationChannelInfo:
-      type: object
-      required:
-      - id
-      - owner_kind
-      - owner_id
-      - channel
-      - name
-      - enabled
-      - created_at
-      - updated_at
-      properties:
-        channel:
-          $ref: '#/components/schemas/NotificationChannelKind'
-        created_at:
-          type: string
-          format: date-time
-        enabled:
-          type: boolean
-        id:
-          $ref: '#/components/schemas/NotificationChannelId'
-        name:
-          $ref: '#/components/schemas/NotificationChannelName'
-        owner_id:
-          type: integer
-          format: int64
-          example: 7261845022003200001
-          minimum: 0
-        owner_kind:
-          $ref: '#/components/schemas/OwnerKind'
-        updated_at:
-          type: string
-          format: date-time
-      example:
-        id: 7261845330120500000
-        owner_kind: tenant
-        owner_id: 7261845022003200001
-        channel: email
-        name: ops-team-email
-        enabled: true
-        created_at: '2026-05-20T10:00:00Z'
-        updated_at: '2026-05-20T10:00:00Z'
-    NotificationChannelKind:
+    NotificationChannelDestination:
       type: string
-      enum:
-      - slack
-      - webhook
-      - sms
-      - email
-    NotificationChannelDetails:
-      allOf:
-      - $ref: '#/components/schemas/NotificationChannelInfo'
-      - type: object
-        required:
-        - destination
-        properties:
-          destination:
-            $ref: '#/components/schemas/NotificationChannelDestination'
-          remarks:
-            type:
-            - string
-            - 'null'
-          settings:
-            oneOf:
-            - type: 'null'
-            - $ref: '#/components/schemas/ChannelSettings'
-    CreateChannel:
-      type: object
-      required:
-      - channel
-      - name
-      - destination
-      properties:
-        channel:
-          $ref: '#/components/schemas/NotificationChannelKind'
-        destination:
-          type: string
-          example: https://hooks.example.com/laserdata/ops
-        name:
-          $ref: '#/components/schemas/NotificationChannelName'
-        remarks:
-          type:
-          - string
-          - 'null'
-          example: Primary production incident sink
-        settings:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/ChannelSettings'
+      example: https://hooks.slack.com/services/REDACTED
     Paged_NotificationChannelInfo:
       type: object
       required:
@@ -716,26 +614,128 @@ components:
           format: int64
           example: 137
           minimum: 0
-    WebhookSettings:
+    NotificationChannelKind:
+      type: string
+      enum:
+      - slack
+      - webhook
+      - sms
+      - email
+    CreateChannel:
       type: object
+      required:
+      - channel
+      - name
+      - destination
       properties:
-        headers:
-          type:
-          - object
-          - 'null'
-          additionalProperties:
-            type: string
-          propertyNames:
-            type: string
-        method:
+        channel:
+          $ref: '#/components/schemas/NotificationChannelKind'
+        destination:
+          type: string
+          example: https://hooks.example.com/laserdata/ops
+        name:
+          $ref: '#/components/schemas/NotificationChannelName'
+        remarks:
           type:
           - string
           - 'null'
-          example: POST
+          example: Primary production incident sink
+        settings:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/ChannelSettings'
+    SlackSettings:
+      type: object
+      properties:
+        channel:
+          type:
+          - string
+          - 'null'
+          example: laser-alerts
+        icon_emoji:
+          type:
+          - string
+          - 'null'
+          example: ':rotating_light:'
+        username:
+          type:
+          - string
+          - 'null'
+          example: LaserData Cloud
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    NotificationChannelInfo:
+      type: object
+      required:
+      - id
+      - owner_kind
+      - owner_id
+      - channel
+      - name
+      - enabled
+      - created_at
+      - updated_at
+      properties:
+        channel:
+          $ref: '#/components/schemas/NotificationChannelKind'
+        created_at:
+          type: string
+          format: date-time
+        enabled:
+          type: boolean
+        id:
+          $ref: '#/components/schemas/NotificationChannelId'
+        name:
+          $ref: '#/components/schemas/NotificationChannelName'
+        owner_id:
+          type: integer
+          format: int64
+          example: 7261845022003200001
+          minimum: 0
+        owner_kind:
+          $ref: '#/components/schemas/OwnerKind'
+        updated_at:
+          type: string
+          format: date-time
       example:
-        headers:
-          Authorization: Bearer secret-token
-        method: POST
+        id: 7261845330120500000
+        owner_kind: tenant
+        owner_id: 7261845022003200001
+        channel: email
+        name: ops-team-email
+        enabled: true
+        created_at: '2026-05-20T10:00:00Z'
+        updated_at: '2026-05-20T10:00:00Z'
+    OwnerKind:
+      type: string
+      enum:
+      - user
+      - tenant
+      - division
+      - system
+    ChannelSettings:
+      type: object
+      properties:
+        slack:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/SlackSettings'
+        sms:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/SmsSettings'
+        webhook:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/WebhookSettings'
   securitySchemes:
     ld_api_key:
       type: apiKey

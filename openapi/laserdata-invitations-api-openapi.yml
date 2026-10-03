@@ -206,109 +206,6 @@ paths:
           description: Invitation not found
 components:
   schemas:
-    DivisionId:
-      type: integer
-      format: int64
-      example: 7261844974723780000
-      minimum: 0
-    Paged_TenantInvitationInfo:
-      type: object
-      required:
-      - total_pages
-      - total_results
-      - page
-      - items
-      properties:
-        items:
-          type: array
-          items:
-            type: object
-            required:
-            - id
-            - status
-            - email
-            - roles
-            properties:
-              email:
-                $ref: '#/components/schemas/Email'
-              id:
-                $ref: '#/components/schemas/InvitationId'
-              roles:
-                type: array
-                items:
-                  type: string
-                description: 'Role names the invitee will receive on acceptance. System roles are `admin`,
-
-                  `developer`, `viewer`, `billing`; tenants may also define custom roles via
-
-                  `POST /tenants/{tenant_id}/roles`. Empty when the invitation grants no role.'
-              status:
-                $ref: '#/components/schemas/InvitationStatus'
-            example:
-              id: 7261845127892140000
-              status: pending
-              email: invitee@acme.com
-              roles:
-              - developer
-        page:
-          type: integer
-          format: int64
-          example: 1
-          minimum: 1
-        total_pages:
-          type: integer
-          format: int64
-          example: 4
-          minimum: 0
-        total_results:
-          type: integer
-          format: int64
-          example: 137
-          minimum: 0
-    Email:
-      type: string
-      example: alice@laserdata.com
-    InvitationId:
-      type: integer
-      format: int64
-      example: 611298765432109070
-      minimum: 0
-    RoleId:
-      type: integer
-      format: int64
-      example: 7261845001236500000
-      minimum: 0
-    TenantId:
-      type: integer
-      format: int64
-      example: 7261845022003200001
-      minimum: 0
-    InvitationStatus:
-      type: string
-      enum:
-      - pending
-      - accepted
-      - rejected
-    InviteMember:
-      type: object
-      required:
-      - email
-      properties:
-        division_id:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/DivisionId'
-        email:
-          $ref: '#/components/schemas/Email'
-        roles:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/RoleId'
-    TenantName:
-      type: string
-      example: acme-corp
     Paged_InvitationInfo:
       type: object
       required:
@@ -364,6 +261,109 @@ components:
           format: int64
           example: 137
           minimum: 0
+    RoleId:
+      type: integer
+      format: int64
+      example: 7261845001236500000
+      minimum: 0
+    Paged_TenantInvitationInfo:
+      type: object
+      required:
+      - total_pages
+      - total_results
+      - page
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - status
+            - email
+            - roles
+            properties:
+              email:
+                $ref: '#/components/schemas/Email'
+              id:
+                $ref: '#/components/schemas/InvitationId'
+              roles:
+                type: array
+                items:
+                  type: string
+                description: 'Role names the invitee will receive on acceptance. System roles are `admin`,
+
+                  `developer`, `viewer`, `billing`; tenants may also define custom roles via
+
+                  `POST /tenants/{tenant_id}/roles`. Empty when the invitation grants no role.'
+              status:
+                $ref: '#/components/schemas/InvitationStatus'
+            example:
+              id: 7261845127892140000
+              status: pending
+              email: invitee@acme.com
+              roles:
+              - developer
+        page:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        total_pages:
+          type: integer
+          format: int64
+          example: 4
+          minimum: 0
+        total_results:
+          type: integer
+          format: int64
+          example: 137
+          minimum: 0
+    InvitationStatus:
+      type: string
+      enum:
+      - pending
+      - accepted
+      - rejected
+    DivisionId:
+      type: integer
+      format: int64
+      example: 7261844974723780000
+      minimum: 0
+    TenantId:
+      type: integer
+      format: int64
+      example: 7261845022003200001
+      minimum: 0
+    InvitationId:
+      type: integer
+      format: int64
+      example: 611298765432109070
+      minimum: 0
+    Email:
+      type: string
+      example: alice@laserdata.com
+    TenantName:
+      type: string
+      example: acme-corp
+    InviteMember:
+      type: object
+      required:
+      - email
+      properties:
+        division_id:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/DivisionId'
+        email:
+          $ref: '#/components/schemas/Email'
+        roles:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/RoleId'
   securitySchemes:
     ld_api_key:
       type: apiKey
